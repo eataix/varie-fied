@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+
+{% block title %} Varie-fied - {{ current_project.name }} {% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/extensions/editable/bootstrap-table-editable.min.js"></script>
+
+    <script>
+        function pendingClick(cb) {
+            $(cb.parentNode.parentNode.parentNode).attr('class', 'info');
+        }
+        function pendingFormatter(value, row, index) {
+            var mid;
+            if (value) {
+                mid = '<input class="checkbox" type="checkbox" checked="" onclick="pendingClick(this);">';
+            } else {
+                mid = '<input class="checkbox" type="checkbox" onclick="pendingClick(this);">';
+            }
+            return "<label>" + mid + "</label>";
+        }
+
+        function approvedClick(cb) {
+            $(cb.parentNode.parentNode.parentNode).attr('class', 'success');
+        }
+        function approvedFormatter(value, row, index) {
+            var mid;
+            if (value) {
+                mid = '<input class="checkbox" type="checkbox" checked="" onclick="approvedClick(this);">';
+            } else {
+                mid = '<input class="checkbox" type="checkbox" onclick="approvedClick(this);">';
+            }
+            return "<label>" + mid + "</label>";
+        }
+
+        function declinedClick(cb) {
+            $(cb.parentNode.parentNode.parentNode).attr('class', 'danger');
+        }
+        function declinedFormatter(value, row, index) {
+            var mid;
+            if (value) {
+                mid = '<input class="checkbox" type="checkbox" checked="" onclick="declinedClick(this);">';
+            } else {
+                mid = '<input class="checkbox" type="checkbox" onclick="declinedClick(this);">';
+            }
+            return "<label>" + mid + "</label>";
+        }
+
+        function completeClick(cb) {
+            $(cb.parentNode.parentNode.parentNode).attr('class', 'warning');
+        }
+        function completeFormatter(value, row, index) {
+            var mid;
+            if (value) {
+                mid = '<input class="checkbox" type="checkbox" checked="" onclick="completeClick(this);">';
+            } else {
+                mid = '<input class="checkbox" type="checkbox" onclick="completeClick(this);">';
+            }
+            return "<label>" + mid + "</label>";
+        }
+
+        function rowStyle(row, index) {
+            if (row['pending']) {
+                return {classes: 'active'};
+            } else if (row['approved']) {
+                return {classes: 'success'};
+            } else if (row['declined']) {
+                return {classes: 'danger'};
+            } else if (row['info']) {
+                return {classes: 'info'};
+            }
+        }
+
+        function timeFormatter(value, row, index) {
+            return "<p>" + moment(value).toDate() + "</p>";
+        }
+
+        var validate_required = function (v) {
+            if (!v) {
+                return "Cannot be empty!";
+            }
+        };
+
+
+        $.ajax({
+            url: "/api/v1.0/projects/{{ current_project.pid }}/variations/",
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                $('#table').bootstrapTable({
+                    columns: [{
+                        checkbox: true
+                    }, {
+                        field: 'vid',
+                        title: '#',
+                        halign: 'center'
+                    }, {
+                        field: 'date',
+                        title: 'Date',
+                        formatter: 'timeFormatter',
+                        halign: 'center',
+                        width: '300px'
+                    }, {
+                        field: 'subcontractor',
+                        title: 'Subcontractor',
+                        editable: {
+                            type: 'text',
+                            validate: validate_required
+                        },
+                        halign: 'center',
+                        searchable: true,
+                        sortable: true
+                    }, {
+                        field: 'amount',
+                        title: 'Amount',
+                        editable: {
+                            type: 'text',
+                            validate: function (v) {
+                                if (!v) {
+                                    return "Cannot be empty!";
+                                }
+                                if (isNaN(parseFloat(v)) || !isFinite(v)) {
+                                    return "Must be a number!";
+                                }
+                            }
+                        },
+                        halign: 'center',
+                        sortable: true
+                    }, {
+                        field: 'invoice_no',
+                        title: 'Invoice #',
+                        editable: true,
+                        halign: 'center'
+                    }, {
+                        field: 'description',
+                        title: 'Description',
+                        editable: {
+                            type: 'textarea'
+                        },
+                        halign: 'center'
+                    }, {
+                        field: 'note',
+                        title: 'Note',
+                        editable: {
+                            type: 'textarea'
+                        },
+                        halign: 'center'
+                    }, {
+                        field: 'pending',
+                        title: 'Pending',
+                        formatter: "pendingFormatter",
+                        halign: 'center',
+                        valign: 'center',
+                        sortable: true
+                    }, {
+                        field: 'approved',
+                        title: 'Approved',
+                        formatter: "approvedFormatter",
+                        halign: 'center',
+                        valign: 'center',
+                        sortable: true
+                    }, {
+                        field: 'declined',
+                        title: 'Declined',
+                        formatter: "declinedFormatter",
+                        halign: 'center',
+                        valign: 'center',
+                        sortable: true
+                    }, {
+                        field: 'completed',
+                        title: 'Completed',
+                        formatter: "completeFormatter",
+                        halign: 'center',
+                        valign: 'center',
+                        sortable: true
+                    }],
+                    data: data['variations'],
+                    rowStyle: "rowStyle",
+                    showColumns: true,
+                    showRefresh: true,
+                    showToggle: true,
+                    toolbar: "#toolbar"
+                });
+            }
+        });
+
+        $.fn.editable.defaults.mode = 'inline';
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#delete_project').on("click", function (e) {
+                swal({
+                    title: "Are you sure to delete the project?",
+                    text: "You are going to",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "No, cancel plx!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                }, function (isConfirm) {
+                    if (isConfirm) {
+                        $.ajax({
+                            url: "/api/v1.0/projects/{{ current_project.pid }}",
+                            type: "DELETE",
+                            data: JSON.stringify({
+                                {%- if current_project.active %}
+                                    "active": false,
+                                {% else %}
+                                    "active": true,
+                                {% endif -%}
+                            }),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (data) {
+                                swal({
+                                    title: "Nice!",
+                                    text: "You delete: {{ current_project.name }}",
+                                    type: "success",
+                                }, function () {
+                                    window.location.href = "/";
+                                });
+                            },
+                            failure: function (err) {
+                            }
+                        });
+                    } else {
+                        swal("Cancelled", "Your project is safe :)", "error");
+                    }
+                });
+            });
+
+            var action = "{% if current_project.active %}archive{% else %}unarchive{% endif %}";
+            $('#archive_project').on("click", function (e) {
+                swal({
+                    title: "Are you sure to " + action + " the project?",
+                    text: "You can recover this project later!",
+                    type: "info",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, " + action + " it!",
+                    cancelButtonText: "No, cancel plx!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                }, function (isConfirm) {
+                    if (isConfirm) {
+                        $.ajax({
+                            url: "/api/v1.0/projects/{{ current_project.pid }}",
+                            type: "PUT",
+                            data: JSON.stringify({
+                                {%- if current_project.active %}
+                                    "active": false,
+                                {% else %}
+                                    "active": true,
+                                {% endif -%}
+                            }),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (data) {
+                                swal({
+                                    title: "Nice!",
+                                    text: "You " + action + ": {{ current_project.name }}",
+                                    type: "success",
+                                }, function () {
+                                    location.reload()
+                                });
+                            },
+                            failure: function (err) {
+                            }
+                        });
+                        swal("Deleted!", "The project has been archived.", "success");
+                    } else {
+                        swal("Cancelled", "The project file is safe :)", "error");
+                    }
+                });
+            });
+
+            $("#rename_project").on("click", function (e) {
+                swal({
+                    title: "Rename Project",
+                    text: "What would you like to call the project?",
+                    type: "input",
+                    inputValue: "{{ current_project.name }}",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                }, function (inputValue) {
+                    if (inputValue === false) {
+                        return false;
+                    } else if (inputValue === "") {
+                        swal.showInputError("You need to write something!");
+                        return false;
+                    } else {
+                        if (inputValue != "{{ current_project.name }}") {
+                            $.ajax({
+                                url: "/api/v1.0/projects/{{ current_project.pid }}",
+                                type: "PUT",
+                                data: JSON.stringify({
+                                    "name": inputValue
+                                }),
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (data) {
+                                    swal({
+                                        title: "Nice!",
+                                        text: "You changed the project name from \"{{ current_project.name }}\" to \"" + inputValue + '"',
+                                        type: "success"
+                                    }, function () {
+                                        location.reload()
+                                    });
+                                },
+                                failure: function (err) {
+                                }
+                            });
+                        } else {
+                            swal("unchanged")
+                        }
+                    }
+                });
+            });
+
+            $('#btn-save').on('click', function (e) {
+                swal({
+                    title: "Are you sure to save all the changes?",
+                    {#                    text: "You are going to",#}
+                    type: "info",
+                    showCancelButton: true,
+                    confirmButtonColor: "teal",
+                    confirmButtonText: "Yes, save them!",
+                    cancelButtonText: "No, cancel plx!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                }, function (isConfirm) {
+                    if (isConfirm) {
+                        var data = $('#table').bootstrapTable('getData');
+                        for (var key in data) {
+                            var value = data[key];
+                            var vid = value['vid'];
+                            console.log(vid);
+                            console.log(JSON.stringify(value));
+                            $.ajax({
+                                url: "/api/v1.0/variations/" + vid,
+                                type: "PUT",
+                                data: JSON.stringify(value),
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (data) {
+                                    swal({
+                                        title: "Nice!",
+                                        text: "You saved all changes.",
+                                        type: "success"
+                                    }, function () {
+                                        location.reload()
+                                    });
+                                },
+                                failure: function (err) {
+                                }
+                            })
+                        }
+                    } else {
+                        swal("Cancelled", "Your saves are unsaved", "error");
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <h2>Variations for {{ current_project.name }}</h2>
+
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <button id="rename_project" type="button" class="btn btn-info btn-raised">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Rename Project
+            </button>
+            <button class="btn btn-primary btn-raised" data-toggle="modal" data-target="#complete-dialog">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Variation
+            </button>
+            <button id="archive_project" type="button" class="btn btn-info btn-raised">
+                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                {% if current_project.active %}
+                    Archive Project
+                {% else %}
+                    Unarchive Project
+                {% endif %}
+            </button>
+            <button id="delete_project" type="button" class="btn btn-danger btn-raised">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete Project
+            </button>
+        </div>
+
+        <table id="table"></table>
+
+        <div id="toolbar">
+            <div class="form-inline" role="form">
+                <div class="form-group">
+                    <button id="btn-save" type="button" class="btn btn-info btn-raised">Save</button>
+                </div>
+                <div class="form-group">
+                    <button id="btn-discard" type="button" class="btn btn-warning btn-raised">Discard</button>
+                </div>
+                <div class="form-group">
+                    <button id="ok" type="button" class="btn btn-danger btn-raised">Delete</button>
+                </div>
+{#                <div class="form-group">#}
+{#                    <input name="search" class="form-control" type="text" placeholder="Search">#}
+{#                </div>#}
+{#                <button id="ok" type="submit" class="btn btn-default">OK</button>#}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

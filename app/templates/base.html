@@ -1,0 +1,270 @@
+{% extends "bootstrap/base.html" %}
+
+{% block html_attribs %} class="no-js" lang="en"{% endblock %}
+
+{% block metas %}
+    {{ super() }}
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+{% endblock %}
+
+{% block title %} Varie-fied {% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/roboto.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material-fullpalette.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/ripples.min.css">
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.0/sweetalert.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.15.35/css/bootstrap-datetimepicker.min.css">
+{% endblock styles %}
+
+{% block scripts %}
+    {{ super() }}
+
+    {{ moment.include_moment() }}
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/js/ripples.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/js/material.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.0/sweetalert.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.15.35/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/parsley.js/2.1.2/parsley.min.js"></script>
+
+    <script>
+        $(function () {
+            $.material.init();
+            $("#picker_datetime").datetimepicker({showTodayButton: true});
+            $("#form-new-variation").parsley();
+        });
+
+        $(document).ready(function () {
+            $("#add_project").on("click", function (e) {
+                swal({
+                    title: "New Project",
+                    text: "Project name:",
+                    type: "input",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    animation: "slide-from-top",
+                    inputPlaceholder: "Project name"
+                }, function (inputValue) {
+                    if (inputValue === false) {
+                        return false;
+                    }
+                    if (inputValue === "") {
+                        swal.showInputError("Project name must not be empty");
+                        return false
+                    }
+                    $.ajax({
+                        url: "/api/v1.0/projects/",
+                        type: "POST",
+                        data: JSON.stringify({"name": inputValue}),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            swal({
+                                title: "Nice!",
+                                text: "You created a new project: " + inputValue,
+                                type: "success"
+                            }, function () {
+                                location.reload()
+                            });
+                        },
+                        failure: function (err) {
+                        }
+                    });
+                });
+            });
+
+            $("#btn_submit").on("click", function (e) {
+                var instance = $("#form-new-variation").parsley();
+                instance.validate();
+                if (instance.isValid()) {
+                    var project_id = $("#select_project_id").val();
+                    var time = $('#picker_datetime').data("DateTimePicker").date();
+                    var timeUTC = time.utc().format();
+                    var subcontractor = $("#input_subcontractor").val();
+                    var invoice_no = $("#input_invoice_no").val();
+                    var input_amount = $("#input_amount").val();
+                    var input_description = $("#input_description").val();
+                    swal({
+                        title: "Are you sure?",
+                        text: "Time: " + time.format('Do MMMM YYYY h:mm:ss a') + "\nSubcontractor: " + subcontractor + "\nAmount: " + input_amount,
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, delete it!",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            $.ajax({
+                                url: "/api/v1.0/variations/",
+                                type: "POST",
+                                data: JSON.stringify({
+                                    "project_id": project_id,
+                                    "date": timeUTC,
+                                    "subcontractor": subcontractor,
+                                    "invoice_no": invoice_no,
+                                    "amount": input_amount,
+                                    "description": input_description
+                                }),
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (data) {
+                                    swal({
+                                        title: "Nice!",
+                                        text: "You created a new variation",
+                                        type: "success"
+                                    }, function () {
+                                        location.reload()
+                                    });
+                                },
+                                failure: function (err) {
+                                }
+                            });
+                        } else {
+                            swal("Cancelled", "Your imaginary file is safe :)", "error");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block navbar %}
+    <div class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Varie-fied</a>
+        </div>
+        <div class="navbar-collapse collapse navbar-responsive-collapse">
+            <ul class="nav navbar-nav">
+                <li {% if front is defined %} class='active' {% endif %}>
+                    <a href="/"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home</a></li>
+                {% for project in projects -%}
+                    {% if project.active %}
+                        <li {% if current_project is defined and current_project.pid == project.pid %}class="active"{% endif %}>
+                            <a href="/project/{{ project.pid }}">
+                                <span class="glyphicon {% if current_project is defined and current_project.pid == project.pid %}glyphicon-folder-open{% else %}glyphicon-folder-close{% endif %}" aria-hidden="true"></span> {{ project.name }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                <li class="dropdown{% if current_project is defined and not current_project.active %} active{% endif %}">
+                    <a href="javascript:void(0)" data-target="javascript:void(0)" class="dropdown-toggle"
+                       data-toggle="dropdown">Archived Projects <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {% for project in projects %}
+                            {% if not project.active %}
+                                <li><a href="/project/{{ project.pid }}">{{ project.name }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li>
+                    <a id="add_project" href="javascript:void(0)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        New Project</a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#complete-dialog"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        New Variation</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="complete-dialog" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">New Variation</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" data-parsley-validate id="form-new-variation">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Project</label>
+
+                            <div class="col-sm-10">
+                                <select id="select_project_id" class="form-control">
+                                    {%- for project in projects %}
+                                        <option value="{{ project.pid }}">{{ project.name }}</option>
+                                    {% endfor -%}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputTime" class="col-sm-2 control-label">Time</label>
+
+                            <div class='col-sm-10'>
+                                <div class='input-group date' id='picker_datetime'>
+                                    <input type='text' class="form-control" required/>
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputSubcontractor" class="col-sm-2 control-label">Subcontractor</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="input_subcontractor" placeholder="Name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputInvoiceNo" class="col-sm-2 control-label">Invoice Number</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="input_invoice_no" placeholder="Optional">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAmount" class="col-sm-2 control-label">Amount</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="input_amount" placeholder="0.0" , data-parsley-type="number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputDescription" class="col-sm-2 control-label">Description</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="input_description" placeholder="" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-dismiss="modal">Dismiss</button>
+                    <button id="btn_submit" class="btn btn-info">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% for message in get_flashed_messages() %}
+            <div class="alert alert-warning">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% block page_content %}{% endblock %}
+    </div>
+{% endblock %}
