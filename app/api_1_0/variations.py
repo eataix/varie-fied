@@ -1,22 +1,27 @@
+from flask import jsonify, request
+
 from . import api
 from .. import db
-from flask import jsonify, request
+from .authentication import auth
 from ..models import Variation
 
 
 @api.route('/variations/')
+@auth.login_required
 def get_variations():
     variations = Variation.query.all()
     return jsonify({'variations': [project.to_json() for project in variations]})
 
 
 @api.route('/variations/<int:variation_id>')
+@auth.login_required
 def get_variation(variation_id):
     variation = Variation.query.get_or_404(variation_id)
     return jsonify(variation.to_json())
 
 
 @api.route('/variations/', methods=['POST'])
+@auth.login_required
 def new_variation():
     variation = Variation.from_json(request.json)
     db.session.add(variation)
@@ -25,6 +30,7 @@ def new_variation():
 
 
 @api.route('/variations/<int:variation_id>', methods=['PUT'])
+@auth.login_required
 def edit_variation(variation_id):
     variation = Variation.query.get_or_404(variation_id)
     variation.subcontractor = request.json.get('subcontractor', variation.subcontractor)

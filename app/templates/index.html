@@ -3,18 +3,22 @@
 {% block page_content %}
     <h1>Active projects</h1>
     <div>
-        {% for project in projects %}
-            {%- if project.active -%}
-                <ul><a href="project/{{ project.pid }}">{{ project.name }}</a></ul>
-            {%- endif -%}
-        {% endfor %}
+        <ul>
+            {% for project in projects %}
+                {%- if project.active -%}
+                    <li><a href="project/{{ project.pid }}">{{ project.name }}</a></li>
+                {%- endif -%}
+            {% endfor %}
+        </ul>
     </div>
     <h1>Previous projects</h1>
     <div>
-        {% for project in projects -%}
-            {%- if not project.active %}
-                <ul><a href="project/{{ project.pid }}">{{ project.name }}</a></ul>
-            {% endif -%}
-        {% endfor %}
+        <ul>
+            {% for project in projects -%}
+                {%- if not project.active %}
+                    <li><a href="project/{{ project.pid }}">{{ project.name }}</a></li>
+                {% endif -%}
+            {% endfor %}
+        </ul>
     </div>
 {% endblock %}
