@@ -11,21 +11,31 @@
     <script>
         function pendingClick(cb) {
             $(cb.parentNode.parentNode.parentNode).attr('class', 'info');
+            cb.parentNode.parentNode.nextSibling.firstChild.firstChild.checked = false;
+            cb.parentNode.parentNode.nextSibling.nextSibling.firstChild.firstChild.checked = false;
         }
         function pendingFormatter(value, row, index) {
+            void(row);
+            void(index);
+
             var mid;
             if (value) {
                 mid = '<input class="checkbox" type="checkbox" checked="" onclick="pendingClick(this);">';
             } else {
                 mid = '<input class="checkbox" type="checkbox" onclick="pendingClick(this);">';
             }
-            return "<label>" + mid + "</label>";
+            return '<label>' + mid + '</label>';
         }
 
         function approvedClick(cb) {
+            cb.parentNode.parentNode.previousSibling.firstChild.firstChild.checked = false;
+            cb.parentNode.parentNode.nextSibling.firstChild.firstChild.checked = false;
             $(cb.parentNode.parentNode.parentNode).attr('class', 'success');
         }
         function approvedFormatter(value, row, index) {
+            void(row);
+            void(index);
+
             var mid;
             if (value) {
                 mid = '<input class="checkbox" type="checkbox" checked="" onclick="approvedClick(this);">';
@@ -36,9 +46,14 @@
         }
 
         function declinedClick(cb) {
+            cb.parentNode.parentNode.previousSibling.firstChild.firstChild.checked = false;
+            cb.parentNode.parentNode.previousSibling.previousSibling.firstChild.firstChild.checked = false;
             $(cb.parentNode.parentNode.parentNode).attr('class', 'danger');
         }
         function declinedFormatter(value, row, index) {
+            void(row);
+            void(index);
+
             var mid;
             if (value) {
                 mid = '<input class="checkbox" type="checkbox" checked="" onclick="declinedClick(this);">';
@@ -49,9 +64,12 @@
         }
 
         function completeClick(cb) {
-            $(cb.parentNode.parentNode.parentNode).attr('class', 'warning');
+            {#            $(cb.parentNode.parentNode.parentNode).attr('class', 'warning');#}
         }
         function completeFormatter(value, row, index) {
+            void(row);
+            void(index);
+
             var mid;
             if (value) {
                 mid = '<input class="checkbox" type="checkbox" checked="" onclick="completeClick(this);">';
@@ -62,18 +80,24 @@
         }
 
         function rowStyle(row, index) {
+            void(index);
+
+            console.log(row);
+
             if (row['pending']) {
-                return {classes: 'active'};
+                return {classes: 'info'};
             } else if (row['approved']) {
                 return {classes: 'success'};
             } else if (row['declined']) {
                 return {classes: 'danger'};
-            } else if (row['info']) {
-                return {classes: 'info'};
+            } else {
+                return {classes: 'active'};
             }
         }
 
         function timeFormatter(value, row, index) {
+            void(row);
+            void(index);
             return "<p>" + moment(value).toDate() + "</p>";
         }
 
@@ -154,28 +178,32 @@
                         formatter: "pendingFormatter",
                         halign: 'center',
                         valign: 'center',
-                        sortable: true
+                        sortable: true,
+                        'class': "pending"
                     }, {
                         field: 'approved',
                         title: 'Approved',
                         formatter: "approvedFormatter",
                         halign: 'center',
                         valign: 'center',
-                        sortable: true
+                        sortable: true,
+                        'class': "approved"
                     }, {
                         field: 'declined',
                         title: 'Declined',
                         formatter: "declinedFormatter",
                         halign: 'center',
                         valign: 'center',
-                        sortable: true
+                        sortable: true,
+                        'class': "declined"
                     }, {
                         field: 'completed',
                         title: 'Completed',
                         formatter: "completeFormatter",
                         halign: 'center',
                         valign: 'center',
-                        sortable: true
+                        sortable: true,
+                        'class': "completed"
                     }],
                     data: data['variations'],
                     rowStyle: "rowStyle",
@@ -193,6 +221,7 @@
     <script>
         $(document).ready(function () {
             $('#delete_project').on("click", function (e) {
+                void(e);
                 swal({
                     title: "Are you sure to delete the project?",
                     text: "You are going to",
@@ -208,20 +237,15 @@
                         $.ajax({
                             url: "/api/v1.0/projects/{{ current_project.pid }}",
                             type: "DELETE",
-                            data: JSON.stringify({
-                                {%- if current_project.active %}
-                                    "active": false,
-                                {% else %}
-                                    "active": true,
-                                {% endif -%}
-                            }),
+                            data: JSON.stringify({}),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json",
                             success: function (data) {
+                                void(data);
                                 swal({
                                     title: "Nice!",
                                     text: "You delete: {{ current_project.name }}",
-                                    type: "success",
+                                    type: "success"
                                 }, function () {
                                     window.location.href = "/";
                                 });
@@ -237,6 +261,7 @@
 
             var action = "{% if current_project.active %}archive{% else %}unarchive{% endif %}";
             $('#archive_project').on("click", function (e) {
+                void(e);
                 swal({
                     title: "Are you sure to " + action + " the project?",
                     text: "You can recover this project later!",
@@ -253,19 +278,16 @@
                             url: "/api/v1.0/projects/{{ current_project.pid }}",
                             type: "PUT",
                             data: JSON.stringify({
-                                {%- if current_project.active %}
-                                    "active": false,
-                                {% else %}
-                                    "active": true,
-                                {% endif -%}
+                                "active":{% if current_project.active %} false{% else %} true{% endif %}
                             }),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json",
                             success: function (data) {
+                                void(data);
                                 swal({
                                     title: "Nice!",
                                     text: "You " + action + ": {{ current_project.name }}",
-                                    type: "success",
+                                    type: "success"
                                 }, function () {
                                     location.reload()
                                 });
@@ -281,6 +303,7 @@
             });
 
             $("#rename_project").on("click", function (e) {
+                void(e);
                 swal({
                     title: "Rename Project",
                     text: "What would you like to call the project?",
@@ -288,7 +311,7 @@
                     inputValue: "{{ current_project.name }}",
                     showCancelButton: true,
                     closeOnConfirm: false,
-                    closeOnCancel: true,
+                    closeOnCancel: true
                 }, function (inputValue) {
                     if (inputValue === false) {
                         return false;
@@ -306,6 +329,7 @@
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
                                 success: function (data) {
+                                    void(data);
                                     swal({
                                         title: "Nice!",
                                         text: "You changed the project name from \"{{ current_project.name }}\" to \"" + inputValue + '"',
@@ -325,6 +349,7 @@
             });
 
             $('#btn-save').on('click', function (e) {
+                void(e);
                 swal({
                     title: "Are you sure to save all the changes?",
                     {#                    text: "You are going to",#}
@@ -338,11 +363,19 @@
                 }, function (isConfirm) {
                     if (isConfirm) {
                         var data = $('#table').bootstrapTable('getData');
-                        for (var key in data) {
+                        for (var key = 0; key < data.length; ++key) {
                             var value = data[key];
                             var vid = value['vid'];
-                            console.log(vid);
+
+                            var selector = "[data-index=" + key + "]";
+                            var element = $(selector);
+                            value['pending'] = element.find(".pending").children().children().is(':checked');
+                            value['approved'] = element.find(".approved").children().children().is(':checked');
+                            value['declined'] = element.find(".declined").children().children().is(':checked');
+                            value['completed'] = element.find(".completed").children().children().is(':checked');
+
                             console.log(JSON.stringify(value));
+
                             $.ajax({
                                 url: "/api/v1.0/variations/" + vid,
                                 type: "PUT",
@@ -350,12 +383,13 @@
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
                                 success: function (data) {
+                                    void(data);
                                     swal({
                                         title: "Nice!",
                                         text: "You saved all changes.",
                                         type: "success"
                                     }, function () {
-                                        location.reload()
+                                        location.reload();
                                     });
                                 },
                                 failure: function (err) {
@@ -414,10 +448,6 @@
                 <div class="form-group">
                     <button id="ok" type="button" class="btn btn-danger btn-raised">Delete</button>
                 </div>
-{#                <div class="form-group">#}
-{#                    <input name="search" class="form-control" type="text" placeholder="Search">#}
-{#                </div>#}
-{#                <button id="ok" type="submit" class="btn btn-default">OK</button>#}
             </div>
         </div>
     </div>

@@ -37,4 +37,5 @@ def edit_variation(variation_id):
     variation.completed = request.json.get('completed', variation.completed)
     variation.note = request.json.get('note', variation.note)
     db.session.add(variation)
+    db.session.commit()
     return jsonify(variation.to_json())

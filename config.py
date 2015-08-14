@@ -14,19 +14,20 @@ class Config:
 
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
+                              'postgresql://localhost/dev-database'
     DEBUG = True
 
 
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
+                              'postgresql://localhost/test-database'
 
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+                              'postgresql://localhost/database'
+
 
 config = {
     'development': DevelopmentConfig,

@@ -45,6 +45,8 @@
 
         $(document).ready(function () {
             $("#add_project").on("click", function (e) {
+                void(e);
+
                 swal({
                     title: "New Project",
                     text: "Project name:",
@@ -68,6 +70,8 @@
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         success: function (data) {
+                            void(data);
+
                             swal({
                                 title: "Nice!",
                                 text: "You created a new project: " + inputValue,
@@ -83,6 +87,8 @@
             });
 
             $("#btn_submit").on("click", function (e) {
+                void(e);
+
                 var instance = $("#form-new-variation").parsley();
                 instance.validate();
                 if (instance.isValid()) {
@@ -99,7 +105,7 @@
                         type: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "Yes, delete it!",
+                        confirmButtonText: "Yes, add it!",
                         cancelButtonText: "No, cancel plx!",
                         closeOnConfirm: false,
                         closeOnCancel: false
@@ -119,6 +125,8 @@
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
                                 success: function (data) {
+                                    void(data);
+
                                     swal({
                                         title: "Nice!",
                                         text: "You created a new variation",
@@ -164,8 +172,7 @@
                     {% endif %}
                 {% endfor %}
                 <li class="dropdown{% if current_project is defined and not current_project.active %} active{% endif %}">
-                    <a href="javascript:void(0)" data-target="javascript:void(0)" class="dropdown-toggle"
-                       data-toggle="dropdown">Archived Projects <b class="caret"></b></a>
+                    <a href="javascript:void(0)" data-target="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"> Archived Projects <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         {% for project in projects %}
                             {% if not project.active %}
@@ -175,12 +182,10 @@
                     </ul>
                 </li>
                 <li>
-                    <a id="add_project" href="javascript:void(0)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                        New Project</a>
+                    <a id="add_project" href="javascript:void(0)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Project</a>
                 </li>
                 <li>
-                    <a href="javascript:void(0)" data-toggle="modal" data-target="#complete-dialog"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                        New Variation</a>
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#complete-dialog"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Variation</a>
                 </li>
             </ul>
         </div>
@@ -191,7 +196,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title">New Variation</h4>
+                    <h2 class="modal-title">New Variation</h2>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal" data-parsley-validate id="form-new-variation">
@@ -199,6 +204,7 @@
                             <label class="col-sm-2 control-label">Project</label>
 
                             <div class="col-sm-10">
+                                <label for="select_project_id"></label>
                                 <select id="select_project_id" class="form-control">
                                     {%- for project in projects %}
                                         <option value="{{ project.pid }}">{{ project.name }}</option>
@@ -211,7 +217,9 @@
 
                             <div class='col-sm-10'>
                                 <div class='input-group date' id='picker_datetime'>
-                                    <input type='text' class="form-control" required/>
+                                    <label>
+                                        <input type='text' class="form-control" required/>
+                                    </label>
                                     <span class="input-group-addon">
                                         <span class="glyphicon glyphicon-calendar"></span>
                                     </span>
@@ -236,7 +244,7 @@
                             <label for="inputAmount" class="col-sm-2 control-label">Amount</label>
 
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="input_amount" placeholder="0.0" , data-parsley-type="number">
+                                <input type="text" class="form-control" id="input_amount" placeholder="0.0" data-parsley-type="number">
                             </div>
                         </div>
                         <div class="form-group">

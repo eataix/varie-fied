@@ -33,6 +33,7 @@ def edit_project(project_id):
     project.name = request.json.get('name', project.name)
     project.active = bool(request.json.get('active', project.active))
     db.session.add(project)
+    db.session.commit()
     return jsonify(project.to_json())
 
 
@@ -46,4 +47,5 @@ def get_project_variations(project_id):
 def delete_project(project_id):
     project = Project.query.get_or_404(project_id)
     db.session.delete(project)
+    db.session.commit()
     return jsonify(project.to_json())
