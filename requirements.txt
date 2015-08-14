@@ -7,3 +7,4 @@ flask-script
 flask-migrate
 flask-httpauth
 gunicorn
+psycopg2
