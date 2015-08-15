@@ -4,5 +4,5 @@ auth = HTTPBasicAuth()
 
 
 @auth.verify_password
-def verify_password(email, password):
-    return password == "password"
+def verify_password(username, password):
+    return username == 'admin' and password == "password"

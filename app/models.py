@@ -1,6 +1,7 @@
 from flask import url_for
 from . import db
 from datetime import datetime
+from sqlalchemy.orm import backref
 from app.exceptions import ValidationError
 import arrow
 
@@ -10,7 +11,10 @@ class Project(db.Model):
     pid = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     active = db.Column(db.Boolean, default=True)
-    variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan")
+    variations = db.relationship('Variation', backref=backref('project', order_by='Variation.timestamp'),
+                                 cascade="all, delete-orphan")
+
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow())
 
     def __repr__(self):
         return u'<Project Name: {0}, Active: {1}>'.format(self.name, self.active)
@@ -47,6 +51,8 @@ class Variation(db.Model):
     note = db.Column(db.Text, nullable=True)
 
     project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'))
+
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow())
 
     def to_json(self):
         json_variation = {

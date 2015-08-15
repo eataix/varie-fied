@@ -45,7 +45,14 @@ def edit_project(project_id):
 @auth.login_required
 def get_project_variations(project_id):
     project = Project.query.get_or_404(project_id)
-    return jsonify({'variations': [variation.to_json() for variation in project.variations]})
+
+    jsons = []
+    for (idx, variation) in enumerate(project.variations):
+        json = variation.to_json()
+        json['virtual_id'] = idx + 1
+        jsons.append(json)
+
+    return jsonify({'variations': jsons})
 
 
 @api.route('/projects/<int:project_id>', methods=['DELETE'])
