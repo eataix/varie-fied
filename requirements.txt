@@ -8,3 +8,4 @@ flask-migrate
 flask-httpauth
 gunicorn
 psycopg2
+ipython
