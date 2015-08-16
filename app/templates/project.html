@@ -396,7 +396,7 @@
                         var selected = $('table').bootstrapTable('getSelections');
                         for (var i = 0; i < selected.length; ++i) {
                             $.ajax({
-                                url: selected[i]["url"],
+                                url: "/api/v1.0/variations/" + selected[i]["vid"],
                                 type: "DELETE",
                                 data: JSON.stringify({}),
                                 contentType: "application/json; charset=utf-8",
@@ -443,7 +443,7 @@
                         var data = $('#table').bootstrapTable('getData');
                         for (var key = 0; key < data.length; ++key) {
                             var value = data[key];
-                            var url = value['url'];
+                            var vid = value['vid'];
 
                             var selector = "[data-index=" + key + "]";
                             var element = $(selector);
@@ -453,7 +453,7 @@
                             value['completed'] = element.find(".completed").children().children().is(':checked');
 
                             $.ajax({
-                                url: url,
+                                url: "/api/v1.0/variations/" + vid,
                                 type: "PUT",
                                 data: JSON.stringify(value),
                                 contentType: "application/json; charset=utf-8",
@@ -470,7 +470,7 @@
                                 },
                                 failure: function (err) {
                                 }
-                            })
+                            });
                         }
                     } else {
                         swal("Cancelled", "Your saves are unsaved", "error");

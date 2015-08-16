@@ -33,7 +33,3 @@ def new_project_post(project_name):
     else:
         return 500
 
-
-@main.route('/presentation')
-def presentation():
-    return render_template('presentation.html')
