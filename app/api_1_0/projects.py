@@ -46,6 +46,7 @@ def edit_project(project_id):
 def get_project_variations(project_id):
     project = Project.query.get_or_404(project_id)
 
+    project.variations.sort(key=lambda v: v.vid)
     jsons = []
     for (idx, variation) in enumerate(project.variations):
         json = variation.to_json()

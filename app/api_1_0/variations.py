@@ -45,3 +45,12 @@ def edit_variation(variation_id):
     db.session.add(variation)
     db.session.commit()
     return jsonify(variation.to_json())
+
+
+@api.route('/variations/<int:variation_id>', methods=['DELETE'])
+@auth.login_required
+def delete_variation(variation_id):
+    variation = Variation.query.get_or_404(variation_id)
+    db.session.delete(variation)
+    db.session.commit()
+    return jsonify(variation.to_json())

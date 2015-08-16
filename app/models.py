@@ -11,8 +11,7 @@ class Project(db.Model):
     pid = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     active = db.Column(db.Boolean, default=True)
-    variations = db.relationship('Variation', backref=backref('project', order_by='Variation.timestamp'),
-                                 cascade="all, delete-orphan")
+    variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan")
 
     timestamp = db.Column(db.DateTime, default=datetime.utcnow())
 
