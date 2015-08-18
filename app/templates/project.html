@@ -125,7 +125,16 @@
                     }, {
                         field: 'virtual_id',
                         title: '#',
-                        halign: 'center'
+                        halign: 'center',
+                        sortable: true
+                    }, {
+                        field: 'description',
+                        title: 'Description',
+                        editable: {
+                            type: 'textarea'
+                        },
+                        halign: 'center',
+                        width: '600px'
                     }, {
                         field: 'date',
                         title: 'Date',
@@ -140,11 +149,11 @@
                             validate: validate_required
                         },
                         halign: 'center',
-                        searchable: true,
+{#                        searchable: true,#}
                         sortable: true
                     }, {
                         field: 'amount',
-                        title: 'Amount',
+                        title: 'Subtotal ($)',
                         editable: {
                             type: 'text',
                             validate: function (v) {
@@ -162,13 +171,6 @@
                         field: 'invoice_no',
                         title: 'Invoice #',
                         editable: true,
-                        halign: 'center'
-                    }, {
-                        field: 'description',
-                        title: 'Description',
-                        editable: {
-                            type: 'textarea'
-                        },
                         halign: 'center'
                     }, {
                         field: 'note',

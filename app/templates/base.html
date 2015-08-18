@@ -41,8 +41,47 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.0/sweetalert.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.15.35/js/bootstrap-datetimepicker.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/parsley.js/2.1.2/parsley.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.4.1/accounting.min.js"></script>
 
     <script>
+        function isNumeric(n) {
+            return !isNaN(parseFloat(n)) && isFinite(n);
+        }
+
+        function update () {
+            var total = 0.0;
+            $('.input-amount').each(function (i, o) {
+                var val = $(o).val();
+                if (val !== "" && isNumeric(val)) {
+                    total += parseFloat(val);
+                }
+            });
+            $('#value-of-work').val(accounting.formatMoney(total));
+            $('#subtotal').val(accounting.formatMoney(total * (1.0 + parseFloat($('#margin').val()) / 100.0)));
+        }
+
+        function addRow(s) {
+            var newRow = $('<tr class="item">' +
+                    '<td>' +
+                    '<input type="text" name="description" class="input-desc form-control" required/>' +
+                    '</td>' +
+                    '<td>' +
+                    '<input type="text" name="amount" class="input-amount form-control" oninput="update()"/>' +
+                    '</td>' +
+                    '<td>' +
+                    '<a href="#" class="add-row" onclick="addRow()">Add Row</a>' +
+                    ' / ' +
+                    '<a href="#" class="delete-row" onclick="deleteRow(this)">Delete Row</a>' +
+                    '</td>' +
+                    '</tr>');
+            $('#items').append(newRow);
+        }
+
+        function deleteRow(e) {
+            var row = e.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
         $(function () {
             $.material.init();
             $("#picker_datetime").datetimepicker({showTodayButton: true});
@@ -61,33 +100,43 @@
                     closeOnConfirm: false,
                     animation: "slide-from-top",
                     inputPlaceholder: "Project name"
-                }, function (inputValue) {
-                    if (inputValue === false) {
+                }, function (projectName) {
+                    if (projectName === false) {
                         return false;
                     }
-                    if (inputValue === "") {
+                    if (projectName === "") {
                         swal.showInputError("Project name must not be empty");
                         return false
                     }
-                    $.ajax({
-                        url: "/api/v1.0/projects/",
-                        type: "POST",
-                        data: JSON.stringify({"name": inputValue}),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function (data) {
-                            void(data);
-
-                            swal({
-                                title: "Nice!",
-                                text: "You created a new project: " + inputValue,
-                                type: "success"
-                            }, function () {
-                                location.reload()
-                            });
-                        },
-                        failure: function (err) {
-                        }
+                    swal({
+                        title: "New Project",
+                        text: "Margin:",
+                        type: "input",
+                        inputValue: "0.15",
+                        showCancelButton: true,
+                        closeOnConfirm: false,
+                        animation: "slide-from-top",
+                        inputPlaceholder: "Project name"
+                    }, function (margin) {
+                        $.ajax({
+                            url: "/api/v1.0/projects/",
+                            type: "POST",
+                            data: JSON.stringify({"name": projectName, "margin": margin}),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (data) {
+                                void(data);
+                                swal({
+                                    title: "Nice!",
+                                    text: "You created a new project: " + projectName,
+                                    type: "success"
+                                }, function () {
+                                    location.reload()
+                                });
+                            },
+                            failure: function (err) {
+                            }
+                        });
                     });
                 });
             });
@@ -103,11 +152,12 @@
                     var timeUTC = time.utc().format();
                     var subcontractor = $("#input_subcontractor").val();
                     var invoice_no = $("#input_invoice_no").val();
-                    var input_amount = $("#input_amount").val();
+                    var input_amount = accounting.unformat($('#subtotal').val());
                     var input_description = $("#input_description").val();
+                    console.log(accounting.format(input_amount));
                     swal({
                         title: "Are you sure?",
-                        text: "Time: " + time.format('Do MMMM YYYY h:mm:ss a') + "\nSubcontractor: " + subcontractor + "\nAmount: " + input_amount,
+                        text: "Time: " + time.format('Do MMMM YYYY h:mm:ss a') + "\nSubcontractor: " + subcontractor + "\nAmount: " + accounting.formatMoney(input_amount),
                         type: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#DD6B55",
@@ -131,15 +181,42 @@
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
                                 success: function (data) {
-                                    void(data);
-
-                                    swal({
-                                        title: "Nice!",
-                                        text: "You created a new variation",
-                                        type: "success"
-                                    }, function () {
-                                        location.reload()
+                                    var vid = data['vid'];
+                                    var successful = true;
+                                    $('.item').each(function (i, obj) {
+                                        var desc = $(obj.children[0].children[0]).val();
+                                        var amount = $(obj.children[1].children[0]).val();
+                                        if (desc !== '' && amount !== '') {
+                                            $.ajax({
+                                                url: "/api/v1.0/items/",
+                                                type: "POST",
+                                                data: JSON.stringify({
+                                                    "variation_id": vid,
+                                                    "description": desc,
+                                                    "amount": amount
+                                                }),
+                                                contentType: "application/json; charset=utf-8",
+                                                dataType: "json",
+                                                success: function (data) {
+                                                    console.log(data);
+                                                },
+                                                failure: function (err) {
+                                                    successful = false;
+                                                }
+                                            });
+                                        }
                                     });
+                                    console.log(successful);
+                                    if (successful) {
+                                        swal({
+                                            title: "Nice!",
+                                            text: "You created a new variation",
+                                            type: "success"
+                                        }, function () {
+                                            location.reload()
+                                        });
+                                    } else {
+                                    }
                                 },
                                 failure: function (err) {
                                 }
@@ -150,6 +227,10 @@
                     });
                 }
             });
+
+
+            $('.input-amount').on('change', update);
+
         });
     </script>
 {% endblock %}
@@ -240,18 +321,65 @@
                                 <input type="text" class="form-control" id="input_invoice_no" placeholder="Optional">
                             </div>
                         </div>
+
                         <div class="form-group">
-                            <label for="inputAmount" class="col-sm-2 control-label">Amount*</label>
+                            <label for="inputAmount" class="col-sm-2 control-label">Value of work</label>
 
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="input_amount" placeholder="0.0" data-parsley-type="number">
+                                <input type="text" class="form-control" id="value-of-work" placeholder="0.0" disabled>
                             </div>
                         </div>
+
                         <div class="form-group">
-                            <label for="inputDescription" class="col-sm-2 control-label">Description*</label>
+                            <label for="inputAmount" class="col-sm-2 control-label">Margin</label>
 
                             <div class="col-sm-10">
+                                <input type="text" class="form-control" id="margin" placeholder="0.0" value="15%" oninput="update()">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputAmount" class="col-sm-2 control-label">Subtotal</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="subtotal" placeholder="0.0" disabled>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputDescription" class="col-sm-2 control-label">Description*</label>
+                            <div class="col-sm-10">
                                 <textarea class="form-control" id="input_description" placeholder="" rows=5 required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputDescription" class="col-sm-2 control-label">Items*</label>
+                            <div class="col-sm-10">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="items">
+                                    <tr class="item">
+                                        <td>
+                                            <input type="text" name="description" class="input-desc form-control" required/>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="amount" class="input-amount form-control" required data-parsley-type="number" oninput="update()"/>
+                                        </td>
+                                        <td>
+                                            <a href="#" class="add-row" onclick="addRow()">Add Row</a>
+                                            /
+                                            <a href="#" class="deleteRow(this)">Delete Row</a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </form>

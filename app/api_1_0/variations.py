@@ -47,6 +47,13 @@ def edit_variation(variation_id):
     return jsonify(variation.to_json())
 
 
+@api.route('/variations/<int:variation_id>/items/')
+@auth.login_required
+def get_variation_items(variation_id):
+    variation = Variation.query.get_or_404(variation_id)
+    return jsonify({'items': [item.to_json() for item in variation.items]})
+
+
 @api.route('/variations/<int:variation_id>', methods=['DELETE'])
 @auth.login_required
 def delete_variation(variation_id):

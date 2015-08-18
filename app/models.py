@@ -1,7 +1,6 @@
 from flask import url_for
 from . import db
 from datetime import datetime
-from sqlalchemy.orm import backref
 from app.exceptions import ValidationError
 import arrow
 
@@ -10,10 +9,9 @@ class Project(db.Model):
     __tablename__ = 'projects'
     pid = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    margin = db.Column(db.Float, nullable=False)
     active = db.Column(db.Boolean, default=True)
     variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan")
-
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow())
 
     def __repr__(self):
         return u'<Project Name: {0}, Active: {1}>'.format(self.name, self.active)
@@ -30,9 +28,10 @@ class Project(db.Model):
     @staticmethod
     def from_json(json_project):
         name = json_project.get('name')
+        margin = json_project.get('margin')
         if name is None or name == '':
             raise ValidationError('project does not have a name')
-        return Project(name=name)
+        return Project(name=name, margin=margin)
 
 
 class Variation(db.Model):
@@ -41,7 +40,7 @@ class Variation(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow())
     subcontractor = db.Column(db.String(64), default="")
     invoice_no = db.Column(db.String(64), nullable=True)
-    description = db.Column(db.Text, nullable=True)
+    description = db.Column(db.Text, nullable=False)
     amount = db.Column(db.Float, default=0.0)
     pending = db.Column(db.Boolean, default=True)
     approved = db.Column(db.Boolean, default=False)
@@ -51,7 +50,10 @@ class Variation(db.Model):
 
     project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'))
 
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow())
+    items = db.relationship('Item', backref='variation', cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return u'<Variation Id: {}, Project: {} >'.format(self.vid, self.project_id)
 
     def to_json(self):
         json_variation = {
@@ -68,6 +70,7 @@ class Variation(db.Model):
             'completed': self.completed,
             'note': self.note,
             'project_id': url_for('api.get_project', project_id=self.project_id, _external=True),
+            'items': url_for('api.get_variation_items', variation_id=self.vid, _external=True),
         }
         return json_variation
 
@@ -88,3 +91,31 @@ class Variation(db.Model):
         return Variation(date=date, subcontractor=subcontractor, invoice_no=invoice_no, description=description,
                          amount=amount, pending=pending, approved=approved, declined=declined, completed=completed,
                          note=note, project=project)
+
+
+class Item(db.Model):
+    __tablename__ = 'items'
+    id = db.Column(db.Integer, primary_key=True)
+    amount = db.Column(db.Float, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+
+    variation_id = db.Column(db.Integer, db.ForeignKey('variations.vid'))
+
+    def __repr__(self):
+        return u'<Item Id: {}, Variation: {} >'.format(self.id, self.variation_id)
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "variation_id": self.variation_id,
+            "amount": self.amount,
+            "description": self.description,
+            'url': url_for('api.get_item', item_id=self.id, _external=True)
+        }
+
+    @staticmethod
+    def from_json(json):
+        variation = Variation.query.get_or_404(int(json.get('variation_id')))
+        amount = json.get('amount')
+        description = json.get('description')
+        return Item(variation=variation, amount=amount, description=description)
