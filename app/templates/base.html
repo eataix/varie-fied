@@ -22,10 +22,15 @@
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.0/sweetalert.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.15.35/css/bootstrap-datetimepicker.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <style>
         #complete-dialog .modal-dialog {
             width: 60%;
+        }
+        .material-icons.md-18 { font-size: 18px; }
+        .material-icons, .icon-text {
+            vertical-align: middle;
         }
     </style>
 {% endblock styles %}
@@ -69,9 +74,9 @@
                     '<input type="text" name="amount" class="input-amount form-control" oninput="update()"/>' +
                     '</td>' +
                     '<td>' +
-                    '<a href="#" class="add-row" onclick="addRow()">Add Row</a>' +
+                    '<a href="#" class="add-row" onclick="addRow();"><i class="material-icons md-18">add</i> Add</a>' +
                     ' / ' +
-                    '<a href="#" class="delete-row" onclick="deleteRow(this)">Delete Row</a>' +
+                    '<a href="#" class="delete-row" onclick="deleteRow(this);"><i class="material-icons md-18">delete</i> Delete</a>' +
                     '</td>' +
                     '</tr>');
             $('#items').append(newRow);
@@ -80,6 +85,7 @@
         function deleteRow(e) {
             var row = e.parentNode.parentNode;
             row.parentNode.removeChild(row);
+            update();
         }
 
         $(function () {
@@ -259,7 +265,7 @@
                     {% endif %}
                 {% endfor %}
                 <li class="dropdown{% if current_project is defined and not current_project.active %} active{% endif %}">
-                    <a href="javascript:void(0)" data-target="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"> Archived Projects <b class="caret"></b></a>
+                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"> Archived Projects <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         {% for project in projects %}
                             {% if not project.active %}
@@ -373,9 +379,9 @@
                                             <input type="text" name="amount" class="input-amount form-control" required data-parsley-type="number" oninput="update()"/>
                                         </td>
                                         <td>
-                                            <a href="#" class="add-row" onclick="addRow()">Add Row</a>
+                                            <a href="#" class="add-row" onclick="addRow();"><i class="material-icons md-18">add</i> Add</a>
                                             /
-                                            <a href="#" class="deleteRow(this)">Delete Row</a>
+                                            <a href="#" class="delete-row" onclick="deleteRow(this);"><i class="material-icons md-18">delete</i> Delete</a>
                                         </td>
                                     </tr>
                                     </tbody>
