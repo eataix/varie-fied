@@ -9,3 +9,4 @@ flask-httpauth
 gunicorn
 psycopg2
 ipython
+openpyxl

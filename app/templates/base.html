@@ -17,12 +17,14 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/roboto.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material-fullpalette.min.css">
+{#    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material-fullpalette.min.css">#}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/ripples.min.css">
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.0/sweetalert.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.15.35/css/bootstrap-datetimepicker.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/css/selectize.bootstrap3.min.css" rel="stylesheet">
 
     <style>
         #complete-dialog .modal-dialog {
@@ -40,6 +42,7 @@
 
     {{ moment.include_moment() }}
 
+    <script src="//cdn.rawgit.com/uzairfarooq/arrive/master/minified/arrive.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/js/ripples.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/js/material.min.js"></script>
 
@@ -48,7 +51,25 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/parsley.js/2.1.2/parsley.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.4.1/accounting.min.js"></script>
 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/js/standalone/selectize.min.js"></script>
+
     <script>
+        function onSelectChanged(e) {
+            var project_id = $('#select_project_id')[0].selectize.items[0];
+            $.ajax({
+                url: "/api/v1.0/projects/" + project_id,
+                type: "GET",
+                data: JSON.stringify({}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $('#margin').val(data['margin'] * 100 + '%');
+                },
+                failure: function (err) {
+                }
+            });
+        }
+
         function isNumeric(n) {
             return !isNaN(parseFloat(n)) && isFinite(n);
         }
@@ -66,7 +87,7 @@
         }
 
         function addRow(s) {
-            var newRow = $('<tr class="item">' +
+            var newRow = $('<tr class="variationItem">' +
                     '<td>' +
                     '<input type="text" name="description" class="input-desc form-control" required/>' +
                     '</td>' +
@@ -95,6 +116,10 @@
         });
 
         $(document).ready(function () {
+            $('#select_project_id').selectize({
+                sortField: 'text'
+            });
+
             $("#add_project").on("click", function (e) {
                 void(e);
 
@@ -153,14 +178,14 @@
                 var instance = $("#form-new-variation").parsley();
                 instance.validate();
                 if (instance.isValid()) {
-                    var project_id = $("#select_project_id").val();
+                    var project_id = $('#select_project_id')[0].selectize.items[0];
                     var time = $('#picker_datetime').data("DateTimePicker").date();
                     var timeUTC = time.utc().format();
                     var subcontractor = $("#input_subcontractor").val();
                     var invoice_no = $("#input_invoice_no").val();
                     var input_amount = accounting.unformat($('#subtotal').val());
                     var input_description = $("#input_description").val();
-                    console.log(accounting.format(input_amount));
+{#                    console.log(accounting.format(input_amount));#}
                     swal({
                         title: "Are you sure?",
                         text: "Time: " + time.format('Do MMMM YYYY h:mm:ss a') + "\nSubcontractor: " + subcontractor + "\nAmount: " + accounting.formatMoney(input_amount),
@@ -189,7 +214,7 @@
                                 success: function (data) {
                                     var vid = data['vid'];
                                     var successful = true;
-                                    $('.item').each(function (i, obj) {
+                                    $('.variationItem').each(function (i, obj) {
                                         var desc = $(obj.children[0].children[0]).val();
                                         var amount = $(obj.children[1].children[0]).val();
                                         if (desc !== '' && amount !== '') {
@@ -207,12 +232,13 @@
                                                     console.log(data);
                                                 },
                                                 failure: function (err) {
+                                                    console.log(err);
                                                     successful = false;
                                                 }
                                             });
                                         }
                                     });
-                                    console.log(successful);
+{#                                    console.log(successful);#}
                                     if (successful) {
                                         swal({
                                             title: "Nice!",
@@ -275,10 +301,10 @@
                     </ul>
                 </li>
                 <li>
-                    <a id="add_project" href="javascript:void(0)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Project</a>
+                    <a id="add_project" href="#!"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Project</a>
                 </li>
                 <li>
-                    <a href="javascript:void(0)" data-toggle="modal" data-target="#complete-dialog"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Variation</a>
+                    <a href="#!" data-toggle="modal" data-target="#complete-dialog"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Variation</a>
                 </li>
             </ul>
         </div>
@@ -296,7 +322,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Project*</label>
                             <div class="col-sm-10">
-                                <select id="select_project_id" class="form-control">
+                                <select id="select_project_id" class="form-control" onchange="onSelectChanged(this);">
+                                    <option value="">Select a project</option>
                                     {%- for project in projects %}
                                         <option value="{{ project.pid }}">{{ project.name }}</option>
                                     {% endfor -%}
@@ -371,7 +398,7 @@
                                     </tr>
                                     </thead>
                                     <tbody id="items">
-                                    <tr class="item">
+                                    <tr class="variationItem">
                                         <td>
                                             <input type="text" name="description" class="input-desc form-control" required/>
                                         </td>

@@ -14,7 +14,6 @@
             cb.parentNode.parentNode.nextSibling.firstChild.firstChild.checked = false;
             cb.parentNode.parentNode.nextSibling.nextSibling.firstChild.firstChild.checked = false;
             $("#btn-save").prop("disabled", false);
-            $("#btn-discard").prop("disabled", false);
         }
         function pendingFormatter(value, row, index) {
             void(row);
@@ -34,7 +33,6 @@
             cb.parentNode.parentNode.nextSibling.firstChild.firstChild.checked = false;
             $(cb.parentNode.parentNode.parentNode).attr('class', 'success');
             $("#btn-save").prop("disabled", false);
-            $("#btn-discard").prop("disabled", false);
         }
         function approvedFormatter(value, row, index) {
             void(row);
@@ -54,7 +52,6 @@
             cb.parentNode.parentNode.previousSibling.previousSibling.firstChild.firstChild.checked = false;
             $(cb.parentNode.parentNode.parentNode).attr('class', 'danger');
             $("#btn-save").prop("disabled", false);
-            $("#btn-discard").prop("disabled", false);
         }
         function declinedFormatter(value, row, index) {
             void(row);
@@ -70,9 +67,7 @@
         }
 
         function completeClick(cb) {
-            {#            $(cb.parentNode.parentNode.parentNode).attr('class', 'warning');#}
             $("#btn-save").prop("disabled", false);
-            $("#btn-discard").prop("disabled", false);
         }
         function completeFormatter(value, row, index) {
             void(row);
@@ -105,6 +100,12 @@
             void(row);
             void(index);
             return "<p>" + moment(value).toDate() + "</p>";
+        }
+
+        function moneyFormatter(value, row, index) {
+            void(row);
+            void(index);
+            return accounting.formatMoney(value);
         }
 
         var validate_required = function (v) {
@@ -149,24 +150,13 @@
                             validate: validate_required
                         },
                         halign: 'center',
-{#                        searchable: true,#}
                         sortable: true
                     }, {
                         field: 'amount',
                         title: 'Subtotal ($)',
-                        editable: {
-                            type: 'text',
-                            validate: function (v) {
-                                if (!v) {
-                                    return "Cannot be empty!";
-                                }
-                                if (isNaN(parseFloat(v)) || !isFinite(v)) {
-                                    return "Must be a number!";
-                                }
-                            }
-                        },
                         halign: 'center',
-                        sortable: true
+                        sortable: true,
+                        formatter: 'moneyFormatter'
                     }, {
                         field: 'invoice_no',
                         title: 'Invoice #',
@@ -377,7 +367,6 @@
 
             $("#table").on("editable-save.bs.table", function (e) {
                 $("#btn-save").prop("disabled", false);
-                $("#btn-discard").prop("disabled", false);
             });
 
             $('#btn-delete').on('click', function (e) {
@@ -492,8 +481,12 @@
 {% block content %}
     <div class="container-fluid">
         <h2>Variations for {{ current_project.name }}</h2>
-
         <div class="btn-toolbar" role="toolbar" aria-label="...">
+{#            <button id="export_project" type="button" class="btn btn-info btn-raised" location.href='export/{{ current_project.pid }}';>#}
+{#            </button>#}
+            <a class="btn btn-info btn-raised" href="/export/{{ current_project.pid }}">
+                <span class="glyphicon glyphicon-export" aria-hidden="true"></span> Export Project
+            </a>
             <button id="rename_project" type="button" class="btn btn-info btn-raised">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Rename Project
             </button>
@@ -519,9 +512,6 @@
             <div class="form-inline" role="form">
                 <div class="form-group">
                     <button id="btn-save" type="button" class="btn btn-info btn-raised" disabled>Save</button>
-                </div>
-                <div class="form-group">
-                    <button id="btn-discard" type="button" class="btn btn-warning btn-raised" disabled>Discard</button>
                 </div>
                 <div class="form-group">
                     <button id="btn-delete" type="button" class="btn btn-danger btn-raised" disabled>Delete</button>

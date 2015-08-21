@@ -1,4 +1,4 @@
-from flask import render_template, redirect
+from flask import render_template, redirect, send_file
 
 from . import main
 from .authentication import auth
@@ -22,14 +22,10 @@ def handle_project(project_id):
                            variations=current_project.variations)
 
 
-@main.route('/new/project/<project_name>')
+@main.route('/export/<int:project_id>')
 @auth.login_required
-def new_project_post(project_name):
-    if project_name:
-        project = Project()
-        project.name = project_name
-        db.session.add(project)
-        return redirect('/')
-    else:
-        return 500
-
+def export_project(project_id):
+    current_project = Project.query.get_or_404(project_id)
+    fn = current_project.export()
+    return send_file('../generated/' + fn, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True)
