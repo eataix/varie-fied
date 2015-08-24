@@ -36,6 +36,7 @@ def edit_project(project_id):
     project = Project.query.get_or_404(project_id)
     project.name = request.json.get('name', project.name)
     project.active = bool(request.json.get('active', project.active))
+    project.admin_fee = request.json.get('admin_fee', project.admin_fee)
     db.session.add(project)
     db.session.commit()
     return jsonify(project.to_json())

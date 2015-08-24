@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/roboto.min.css">
-{#    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material-fullpalette.min.css">#}
+    {#    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material-fullpalette.min.css">#}
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/ripples.min.css">
 
@@ -30,7 +30,11 @@
         #complete-dialog .modal-dialog {
             width: 60%;
         }
-        .material-icons.md-18 { font-size: 18px; }
+
+        .material-icons.md-18 {
+            font-size: 18px;
+        }
+
         .material-icons, .icon-text {
             vertical-align: middle;
         }
@@ -64,6 +68,13 @@
                 dataType: "json",
                 success: function (data) {
                     $('#margin').val(data['margin'] * 100 + '%');
+                    if (data['admin_fee'] === null) {
+                        $('#admin-fee').parent().parent().hide();
+                        $('#admin-fee').val('');
+                    } else {
+                        $('#admin-fee').parent().parent().show();
+                        $('#admin-fee').val(accounting.formatMoney(data['admin_fee']));
+                    }
                 },
                 failure: function (err) {
                 }
@@ -83,7 +94,12 @@
                 }
             });
             $('#value-of-work').val(accounting.formatMoney(total));
-            $('#subtotal').val(accounting.formatMoney(total * (1.0 + parseFloat($('#margin').val()) / 100.0)));
+            var subtotal = 0.0;
+            subtotal += total * (1.0 + parseFloat($('#margin').val()) / 100.0);
+            if ($('#admin-fee').val() !== '') {
+                subtotal += accounting.parse($('#admin-fee').val());
+            }
+            $('#subtotal').val(accounting.formatMoney(subtotal));
         }
 
         function addRow(s) {
@@ -147,26 +163,37 @@
                         showCancelButton: true,
                         closeOnConfirm: false,
                         animation: "slide-from-top",
-                        inputPlaceholder: "Project name"
+                        inputPlaceholder: "Project Margin"
                     }, function (margin) {
-                        $.ajax({
-                            url: '{{ url_for('api.new_project') }}',
-                            type: "POST",
-                            data: JSON.stringify({"name": projectName, "margin": margin}),
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            success: function (data) {
-                                void(data);
-                                swal({
-                                    title: "Nice!",
-                                    text: "You created a new project: " + projectName,
-                                    type: "success"
-                                }, function () {
-                                    location.reload()
-                                });
-                            },
-                            failure: function (err) {
-                            }
+                        swal({
+                            title: "New Project",
+                            text: "Administration fee (optional):",
+                            type: "input",
+                            inputValue: "",
+                            showCancelButton: true,
+                            closeOnConfirm: false,
+                            animation: "slide-from-top",
+                            inputPlaceholder: "e.g., 100"
+                        }, function (admin_fee) {
+                            $.ajax({
+                                url: '{{ url_for('api.new_project') }}',
+                                type: "POST",
+                                data: JSON.stringify({"name": projectName, "margin": margin, "admin_fee": admin_fee}),
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (data) {
+                                    void(data);
+                                    swal({
+                                        title: "Nice!",
+                                        text: "You created a new project: " + projectName,
+                                        type: "success"
+                                    }, function () {
+                                        location.reload()
+                                    });
+                                },
+                                failure: function (err) {
+                                }
+                            });
                         });
                     });
                 });
@@ -185,7 +212,6 @@
                     var invoice_no = $("#input_invoice_no").val();
                     var input_amount = accounting.unformat($('#subtotal').val());
                     var input_description = $("#input_description").val();
-{#                    console.log(accounting.format(input_amount));#}
                     swal({
                         title: "Are you sure?",
                         text: "Time: " + time.format('Do MMMM YYYY h:mm:ss a') + "\nSubcontractor: " + subcontractor + "\nAmount: " + accounting.formatMoney(input_amount),
@@ -229,16 +255,13 @@
                                                 contentType: "application/json; charset=utf-8",
                                                 dataType: "json",
                                                 success: function (data) {
-                                                    console.log(data);
                                                 },
                                                 failure: function (err) {
-                                                    console.log(err);
                                                     successful = false;
                                                 }
                                             });
                                         }
                                     });
-{#                                    console.log(successful);#}
                                     if (successful) {
                                         swal({
                                             title: "Nice!",
@@ -291,7 +314,8 @@
                     {% endif %}
                 {% endfor %}
                 <li class="dropdown{% if current_project is defined and not current_project.active %} active{% endif %}">
-                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"> Archived Projects <b class="caret"></b></a>
+                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"> Archived Projects
+                        <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         {% for project in projects %}
                             {% if not project.active %}
@@ -301,10 +325,12 @@
                     </ul>
                 </li>
                 <li>
-                    <a id="add_project" href="#!"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Project</a>
+                    <a id="add_project" href="#!"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New
+                                                                                                                    Project</a>
                 </li>
                 <li>
-                    <a href="#!" data-toggle="modal" data-target="#complete-dialog"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Variation</a>
+                    <a href="#!" data-toggle="modal" data-target="#complete-dialog"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        New Variation</a>
                 </li>
             </ul>
         </div>
@@ -321,6 +347,7 @@
                     <form class="form-horizontal" id="form-new-variation">
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Project*</label>
+
                             <div class="col-sm-10">
                                 <select id="select_project_id" class="form-control" onchange="onSelectChanged(this);">
                                     <option value="">Select a project</option>
@@ -332,6 +359,7 @@
                         </div>
                         <div class="form-group">
                             <label for="inputTime" class="col-sm-2 control-label">Time*</label>
+
                             <div class='col-sm-10'>
                                 <div class='input-group date' id='picker_datetime'>
                                     <input type='text' class="form-control" required/>
@@ -343,6 +371,7 @@
                         </div>
                         <div class="form-group">
                             <label for="inputSubcontractor" class="col-sm-2 control-label">Subcontractor*</label>
+
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="input_subcontractor" placeholder="Name" required>
                             </div>
@@ -367,7 +396,15 @@
                             <label for="inputAmount" class="col-sm-2 control-label">Margin</label>
 
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="margin" placeholder="0.0" value="15%" oninput="update()">
+                                <input type="text" class="form-control" id="margin" placeholder="0.0" value="15%" oninput="update();">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputAdminFee" class="col-sm-2 control-label">Admin-fee</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="admin-fee" placeholder="0.0" oninput="update();" disabled>
                             </div>
                         </div>
 
@@ -381,6 +418,7 @@
 
                         <div class="form-group">
                             <label for="inputDescription" class="col-sm-2 control-label">Description*</label>
+
                             <div class="col-sm-10">
                                 <textarea class="form-control" id="input_description" placeholder="" rows=5 required></textarea>
                             </div>
@@ -388,6 +426,7 @@
 
                         <div class="form-group">
                             <label for="inputDescription" class="col-sm-2 control-label">Items*</label>
+
                             <div class="col-sm-10">
                                 <table class="table table-bordered">
                                     <thead>
@@ -406,9 +445,11 @@
                                             <input type="text" name="amount" class="input-amount form-control" required data-parsley-type="number" oninput="update()"/>
                                         </td>
                                         <td>
-                                            <a href="#" class="add-row" onclick="addRow();"><i class="material-icons md-18">add</i> Add</a>
+                                            <a href="#" class="add-row" onclick="addRow();"><i class="material-icons md-18">add</i>
+                                                Add</a>
                                             /
-                                            <a href="#" class="delete-row" onclick="deleteRow(this);"><i class="material-icons md-18">delete</i> Delete</a>
+                                            <a href="#" class="delete-row" onclick="deleteRow(this);"><i class="material-icons md-18">delete</i>
+                                                Delete</a>
                                         </td>
                                     </tr>
                                     </tbody>

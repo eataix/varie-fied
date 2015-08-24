@@ -139,8 +139,8 @@
                     for (var i = 0; i < items.length; ++i) {
                         var item = items[i];
                         var id = item['id'];
-                        var description = '<a href="#" type="text" pk=' + id + ' class="' + descriptionClass +'">' + item.description + '</a>';
-                        var amount = '<a href="#" type="text" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
+                        var description = '<a href="#" data-type="textarea" pk=' + id + ' class="' + descriptionClass +'">' + item.description + '</a>';
+                        var amount = '<a href="#" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
                         html += '<tr class="item-detail"><td>' + description + '</td><td>' + amount + '</td></tr>';
                     }
                     html += '</tbody>' + '</table>';
@@ -164,10 +164,12 @@
                                 total += parseFloat(params.newValue);
                             }
                         });
-                        $(this).closest('.detail-view').prev().children('.subtotal').html('<b>' + accounting.formatMoney(total * (1.0 + {{ current_project.margin }})) + '</b>');
+                        total *= 1.0 + {{ current_project.margin }};
+                        {% if current_project.admin_fee is not none %}
+                            total += {{ current_project.admin_fee }};
+                        {% endif %}
+                        $(this).closest('.detail-view').prev().children('.subtotal').html('<b>' + accounting.formatMoney(total) + '</b>');
                     });
-
-
                 }
             });
             return '';

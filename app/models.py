@@ -19,11 +19,12 @@ class Project(db.Model):
 
     def to_json(self):
         json_project = {
-            'url': url_for('api.get_project', project_id=self.pid, _external=True),
             'name': self.name,
             'active': self.active,
             'margin': self.margin,
+            'admin_fee': self.admin_fee,
             'variations': url_for('api.get_project_variations', project_id=self.pid, _external=True),
+            'url': url_for('api.get_project', project_id=self.pid, _external=True),
         }
         return json_project
 
@@ -31,9 +32,10 @@ class Project(db.Model):
     def from_json(json_project):
         name = json_project.get('name')
         margin = json_project.get('margin')
+        admin_fee = json_project.get('admin_fee')
         if name is None or name == '':
             raise ValidationError('project does not have a name')
-        return Project(name=name, margin=margin)
+        return Project(name=name, margin=margin, admin_fee=admin_fee)
 
     def export(self):
         from openpyxl import Workbook
