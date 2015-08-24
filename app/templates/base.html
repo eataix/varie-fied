@@ -150,7 +150,7 @@
                         inputPlaceholder: "Project name"
                     }, function (margin) {
                         $.ajax({
-                            url: "/api/v1.0/projects/",
+                            url: '{{ url_for('api.new_project') }}',
                             type: "POST",
                             data: JSON.stringify({"name": projectName, "margin": margin}),
                             contentType: "application/json; charset=utf-8",
@@ -199,7 +199,7 @@
                     }, function (isConfirm) {
                         if (isConfirm) {
                             $.ajax({
-                                url: "/api/v1.0/variations/",
+                                url: '{{ url_for('api.new_variation') }}',
                                 type: "POST",
                                 data: JSON.stringify({
                                     "project_id": project_id,
@@ -219,7 +219,7 @@
                                         var amount = $(obj.children[1].children[0]).val();
                                         if (desc !== '' && amount !== '') {
                                             $.ajax({
-                                                url: "/api/v1.0/items/",
+                                                url: '{{ url_for('api.new_item') }}',
                                                 type: "POST",
                                                 data: JSON.stringify({
                                                     "variation_id": vid,

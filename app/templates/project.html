@@ -115,7 +115,7 @@
         }
 
         function detailFormatter(index, row) {
-            var url = row['items'];
+            var url = '/api/v1.0/variations/' + row['vid'] + '/items/';
             $.ajax({
                 url: url,
                 type: "GET",
@@ -174,7 +174,7 @@
         }
 
         $.ajax({
-            url: "/api/v1.0/projects/{{ current_project.pid }}/variations/",
+            url: '{{ url_for('api.get_project_variations', project_id=current_project.pid) }}',
             type: "GET",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -314,7 +314,7 @@
                 }, function (isConfirm) {
                     if (isConfirm) {
                         $.ajax({
-                            url: "/api/v1.0/projects/{{ current_project.pid }}",
+                            url: '{{ url_for('api.delete_project', project_id=current_project.pid) }}',
                             type: "DELETE",
                             data: JSON.stringify({}),
                             contentType: "application/json; charset=utf-8",
@@ -354,7 +354,7 @@
                 }, function (isConfirm) {
                     if (isConfirm) {
                         $.ajax({
-                            url: "/api/v1.0/projects/{{ current_project.pid }}",
+                            url: '{{ url_for('api.edit_project', project_id=current_project.pid) }}',
                             type: "PUT",
                             data: JSON.stringify({
                                 "active":{% if current_project.active %} false{% else %} true{% endif %}
@@ -400,7 +400,7 @@
                     } else {
                         if (inputValue != "{{ current_project.name }}") {
                             $.ajax({
-                                url: "/api/v1.0/projects/{{ current_project.pid }}",
+                                url: '{{ url_for('api.edit_project', project_id=current_project.pid) }}',
                                 type: "PUT",
                                 data: JSON.stringify({
                                     "name": inputValue
