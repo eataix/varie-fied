@@ -175,10 +175,14 @@
                             animation: "slide-from-top",
                             inputPlaceholder: "e.g., 100"
                         }, function (admin_fee) {
+                            var data = {"name": projectName, "margin": margin};
+                            if (admin_fee !== '') {
+                                data["admin_fee"]= admin_fee;
+                            }
                             $.ajax({
                                 url: '{{ url_for('api.new_project') }}',
                                 type: "POST",
-                                data: JSON.stringify({"name": projectName, "margin": margin, "admin_fee": admin_fee}),
+                                data: JSON.stringify(data),
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
                                 success: function (data) {
