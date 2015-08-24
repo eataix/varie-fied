@@ -51,6 +51,7 @@ def edit_variation(variation_id):
 @auth.login_required
 def get_variation_items(variation_id):
     variation = Variation.query.get_or_404(variation_id)
+    variation.items.sort(key=lambda i: i.id)
     return jsonify({'items': [item.to_json() for item in variation.items]})
 
 

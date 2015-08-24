@@ -108,11 +108,70 @@
             return accounting.formatMoney(value);
         }
 
-        var validate_required = function (v) {
+        function validate_required (v) {
             if (!v) {
                 return "Cannot be empty!";
             }
-        };
+        }
+
+        function detailFormatter(index, row) {
+            var url = row['items'];
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+
+                    var items = data['items'];
+                    var html =
+                            '<table class="table table-hover">' +
+                            '<thead>' +
+                            '<tr>' +
+                            '<th>Name</th>' +
+                            '<th>Amount</th>' +
+                            '</tr>' +
+                            '</thead>' +
+                            '<tbody>';
+                    var descriptionClass = 'new-editable-description-' + index;
+                    var amountClass = 'new-editable-amount-' + index;
+
+                    for (var i = 0; i < items.length; ++i) {
+                        var item = items[i];
+                        var id = item['id'];
+                        var description = '<a href="#" type="text" pk=' + id + ' class="' + descriptionClass +'">' + item.description + '</a>';
+                        var amount = '<a href="#" type="text" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
+                        html += '<tr class="item-detail"><td>' + description + '</td><td>' + amount + '</td></tr>';
+                    }
+                    html += '</tbody>' + '</table>';
+
+                    $($('[data-index=' + index + ']').next()).children().html(html);
+                    $('.' + descriptionClass).editable();
+                    $('.' + amountClass).editable();
+                    $('.' + descriptionClass).on('save', function (e, params) {
+                        $("#btn-save").prop("disabled", false);
+                    });
+                    $('.' + amountClass).on('save', function (e, params) {
+                        $("#btn-save").prop("disabled", false);
+                        var total = 0.0;
+                        $('.' + amountClass).each(function (i, o) {
+                            if (o !== e['target']) {
+                                var val = $(o).html();
+                                if (val !== "" && isNumeric(val)) {
+                                    total += parseFloat(val);
+                                }
+                            } else {
+                                total += parseFloat(params.newValue);
+                            }
+                        });
+                        $(this).closest('.detail-view').prev().children('.subtotal').html('<b>' + accounting.formatMoney(total * (1.0 + {{ current_project.margin }})) + '</b>');
+                    });
+
+
+                }
+            });
+            return '';
+        }
 
         $.ajax({
             url: "/api/v1.0/projects/{{ current_project.pid }}/variations/",
@@ -156,7 +215,8 @@
                         title: 'Subtotal ($)',
                         halign: 'center',
                         sortable: true,
-                        formatter: 'moneyFormatter'
+                        formatter: 'moneyFormatter',
+                        'class': 'subtotal'
                     }, {
                         field: 'invoice_no',
                         title: 'Invoice #',
@@ -227,7 +287,9 @@
                     onUncheckAll: function(rows) {
                         void(rows);
                         $("#btn-delete").prop("disabled", true);
-                    }
+                    },
+                    detailView: true,
+                    detailFormatter: "detailFormatter"
                 });
             }
         });
@@ -414,7 +476,6 @@
                         swal("Cancelled", "Your project is safe :)", "error");
                     }
                 });
-
             });
 
             $('#btn-save').on('click', function (e) {
@@ -442,6 +503,7 @@
                             value['approved'] = element.find(".approved").children().children().is(':checked');
                             value['declined'] = element.find(".declined").children().children().is(':checked');
                             value['completed'] = element.find(".completed").children().children().is(':checked');
+                            value['amount'] = accounting.parse(element.find('.subtotal').html());
 
                             $.ajax({
                                 url: "/api/v1.0/variations/" + vid,
@@ -450,20 +512,42 @@
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
                                 success: function (data) {
-                                    void(data);
-                                    swal({
-                                        title: "Nice!",
-                                        text: "You saved all changes.",
-                                        type: "success"
-                                    }, function () {
-                                        location.reload();
-                                    });
                                 },
                                 failure: function (err) {
                                 }
                             });
                         }
-                    } else {
+                        $('.item-detail').each(function(i, o) {
+                            var itemData = $(o).find('a');
+                            var descriptionObj = $(itemData[0]);
+                            var amountObj = $(itemData[1]);
+                            var id = (descriptionObj.attr('pk'));
+                            var description = descriptionObj.html();
+                            var amount = parseFloat(amountObj.html());
+
+                            $.ajax({
+                                url: "/api/v1.0/items/" + id,
+                                type: "PUT",
+                                data: JSON.stringify({
+                                    "amount": amount,
+                                    "description": description
+                                }),
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (data) {
+                                },
+                                failure: function (err) {
+                                }
+                            });
+                        });
+                        swal({
+                            title: "Nice!",
+                            text: "You saved all changes.",
+                            type: "success"
+                        }, function () {
+                            location.reload();
+                        });
+                   } else {
                         swal("Cancelled", "Your saves are unsaved", "error");
                     }
                 });

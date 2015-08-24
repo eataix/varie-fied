@@ -16,8 +16,8 @@ def get_items():
 @api.route('/items/<int:item_id>')
 @auth.login_required
 def get_item(item_id):
-    variation = Item.query.get_or_404(item_id)
-    return jsonify(variation.to_json())
+    item = Item.query.get_or_404(item_id)
+    return jsonify(item.to_json())
 
 
 @api.route('/items/', methods=['POST'])
@@ -29,7 +29,7 @@ def new_item():
     return jsonify(item.to_json()), 201
 
 
-@api.route('/variations/<int:item_id>', methods=['PUT'])
+@api.route('/items/<int:item_id>', methods=['PUT'])
 @auth.login_required
 def edit_item(item_id):
     item = Item.query.get_or_404(item_id)
@@ -39,7 +39,7 @@ def edit_item(item_id):
     return jsonify(item.to_json())
 
 
-@api.route('/variations/<int:item_id>', methods=['DELETE'])
+@api.route('/items/<int:item_id>', methods=['DELETE'])
 @auth.login_required
 def delete_item(item_id):
     item = Item.query.get_or_404(item_id)
