@@ -11,6 +11,7 @@ class Project(db.Model):
     name = db.Column(db.String, nullable=False)
     margin = db.Column(db.Float, nullable=False)
     active = db.Column(db.Boolean, default=True)
+    admin_fee = db.Column(db.Float, nullable=True)
     variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan")
 
     def __repr__(self):
