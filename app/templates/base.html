@@ -23,20 +23,11 @@
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.0/sweetalert.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.15.35/css/bootstrap-datetimepicker.min.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/css/selectize.bootstrap3.min.css" rel="stylesheet">
 
     <style>
         #complete-dialog .modal-dialog {
             width: 60%;
-        }
-
-        .material-icons.md-18 {
-            font-size: 18px;
-        }
-
-        .material-icons, .icon-text {
-            vertical-align: middle;
         }
     </style>
 {% endblock styles %}
@@ -46,7 +37,7 @@
 
     {{ moment.include_moment() }}
 
-    <script src="//cdn.rawgit.com/uzairfarooq/arrive/master/minified/arrive.min.js"></script>
+    <script src="//cdn.rawgit.com/uzairfarooq/arrive/v2.2.0/minified/arrive.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/js/ripples.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/js/material.min.js"></script>
 
@@ -111,9 +102,9 @@
                     '<input type="text" name="amount" class="input-amount form-control" oninput="update()"/>' +
                     '</td>' +
                     '<td>' +
-                    '<a href="#" class="add-row" onclick="addRow();"><i class="material-icons md-18">add</i> Add</a>' +
+                    '<a href="#" class="add-row" onclick="addRow();"><i class="fa fa-plus"></i> Add</a>' +
                     ' / ' +
-                    '<a href="#" class="delete-row" onclick="deleteRow(this);"><i class="material-icons md-18">delete</i> Delete</a>' +
+                    '<a href="#" class="delete-row" onclick="deleteRow(this);"><i class="fa fa-minus"></i> Delete</a>' +
                     '</td>' +
                     '</tr>');
             $('#items').append(newRow);
@@ -307,12 +298,12 @@
         <div class="navbar-collapse collapse navbar-responsive-collapse">
             <ul class="nav navbar-nav">
                 <li {% if front is defined %} class='active' {% endif %}>
-                    <a href="/"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home</a></li>
+                    <a href="/"><i class="fa fa-home"></i>Home</a></li>
                 {% for project in projects -%}
                     {% if project.active %}
                         <li {% if current_project is defined and current_project.pid == project.pid %}class="active"{% endif %}>
                             <a href="/project/{{ project.pid }}">
-                                <span class="glyphicon {% if current_project is defined and current_project.pid == project.pid %}glyphicon-folder-open{% else %}glyphicon-folder-close{% endif %}" aria-hidden="true"></span> {{ project.name }}
+                                <i class="fa {% if current_project is defined and current_project.pid == project.pid %}fa-folder-open{% else %}fa-folder{% endif %}"></i> {{ project.name }}
                             </a>
                         </li>
                     {% endif %}
@@ -329,12 +320,10 @@
                     </ul>
                 </li>
                 <li>
-                    <a id="add_project" href="#!"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New
-                                                                                                                    Project</a>
+                    <a id="add_project" href="javascript:void(0)"><i class="fa fa-plus"></i> New Project</a>
                 </li>
                 <li>
-                    <a href="#!" data-toggle="modal" data-target="#complete-dialog"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                        New Variation</a>
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#complete-dialog"><i class="fa fa-plus"></i> New Variation</a>
                 </li>
             </ul>
         </div>
@@ -368,7 +357,7 @@
                                 <div class='input-group date' id='picker_datetime'>
                                     <input type='text' class="form-control" required/>
                                     <span class="input-group-addon">
-                                        <span class="glyphicon glyphicon-calendar"></span>
+                                        <i class="fa fa-calendar"></i>
                                     </span>
                                 </div>
                             </div>
@@ -449,10 +438,10 @@
                                             <input type="text" name="amount" class="input-amount form-control" required data-parsley-type="number" oninput="update()"/>
                                         </td>
                                         <td>
-                                            <a href="#" class="add-row" onclick="addRow();"><i class="material-icons md-18">add</i>
+                                            <a href="#" class="add-row" onclick="addRow();"><i class="fa fa-plus"></i>
                                                 Add</a>
                                             /
-                                            <a href="#" class="delete-row" onclick="deleteRow(this);"><i class="material-icons md-18">delete</i>
+                                            <a href="#" class="delete-row" onclick="deleteRow(this);"><i class="fa fa-minus"></i>
                                                 Delete</a>
                                         </td>
                                     </tr>

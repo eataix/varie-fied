@@ -571,16 +571,16 @@
 {#            <button id="export_project" type="button" class="btn btn-info btn-raised" location.href='export/{{ current_project.pid }}';>#}
 {#            </button>#}
             <a class="btn btn-info btn-raised" href="/export/{{ current_project.pid }}">
-                <span class="glyphicon glyphicon-export" aria-hidden="true"></span> Export Project
+                <i class="fa fa-download"></i> Export Project
             </a>
             <button id="rename_project" type="button" class="btn btn-info btn-raised">
-                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Rename Project
+                <i class="fa fa-pencil"></i> Rename Project
             </button>
             <button class="btn btn-primary btn-raised" data-toggle="modal" data-target="#complete-dialog">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Variation
+                <i class="fa fa-plus"></i> Add Variation
             </button>
             <button id="archive_project" type="button" class="btn btn-info btn-raised">
-                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                <i class="fa fa-check-square-o"></i>
                 {% if current_project.active %}
                     Archive Project
                 {% else %}
@@ -588,7 +588,7 @@
                 {% endif %}
             </button>
             <button id="delete_project" type="button" class="btn btn-danger btn-raised">
-                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete Project
+                <i class="fa fa-trash"></i> Delete Project
             </button>
         </div>
 
