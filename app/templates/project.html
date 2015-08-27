@@ -579,15 +579,12 @@
 
 {% block content %}
     <div class="container-fluid">
-        <h2>Variations for {{ current_project.name }}</h2>
+        <h2>Variations for {{ current_project.name }} <small>(margin: {{ current_project.margin * 100 }}%{% if current_project.admin_fee is not none%}, admin fee: {{ current_project.admin_fee }}{% endif %}, <a href="javascript:void(0)" data-toggle="modal" data-target="#edit-dialog">edit</a>)</small></h2>
 
         <div class="btn-toolbar" role="toolbar" aria-label="...">
             <a class="btn btn-info btn-raised" href="/export/{{ current_project.pid }}">
                 <i class="fa fa-download"></i> Export Project
             </a>
-            <button id="rename_project" type="button" class="btn btn-info btn-raised" data-toggle="modal" data-target="#edit-dialog">
-                <i class="fa fa-pencil"></i> Edit Project
-            </button>
             <button class="btn btn-primary btn-raised" data-toggle="modal" data-target="#complete-dialog">
                 <i class="fa fa-plus"></i> Add Variation
             </button>
