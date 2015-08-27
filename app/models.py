@@ -63,48 +63,51 @@ class Project(db.Model):
         ws['E1'].font = Font(bold=True)
         ws['E1'].alignment = Alignment(horizontal='center')
 
-        ws.merge_cells('A12:B12')
-
-        ws['A12'].value = 'TOTALS'
-        ws['A12'].font = Font(bold=True)
-        ws['A12'].alignment = Alignment(horizontal='center')
-
-        ws['C12'].value = '=SUM(C2:C11)'
-        ws['C12'].font = Font(bold=True)
-        ws['C12'].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
-
-        ws['D12'].value = '=SUM(D2:D11)'
-        ws['D12'].font = Font(bold=True)
-        ws['D12'].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
-
-        ws['E12'].value = '=SUM(E2:E11)'
-        ws['E12'].font = Font(bold=True)
-        ws['E12'].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
-
         self.variations.sort(key=lambda v: v.vid)
 
-        for idx, variation in enumerate(self.variations):
+        idx = 2
+        for variation in self.variations:
             column = None
             if variation.pending:
                 column = 'C'
             elif variation.approved:
                 column = 'D'
-            cell = ws[column + str(idx + 2)]
+            cell = ws[column + str(idx)]
             cell.value = variation.amount
             cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
             if variation.completed:
                 column = 'E'
-                cell = ws[column + str(idx + 2)]
+                cell = ws[column + str(idx)]
                 cell.value = variation.amount
                 cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
-            cell = ws['A' + str(idx + 2)]
-            cell.value = idx + 1
+            cell = ws['A' + str(idx)]
+            cell.value = idx - 2
             cell.font = Font(bold=True)
             cell.alignment = Alignment(horizontal='center')
-            cell = ws['B' + str(idx + 2)]
+            cell = ws['B' + str(idx)]
             cell.value = variation.description
+
+            idx += 1
+
+        ws.merge_cells('A{}:B{}'.format(idx, idx))
+
+        ws['A{}'.format(idx)].value = 'TOTALS'
+        ws['A{}'.format(idx)].font = Font(bold=True)
+        ws['A{}'.format(idx)].alignment = Alignment(horizontal='center')
+
+        ws['C{}'.format(idx)].value = '=SUM(C2:C{})'.format(idx - 1)
+        ws['C{}'.format(idx)].font = Font(bold=True)
+        ws['C{}'.format(idx)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+
+        ws['D{}'.format(idx)].value = '=SUM(D2:D{})'.format(idx - 1)
+        ws['D{}'.format(idx)].font = Font(bold=True)
+        ws['D{}'.format(idx)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+
+        ws['E{}'.format(idx)].value = '=SUM(E2:E{})'.format(idx - 1)
+        ws['E{}'.format(idx)].font = Font(bold=True)
+        ws['E{}'.format(idx)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
         for idx, variation in enumerate(self.variations):
             ws = wb.create_sheet()
