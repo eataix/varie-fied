@@ -72,6 +72,8 @@ class Project(db.Model):
                 column = 'C'
             elif variation.approved:
                 column = 'D'
+            elif variation.declined:
+                column = 'C'
             cell = ws[column + str(idx)]
             cell.value = variation.amount
             cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'

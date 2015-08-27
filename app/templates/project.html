@@ -17,9 +17,6 @@
             $("#btn-save").prop("disabled", false);
         }
         function pendingFormatter(value, row, index) {
-            void(row);
-            void(index);
-
             var mid;
             if (value) {
                 mid = '<input class="checkbox checkbox-pending" type="checkbox" checked="" onclick="pendingClick(this);">';
@@ -37,9 +34,6 @@
             $("#btn-save").prop("disabled", false);
         }
         function approvedFormatter(value, row, index) {
-            void(row);
-            void(index);
-
             var mid;
             if (value) {
                 mid = '<input class="checkbox checkbox-approved" type="checkbox" checked="" onclick="approvedClick(this);">';
@@ -57,9 +51,6 @@
             $("#btn-save").prop("disabled", false);
         }
         function declinedFormatter(value, row, index) {
-            void(row);
-            void(index);
-
             var mid;
             if (value) {
                 mid = '<input class="checkbox checkbox-declined" type="checkbox" checked="" onclick="declinedClick(this);">';
@@ -73,9 +64,6 @@
             $("#btn-save").prop("disabled", false);
         }
         function completeFormatter(value, row, index) {
-            void(row);
-            void(index);
-
             var mid;
             if (value) {
                 mid = '<input class="checkbox checkbox-complete" type="checkbox" checked="" onclick="completeClick(this);">';
@@ -86,8 +74,6 @@
         }
 
         function rowStyle(row, index) {
-            void(index);
-
             if (row['pending']) {
                 return {classes: 'info'};
             } else if (row['approved']) {
@@ -100,14 +86,10 @@
         }
 
         function timeFormatter(value, row, index) {
-            void(row);
-            void(index);
             return "<p>" + moment(value).toDate() + "</p>";
         }
 
         function moneyFormatter(value, row, index) {
-            void(row);
-            void(index);
             return accounting.formatMoney(value);
         }
 
@@ -142,8 +124,8 @@
                     for (var i = 0; i < items.length; ++i) {
                         var item = items[i];
                         var id = item['id'];
-                        var description = '<a href="#" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
-                        var amount = '<a href="#" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
+                        var description = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
+                        var amount = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
                         html += '<tr class="item-detail"><td>' + description + '</td><td style="text-align: right;width: 200px">' + amount + '</td></tr>';
                     }
                     html += '</tbody>' + '</table>';
@@ -269,30 +251,7 @@
                     }],
                     data: data['variations'],
                     rowStyle: "rowStyle",
-                    showColumns: true,
-                    showRefresh: true,
-                    showToggle: true,
                     toolbar: "#toolbar",
-                    onCheck: function (rows) {
-                        void(rows);
-                        $("#btn-delete").prop("disabled", false);
-
-                    },
-                    onCheckAll: function (rows) {
-                        void(rows);
-                        $("#btn-delete").prop("disabled", false);
-                    },
-                    onUncheck: function (rows) {
-                        void(rows);
-                        var selected = $('table').bootstrapTable('getSelections');
-                        if (selected == 0) {
-                            $("#btn-delete").prop("disabled", true);
-                        }
-                    },
-                    onUncheckAll: function (rows) {
-                        void(rows);
-                        $("#btn-delete").prop("disabled", true);
-                    },
                     detailView: true,
                     detailFormatter: "detailFormatter"
                 });
@@ -305,7 +264,6 @@
     <script>
         $(document).ready(function () {
             $('#delete_project').on("click", function (e) {
-                void(e);
                 swal({
                     title: "Are you sure to delete the project?",
                     text: "You are going to",
@@ -325,7 +283,6 @@
                             contentType: "application/json; charset=utf-8",
                             dataType: "json",
                             success: function (data) {
-                                void(data);
                                 swal({
                                     title: "Nice!",
                                     text: "You delete: {{ current_project.name }}",
@@ -345,7 +302,6 @@
 
             var action = "{% if current_project.active %}archive{% else %}unarchive{% endif %}";
             $('#archive_project').on("click", function (e) {
-                void(e);
                 swal({
                     title: "Are you sure to " + action + " the project?",
                     text: "You can recover this project later!",
@@ -367,7 +323,6 @@
                             contentType: "application/json; charset=utf-8",
                             dataType: "json",
                             success: function (data) {
-                                void(data);
                                 swal({
                                     title: "Nice!",
                                     text: "You " + action + ": {{ current_project.name }}",
@@ -419,7 +374,6 @@
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
                                 success: function (data) {
-                                    void(data);
                                     swal({
                                         title: "Nice!",
                                         text: "Save changes",
@@ -429,8 +383,6 @@
                                     });
                                 },
                                 failure: function (err) {
-                                    void(err);
-                                    success = false;
                                 }
                             });
                         } else {
@@ -440,12 +392,24 @@
                 }
             });
 
-            $("#table").on("editable-save.bs.table", function (e) {
+            var $table = $('#table');
+            $table.on("editable-save.bs.table", function (rows) {
                 $("#btn-save").prop("disabled", false);
+            });
+            $table.on("check.bs.table check-all.bs.table check-some.bs.table", function (rows) {
+                $("#btn-delete").prop("disabled", false);
+            });
+            $table.on("uncheck-all.bs.table", function (rows) {
+                $("#btn-delete").prop("disabled", true);
+            });
+            $table.on('uncheck.bs.table	uncheck-some.bs.table', function (rows) {
+                var selected = $('table').bootstrapTable('getSelections');
+                if (selected == 0) {
+                    $("#btn-delete").prop("disabled", true);
+                }
             });
 
             $('#btn-delete').on('click', function (e) {
-                void(e);
                 swal({
                     title: "Are you sure to delete selected rows?",
                     text: "You cannot recover them later!",
@@ -468,10 +432,8 @@
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
                                 success: function (data) {
-                                    void(data);
                                 },
                                 failure: function (err) {
-                                    void(err);
                                     success = false;
                                 }
                             });
@@ -492,7 +454,6 @@
             });
 
             $('#btn-save').on('click', function (e) {
-                void(e);
                 swal({
                     title: "Are you sure to save all the changes?",
                     {#                    text: "You are going to",#}
