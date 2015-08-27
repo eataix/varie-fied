@@ -10,9 +10,10 @@
 
     <script>
         function pendingClick(cb) {
-            $(cb.parentNode.parentNode.parentNode).attr('class', 'info');
-            cb.parentNode.parentNode.nextSibling.firstChild.firstChild.checked = false;
-            cb.parentNode.parentNode.nextSibling.nextSibling.firstChild.firstChild.checked = false;
+            var tr = $(cb).parents('tr');
+            tr.attr('class', 'info');
+            tr.find('.checkbox-approved').prop('checked', false);
+            tr.find('.checkbox-declined').prop('checked', false);
             $("#btn-save").prop("disabled", false);
         }
         function pendingFormatter(value, row, index) {
@@ -21,17 +22,18 @@
 
             var mid;
             if (value) {
-                mid = '<input class="checkbox" type="checkbox" checked="" onclick="pendingClick(this);">';
+                mid = '<input class="checkbox checkbox-pending" type="checkbox" checked="" onclick="pendingClick(this);">';
             } else {
-                mid = '<input class="checkbox" type="checkbox" onclick="pendingClick(this);">';
+                mid = '<input class="checkbox checkbox-pending" type="checkbox" onclick="pendingClick(this);">';
             }
             return '<label>' + mid + '</label>';
         }
 
         function approvedClick(cb) {
-            cb.parentNode.parentNode.previousSibling.firstChild.firstChild.checked = false;
-            cb.parentNode.parentNode.nextSibling.firstChild.firstChild.checked = false;
-            $(cb.parentNode.parentNode.parentNode).attr('class', 'success');
+            var tr = $(cb).parents('tr');
+            tr.attr('class', 'success');
+            tr.find('.checkbox-pending').prop('checked', false);
+            tr.find('.checkbox-declined').prop('checked', false);
             $("#btn-save").prop("disabled", false);
         }
         function approvedFormatter(value, row, index) {
@@ -40,17 +42,18 @@
 
             var mid;
             if (value) {
-                mid = '<input class="checkbox" type="checkbox" checked="" onclick="approvedClick(this);">';
+                mid = '<input class="checkbox checkbox-approved" type="checkbox" checked="" onclick="approvedClick(this);">';
             } else {
-                mid = '<input class="checkbox" type="checkbox" onclick="approvedClick(this);">';
+                mid = '<input class="checkbox checkbox-approved" type="checkbox" onclick="approvedClick(this);">';
             }
             return "<label>" + mid + "</label>";
         }
 
         function declinedClick(cb) {
-            cb.parentNode.parentNode.previousSibling.firstChild.firstChild.checked = false;
-            cb.parentNode.parentNode.previousSibling.previousSibling.firstChild.firstChild.checked = false;
-            $(cb.parentNode.parentNode.parentNode).attr('class', 'danger');
+            var tr = $(cb).parents('tr');
+            tr.attr('class', 'danger');
+            tr.find('.checkbox-pending').prop('checked', false);
+            tr.find('.checkbox-approved').prop('checked', false);
             $("#btn-save").prop("disabled", false);
         }
         function declinedFormatter(value, row, index) {
@@ -59,9 +62,9 @@
 
             var mid;
             if (value) {
-                mid = '<input class="checkbox" type="checkbox" checked="" onclick="declinedClick(this);">';
+                mid = '<input class="checkbox checkbox-declined" type="checkbox" checked="" onclick="declinedClick(this);">';
             } else {
-                mid = '<input class="checkbox" type="checkbox" onclick="declinedClick(this);">';
+                mid = '<input class="checkbox checkbox-declined" type="checkbox" onclick="declinedClick(this);">';
             }
             return "<label>" + mid + "</label>";
         }
@@ -75,9 +78,9 @@
 
             var mid;
             if (value) {
-                mid = '<input class="checkbox" type="checkbox" checked="" onclick="completeClick(this);">';
+                mid = '<input class="checkbox checkbox-complete" type="checkbox" checked="" onclick="completeClick(this);">';
             } else {
-                mid = '<input class="checkbox" type="checkbox" onclick="completeClick(this);">';
+                mid = '<input class="checkbox checkbox-complete" type="checkbox" onclick="completeClick(this);">';
             }
             return "<label>" + mid + "</label>";
         }
