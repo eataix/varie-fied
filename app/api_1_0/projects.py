@@ -3,7 +3,7 @@ from flask import jsonify, request
 from . import api
 from .. import db
 from .authentication import auth
-from ..models import Project
+from ..models import Project, Variation
 
 
 @api.route('/projects/')
@@ -37,7 +37,18 @@ def edit_project(project_id):
     project.name = request.json.get('name', project.name)
     project.active = bool(request.json.get('active', project.active))
     project.admin_fee = request.json.get('admin_fee', project.admin_fee)
+    project.margin = request.json.get('margin', project.margin)
     db.session.add(project)
+    db.session.commit()
+    for variation in Variation.query.all():
+        subtotal = 0.0
+        for item in variation.items:
+            subtotal += item.amount
+        subtotal *= 1.0 + project.margin
+        if project.admin_fee is not None:
+            subtotal += project.admin_fee
+        variation.amount = subtotal
+        db.session.add(variation)
     db.session.commit()
     return jsonify(project.to_json())
 

@@ -108,7 +108,7 @@
             return accounting.formatMoney(value);
         }
 
-        function validate_required (v) {
+        function validate_required(v) {
             if (!v) {
                 return "Cannot be empty!";
             }
@@ -139,7 +139,7 @@
                     for (var i = 0; i < items.length; ++i) {
                         var item = items[i];
                         var id = item['id'];
-                        var description = '<a href="#" data-type="textarea" pk=' + id + ' class="' + descriptionClass +'">' + item.description + '</a>';
+                        var description = '<a href="#" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
                         var amount = '<a href="#" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
                         html += '<tr class="item-detail"><td>' + description + '</td><td>' + amount + '</td></tr>';
                     }
@@ -275,18 +275,18 @@
                         $("#btn-delete").prop("disabled", false);
 
                     },
-                    onCheckAll: function(rows) {
+                    onCheckAll: function (rows) {
                         void(rows);
                         $("#btn-delete").prop("disabled", false);
                     },
-                    onUncheck: function(rows) {
+                    onUncheck: function (rows) {
                         void(rows);
                         var selected = $('table').bootstrapTable('getSelections');
                         if (selected == 0) {
                             $("#btn-delete").prop("disabled", true);
                         }
                     },
-                    onUncheckAll: function(rows) {
+                    onUncheckAll: function (rows) {
                         void(rows);
                         $("#btn-delete").prop("disabled", true);
                     },
@@ -383,29 +383,35 @@
                 });
             });
 
-            $("#rename_project").on("click", function (e) {
-                void(e);
-                swal({
-                    title: "Rename Project",
-                    text: "What would you like to call the project?",
-                    type: "input",
-                    inputValue: "{{ current_project.name }}",
-                    showCancelButton: true,
-                    closeOnConfirm: false,
-                    closeOnCancel: true
-                }, function (inputValue) {
-                    if (inputValue === false) {
-                        return false;
-                    } else if (inputValue === "") {
-                        swal.showInputError("You need to write something!");
-                        return false;
-                    } else {
-                        if (inputValue != "{{ current_project.name }}") {
+            $('#btn-save-meta').on('click', function (e) {
+                var instance = $("#edit-project-meta-form").parsley();
+                instance.validate();
+                if (instance.isValid()) {
+                    swal({
+                        title: "Are you sure to save the changes?",
+                        text: "You cannot recover them later!",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "teal",
+                        confirmButtonText: "Yes, save them!",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    }, function (isConfirmed) {
+                        if (isConfirmed) {
+                            var new_name = $('#new_name').val();
+                            var new_margin = $('#new_margin').val();
+                            var new_admin_fee = $('#new_admin_fee').val();
+                            if (new_admin_fee === '') {
+                                new_admin_fee = null;
+                            }
                             $.ajax({
                                 url: '{{ url_for('api.edit_project', project_id=current_project.pid) }}',
                                 type: "PUT",
                                 data: JSON.stringify({
-                                    "name": inputValue
+                                    "name": new_name,
+                                    "margin": new_margin,
+                                    "admin_fee": new_admin_fee
                                 }),
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
@@ -413,20 +419,22 @@
                                     void(data);
                                     swal({
                                         title: "Nice!",
-                                        text: "You changed the project name from \"{{ current_project.name }}\" to \"" + inputValue + '"',
+                                        text: "Save changes",
                                         type: "success"
                                     }, function () {
                                         location.reload()
                                     });
                                 },
                                 failure: function (err) {
+                                    void(err);
+                                    success = false;
                                 }
                             });
                         } else {
-                            swal("unchanged")
+                            swal("Cancelled", "Your project is safe :)", "error");
                         }
-                    }
-                });
+                    });
+                }
             });
 
             $("#table").on("editable-save.bs.table", function (e) {
@@ -519,7 +527,7 @@
                                 }
                             });
                         }
-                        $('.item-detail').each(function(i, o) {
+                        $('.item-detail').each(function (i, o) {
                             var itemData = $(o).find('a');
                             var descriptionObj = $(itemData[0]);
                             var amountObj = $(itemData[1]);
@@ -549,7 +557,7 @@
                         }, function () {
                             location.reload();
                         });
-                   } else {
+                    } else {
                         swal("Cancelled", "Your saves are unsaved", "error");
                     }
                 });
@@ -562,19 +570,23 @@
     {{ super() }}
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css">
+    <style>
+        #edit-dialog .modal-dialog {
+            width: 85%;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
     <div class="container-fluid">
         <h2>Variations for {{ current_project.name }}</h2>
+
         <div class="btn-toolbar" role="toolbar" aria-label="...">
-{#            <button id="export_project" type="button" class="btn btn-info btn-raised" location.href='export/{{ current_project.pid }}';>#}
-{#            </button>#}
             <a class="btn btn-info btn-raised" href="/export/{{ current_project.pid }}">
                 <i class="fa fa-download"></i> Export Project
             </a>
-            <button id="rename_project" type="button" class="btn btn-info btn-raised">
-                <i class="fa fa-pencil"></i> Rename Project
+            <button id="rename_project" type="button" class="btn btn-info btn-raised" data-toggle="modal" data-target="#edit-dialog">
+                <i class="fa fa-pencil"></i> Edit Project
             </button>
             <button class="btn btn-primary btn-raised" data-toggle="modal" data-target="#complete-dialog">
                 <i class="fa fa-plus"></i> Add Variation
@@ -601,6 +613,47 @@
                 </div>
                 <div class="form-group">
                     <button id="btn-delete" type="button" class="btn btn-danger btn-raised" disabled>Delete</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="edit-dialog" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h2 class="modal-title">Edit Project</h2>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" id="edit-project-meta-form">
+                            <div class="form-group">
+                                <label for="inputSubcontractor" class="col-sm-2 control-label">Project Name</label>
+
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="new_name" placeholder="Name" required value="{{ current_project.name }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputInvoiceNo" class="col-sm-2 control-label">Margin</label>
+
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="new_margin" placeholder="Optional" required value="{{ current_project.margin }}" data-parsley-type="number">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputAmount" class="col-sm-2 control-label">Fixed Administration fee</label>
+
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="new_admin_fee" placeholder="(optional)" {% if current_project.admin_fee is not none %}value="{{ current_project.admin_fee }}"{% endif %}>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" data-dismiss="modal">Dismiss</button>
+                        <button id="btn-save-meta" class="btn btn-info">Save</button>
+                    </div>
                 </div>
             </div>
         </div>

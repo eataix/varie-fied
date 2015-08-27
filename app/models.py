@@ -134,9 +134,18 @@ class Project(db.Model):
             ws['H' + str(row_index)] = '=H{} * {}'.format(row_index - 1, self.margin)
             row_index += 1
 
+            if self.admin_fee is not None:
+                ws.merge_cells('B{}:C{}'.format(row_index, row_index))
+                ws['B' + str(row_index)] = 'Fixed administration fee'
+                ws['H' + str(row_index)] = self.admin_fee
+                row_index += 1
+
             ws.merge_cells('B{}:C{}'.format(row_index, row_index))
             ws['B' + str(row_index)] = 'Subtotal'
-            ws['H' + str(row_index)] = '=H{} + H{}'.format(row_index - 1, row_index - 2)
+            if self.admin_fee is None:
+                ws['H' + str(row_index)] = '=H{} + H{}'.format(row_index - 2, row_index - 1)
+            else:
+                ws['H' + str(row_index)] = '=H{} + H{} + H{}'.format(row_index - 3, row_index - 2, row_index - 1)
             ws['H' + str(row_index)].font = Font(bold=True)
             row_index += 1
 
