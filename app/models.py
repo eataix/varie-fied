@@ -38,35 +38,62 @@ class Project(db.Model):
         return Project(name=name, margin=margin, admin_fee=admin_fee)
 
     def export(self):
+        def cm_to_inch(cm):
+            return cm * 0.393701
+
+        def prepare(worksheet):
+            worksheet.header_footer.setHeader(
+                '&L&"Calibri,Regular"&K000000&G&C&"Lao UI,Bold"&8Total Project Construction Pty. Ltd.&"Lao UI,Regular"&K000000_x000D_ACN 117 578 560  ABN 84 117 578 560_x000D_PO Box 313 HALL ACT_x000D_P: 02-6230 2455   F:02-6230 2488_x000D_E: troy@totalproject.com.au')
+            worksheet.header_footer.setFooter(
+                '&L&"Arial,Italic"&9&K000000App. A - Contract Variations&R&"Arial,Italic"&9&K000000{}'.format(
+                    self.name))
+            worksheet.page_margins.top = cm_to_inch(3.4)
+            worksheet.page_margins.bottom = cm_to_inch(2)
+            worksheet.page_margins.left = cm_to_inch(1.2)
+            worksheet.page_margins.right = cm_to_inch(1.1)
+
         from openpyxl import Workbook
         from openpyxl.styles import Alignment, Border, Font, Side
         wb = Workbook()
+        wb.title = 'Appendix A'
         ws = wb.active
+        prepare(ws)
 
-        ws['A1'] = 'NO.'
-        ws['A1'].font = Font(bold=True)
-        ws['A1'].alignment = Alignment(horizontal='center')
+        ws.merge_cells('A1:D1')
+        ws['A1'].style.alignment.wrap_text = True
+        ws['A1'].value = '{}\nJOB #:'.format(self.name)
+        ws['A1'].font = Font(name='Lao UI', size=11, bold=True)
 
-        ws['B1'] = 'ITEM'
-        ws['B1'].font = Font(bold=True)
-        ws['B1'].alignment = Alignment(horizontal='center')
+        ws.merge_cells('A3:B3')
+        ws['A3'].value = "Appendix 'A' - Contract variations"
+        ws['A3'].font = Font(name='Lao UI', size=10, bold=True)
+        ws['E3'].value = '=TODAY()'
+        ws['E3'].font = Font(name='Lao UI', size=9)
 
-        ws['C1'] = 'PENDING'
-        ws['C1'].font = Font(bold=True)
-        ws['C1'].alignment = Alignment(horizontal='center')
+        ws['A5'].value = 'NO.'
+        ws['B5'].value = 'ITEM'
+        ws['C5'].value = 'PENDING'
+        ws['D5'].value = 'APPROVED'
+        ws['E5'].value = 'COMPLETED'
+        for cell in ['A5', 'B5', 'C5', 'D5', 'E5']:
+            ws[cell].font = Font(name='Lao UI', size=10, bold=True)
+            ws[cell].alignment = Alignment(horizontal='center')
+            ws[cell].border = Border(
+                top=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000')
+            )
 
-        ws['D1'] = 'APPROVED'
-        ws['D1'].font = Font(bold=True)
-        ws['D1'].alignment = Alignment(horizontal='center')
-
-        ws['E1'] = 'COMPLETED'
-        ws['E1'].font = Font(bold=True)
-        ws['E1'].alignment = Alignment(horizontal='center')
-
+        row = 6
         self.variations.sort(key=lambda v: v.vid)
-
-        idx = 2
         for variation in self.variations:
+            ws['A' + str(row)].value = row - 5
+            ws['A' + str(row)].font = Font(name='Lao UI', size=10, bold=True)
+            ws['A' + str(row)].alignment = Alignment(horizontal='center')
+
+            ws['B' + str(row)].value = row - 5
+
             column = None
             if variation.pending:
                 column = 'C'
@@ -74,103 +101,158 @@ class Project(db.Model):
                 column = 'D'
             elif variation.declined:
                 column = 'C'
-            cell = ws[column + str(idx)]
+
+            cell = ws[column + str(row)]
             cell.value = variation.amount
             cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
             if variation.completed:
                 column = 'E'
-                cell = ws[column + str(idx)]
+                cell = ws[column + str(row)]
                 cell.value = variation.amount
                 cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
-            cell = ws['A' + str(idx)]
-            cell.value = idx - 2
-            cell.font = Font(bold=True)
-            cell.alignment = Alignment(horizontal='center')
-            cell = ws['B' + str(idx)]
-            cell.value = variation.description
+            for column in ['A', 'B', 'C', 'D', 'E']:
+                cell = ws[column + str(row)]
+                if column != 'A':
+                    cell.font = Font(name='Lao UI', size=9)
+                    cell.alignment = Alignment(vertical='center', horizontal='left')
+                cell.border = Border(
+                    left=Side(border_style='thin', color='FF000000'),
+                    right=Side(border_style='thin', color='FF000000')
+                )
 
-            idx += 1
+            row += 1
 
-        ws.merge_cells('A{}:B{}'.format(idx, idx))
+        while row < 34:
+            for column in ['A', 'B', 'C', 'D', 'E']:
+                cell = ws[column + str(row)]
+                cell.border = Border(left=Side(border_style='thin', color='FF000000'),
+                                     right=Side(border_style='thin', color='FF000000'))
+            row += 1
 
-        ws['A{}'.format(idx)].value = 'TOTALS'
-        ws['A{}'.format(idx)].font = Font(bold=True)
-        ws['A{}'.format(idx)].alignment = Alignment(horizontal='center')
+        ws.merge_cells('A{}:B{}'.format(row, row))
+        ws['A{}'.format(row)].value = 'TOTALS'
+        ws['A{}'.format(row)].font = Font(bold=True)
+        ws['A{}'.format(row)].alignment = Alignment(horizontal='center')
 
-        ws['C{}'.format(idx)].value = '=SUM(C2:C{})'.format(idx - 1)
-        ws['C{}'.format(idx)].font = Font(bold=True)
-        ws['C{}'.format(idx)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+        ws['C{}'.format(row)].value = '=SUM(C6:C{})'.format(row - 1)
+        ws['C{}'.format(row)].font = Font(bold=True)
+        ws['C{}'.format(row)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
-        ws['D{}'.format(idx)].value = '=SUM(D2:D{})'.format(idx - 1)
-        ws['D{}'.format(idx)].font = Font(bold=True)
-        ws['D{}'.format(idx)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+        ws['D{}'.format(row)].value = '=SUM(D6:D{})'.format(row - 1)
+        ws['D{}'.format(row)].font = Font(bold=True)
+        ws['D{}'.format(row)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
-        ws['E{}'.format(idx)].value = '=SUM(E2:E{})'.format(idx - 1)
-        ws['E{}'.format(idx)].font = Font(bold=True)
-        ws['E{}'.format(idx)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+        ws['E{}'.format(row)].value = '=SUM(E6:E{})'.format(row - 1)
+        ws['E{}'.format(row)].font = Font(bold=True)
+        ws['E{}'.format(row)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
-        for idx, variation in enumerate(self.variations):
-            ws = wb.create_sheet()
-            ws.title = 'V' + str(idx + 1)
-            ws.merge_cells('B1:G1')
-            ws['B1'].value = variation.description
-            ws['B1'].font = Font(bold=True)
+        for column in ['A', 'B', 'C', 'D', 'E']:
+            cell = ws[column + str(row)]
+            cell.border = Border(
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
+                top=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000')
+            )
 
-            row_index = 2
+        for index, variation in enumerate(self.variations):
+            new_ws = wb.create_sheet()
+            prepare(new_ws)
+            new_ws.title = 'V{}'.format(index + 1)
+
+            new_ws.merge_cells('A1:H1')
+            new_ws['A1'].value = 'CONTRACT VARIATION'
+            new_ws['A1'].font = Font(name='Lao UI', size=16, bold=True)
+            new_ws['A1'].alignment = Alignment(vertical='center', horizontal='center')
+
+            new_ws.merge_cells('B3:H3')
+            new_ws['B3'].value = 'PROJECT: {}'.format(self.name)
+            new_ws['B3'].font = Font(name='Lao UI', size=12, bold=True)
+
+            new_ws['B5'].value = 'VARIATION NO:'
+            new_ws['B5'].font = Font(name='Lao UI', size=12, bold=True)
+            new_ws.merge_cells('D5:E5')
+            new_ws['D5'].value = index + 1
+            new_ws['D5'].font = Font(name='Lao UI', size=14, bold=True)
+            new_ws.merge_cells('G5:H5')
+            new_ws['D5'].value = 'TPC REF: {}'.format("")
+            new_ws['D5'].font = Font(name='Lao UI', size=14, bold=True)
+            new_ws['D5'].alignment = Alignment(vertical='center', horizontal='left')
+            for column in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']:
+                cell = new_ws[column + str(6)]
+                cell.border = Border(bottom=Side(border_style='medium', color='FF000000'))
+
+            row = 7
             for item in variation.items:
-                ws.merge_cells('B{}:G{}'.format(row_index, row_index))
-                ws['B' + str(row_index)].value = item.description
-                ws['H' + str(row_index)].value = item.amount
-                row_index += 1
+                new_ws.merge_cells('B{}:G{}'.format(row, row))
+                new_ws['B{}'.format(row)].value = item.description
+                new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11, bold=True)
 
-            for column in 'BCDEFGH':
-                ws[column + str(row_index)].border = Border(bottom=Side(border_style='medium', color='FF000000'))
-            row_index += 1
+                new_ws['H{}'.format(row)].value = item.amount
+                new_ws['H{}'.format(row)].font = Font(name='Lao UI', size=11, bold=True)
 
-            ws.merge_cells('B{}:C{}'.format(row_index, row_index))
-            ws['B' + str(row_index)].value = 'Value of work'
-            ws['H' + str(row_index)].value = '=SUM(H1:H{})'.format(row_index - 1)
-            row_index += 1
+                ws['H{}'.format(row)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+                row += 1
 
-            ws.merge_cells('B{}:C{}'.format(row_index, row_index))
-            ws['B' + str(row_index)] = 'Add OH/Profit ' + str(self.margin * 100) + r'%'
-            ws['H' + str(row_index)] = '=H{} * {}'.format(row_index - 1, self.margin)
-            row_index += 1
+            row = max(row, 13)
+            for column in 'ABCDEFGH':
+                cell = new_ws[column + str(row - 1)]
+                cell.border = Border(bottom=Side(border_style='thin', color='FF000000'))
+
+            new_ws['B' + str(row)].value = 'Value of work'
+            new_ws['H' + str(row)].value = '=SUM(H7:H{})'.format(row - 1)
+            row += 1
+
+            new_ws['B' + str(row)] = 'Add OH/Profit {}%'.format(self.margin * 100)
+            new_ws['H' + str(row)] = '=H{} * {}%'.format(row - 1, self.margin * 100)
 
             if self.admin_fee is not None:
-                ws.merge_cells('B{}:C{}'.format(row_index, row_index))
-                ws['B' + str(row_index)] = 'Fixed administration fee'
-                ws['H' + str(row_index)] = self.admin_fee
-                row_index += 1
+                new_ws['B' + str(row)] = 'Fixed administration fee'
+                new_ws['H' + str(row)] = self.admin_fee
 
-            ws.merge_cells('B{}:C{}'.format(row_index, row_index))
-            ws['B' + str(row_index)] = 'Subtotal'
-            if self.admin_fee is None:
-                ws['H' + str(row_index)] = '=H{} + H{}'.format(row_index - 2, row_index - 1)
-            else:
-                ws['H' + str(row_index)] = '=H{} + H{} + H{}'.format(row_index - 3, row_index - 2, row_index - 1)
-            ws['H' + str(row_index)].font = Font(bold=True)
-            row_index += 1
-
-            ws.merge_cells('B{}:C{}'.format(row_index, row_index))
-            ws['B' + str(row_index)] = 'Add GST'
-            ws['H' + str(row_index)].value = '=H{} * 0.1'.format(row_index - 1)
-            ws['H' + str(row_index)].font = Font(underline='singleAccounting')
             for column in 'BCDEFGH':
-                ws[column + str(row_index)].border = Border(bottom=Side(border_style='medium', color='FF000000'))
-            row_index += 1
+                new_ws[column + str(row)].border = Border(bottom=Side(border_style='thin', color='FF000000'))
+            row += 1
 
-            ws.merge_cells('B{}:C{}'.format(row_index, row_index))
-            ws['B' + str(row_index)] = 'TOTAL'
-            ws['H' + str(row_index)].value = '=H{} + H{}'.format(row_index - 1, row_index - 2)
-            ws['H' + str(row_index)].font = Font(bold=True)
-            row_index += 1
+            new_ws['B' + str(row)] = 'Subtotal'
+            if self.admin_fee is None:
+                new_ws['H' + str(row)] = '=H{} + H{}'.format(row - 2, row - 1)
+            else:
+                new_ws['H' + str(row)] = '=H{} + H{} + H{}'.format(row - 3, row - 2, row - 1)
+            new_ws['H' + str(row)].font = Font(bold=True)
+            row += 1
 
-            for iidex in range(2, row_index):
-                cell = ws['H' + str(iidex)]
+            new_ws['B' + str(row)] = 'Add GST'
+            new_ws['H' + str(row)].value = '=H{} * 0.1'.format(row - 1)
+            new_ws['H' + str(row)].font = Font(underline='singleAccounting')
+            for column in 'BCDEFGH':
+                new_ws[column + str(row)].border = Border(bottom=Side(border_style='medium', color='FF000000'))
+            row += 1
+
+            new_ws.merge_cells('B{}:C{}'.format(row, row))
+            new_ws['B' + str(row)] = 'TOTAL'
+            new_ws['H' + str(row)].value = '=H{} + H{}'.format(row - 1, row - 2)
+            new_ws['H' + str(row)].font = Font(bold=True)
+
+            for idx in range(7, row):
+                cell = new_ws['H' + str(idx)]
                 cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+
+            row += 4
+            new_ws['B{}'.format(row)].value = 'Variation Prepared By:'
+            new_ws['G{}'.format(row)].value = 'Variation Prepared By:'
+
+            row += 5
+            new_ws['B{}'.format(row)].value = 'FOR'
+            new_ws['B{}'.format(row + 1)].value = 'Total Project Construction Pty Ltd'
+            new_ws['G{}'.format(row)].value = 'FOR'
+
+            row += 3
+            new_ws['B{}'.format(row)].value = 'Date:'
+            new_ws['C{}'.format(row)].value = '=TODAY()'
+            new_ws['G{}'.format(row)].value = 'Date:'
 
         fn = self.name + '.xlsx'
         wb.save('generated/' + fn)
