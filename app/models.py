@@ -54,12 +54,13 @@ class Project(db.Model):
 
         from openpyxl import Workbook
         from openpyxl.styles import Alignment, Border, Color, Font, Side, Style, PatternFill
+
         wb = Workbook()
         wb.title = 'Appendix A'
         ws = wb.active
         prepare(ws)
 
-        color_style = Style(fill=PatternFill(patternType='solid', fgColor=Color('D0E0AE')))
+        color_style = Style(fill=PatternFill(patternType='solid', fgColor=Color('D8E4BC')))
 
         ws.merge_cells('A1:D1')
         ws['A1'].style.alignment.wrap_text = True
