@@ -1,8 +1,11 @@
 from flask import url_for
 from . import db
 from datetime import datetime
+from openpyxl.worksheet import Worksheet
 from app.exceptions import ValidationError
 import arrow
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Border, Color, Font, Side, Style, PatternFill
 
 
 class Project(db.Model):
@@ -38,10 +41,10 @@ class Project(db.Model):
         return Project(name=name, margin=margin, admin_fee=admin_fee)
 
     def export(self):
-        def cm_to_inch(cm):
+        def cm_to_inch(cm: float):
             return cm * 0.393701
 
-        def prepare(worksheet):
+        def prepare(worksheet: Worksheet):
             worksheet.header_footer.setHeader(
                 '&L&"Calibri,Regular"&K000000&G&C&"Lao UI,Bold"&8Total Project Construction Pty. Ltd.&"Lao UI,Regular"&K000000_x000D_ACN 117 578 560  ABN 84 117 578 560_x000D_PO Box 313 HALL ACT_x000D_P: 02-6230 2455   F:02-6230 2488_x000D_E: troy@totalproject.com.au')
             worksheet.header_footer.setFooter(
@@ -52,21 +55,21 @@ class Project(db.Model):
             worksheet.page_margins.left = cm_to_inch(1.2)
             worksheet.page_margins.right = cm_to_inch(1.1)
 
-        from openpyxl import Workbook
-        from openpyxl.styles import Alignment, Border, Color, Font, Side, Style, PatternFill
-
+        color_style = Style(fill=PatternFill(patternType='solid', fgColor=Color('D8E4BC')))
+        color_fill = PatternFill(patternType='solid', fgColor=Color('D8E4BC'))
         wb = Workbook()
-        wb.title = 'Appendix A'
+
         ws = wb.active
         prepare(ws)
-
-        color_style = Style(fill=PatternFill(patternType='solid', fgColor=Color('D8E4BC')))
+        ws.title = 'Appendix A'
 
         ws.merge_cells('A1:D1')
-        ws['A1'].style.alignment.wrap_text = True
         ws['A1'].value = '{}\nJOB #:'.format(self.name)
-        ws['A1'].style = color_style
+        ws['A1'].fill = color_fill
         ws['A1'].font = Font(name='Lao UI', size=11, bold=True)
+        ws['A1'].style.alignment.wrap_text = True
+        ws['A1'].alignment = Alignment(vertical='top')
+        ws.row_dimensions[1].height = 35
 
         ws.merge_cells('A3:B3')
         ws['A3'].value = "Appendix 'A' - Contract variations"
@@ -80,9 +83,9 @@ class Project(db.Model):
         ws['D5'].value = 'APPROVED'
         ws['E5'].value = 'COMPLETED'
         for cell in ['A5', 'B5', 'C5', 'D5', 'E5']:
+            ws[cell].fill = color_fill
             ws[cell].font = Font(name='Lao UI', size=10, bold=True)
             ws[cell].alignment = Alignment(horizontal='center')
-            ws[cell].style = color_style
             ws[cell].border = Border(
                 top=Side(border_style='medium', color='FF000000'),
                 bottom=Side(border_style='medium', color='FF000000'),
@@ -94,11 +97,10 @@ class Project(db.Model):
         self.variations.sort(key=lambda v: v.vid)
         for variation in self.variations:
             ws['A' + str(row)].value = row - 5
-            ws['A' + str(row)].font = Font(name='Lao UI', size=10, bold=True)
             ws['A' + str(row)].alignment = Alignment(horizontal='center', vertical='center')
 
             ws['B' + str(row)].value = variation.description
-            ws['B' + str(row)].alignment = Alignment(vertical='top')
+            ws['B' + str(row)].alignment = Alignment(vertical='center')
 
             column = None
             if variation.pending:
@@ -110,62 +112,69 @@ class Project(db.Model):
 
             cell = ws[column + str(row)]
             cell.value = variation.amount
-            cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
             if variation.completed:
                 column = 'E'
                 cell = ws[column + str(row)]
                 cell.value = variation.amount
-                cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
             for column in ['A', 'B', 'C', 'D', 'E']:
                 cell = ws[column + str(row)]
-                if column != 'A':
-                    cell.font = Font(name='Lao UI', size=9)
-                    if column != 'B':
-                        cell.alignment = Alignment(vertical='center', horizontal='left')
+
                 cell.border = Border(left=Side(border_style='thin', color='FF000000'),
                                      right=Side(border_style='thin', color='FF000000'))
+
+                if column != 'A':
+                    cell.font = Font(name='Lao UI', size=9)
+                else:
+                    cell.font = Font(name='Lao UI', size=10)
+
+                if column != 'A':
+                    cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+
+                if column == 'A':
+                    cell.alignment = Alignment(horizontal='center', vertical='center')
+                else:
+                    cell.alignment = Alignment(vertical='center')
 
             row += 1
 
         while row < 34:
             for column in ['A', 'B', 'C', 'D', 'E']:
                 cell = ws[column + str(row)]
+                if column == 'A':
+                    cell.font = Font(name='Lao UI', size=10)
+                else:
+                    cell.font = Font(name='Lao UI', size=9)
                 cell.border = Border(left=Side(border_style='thin', color='FF000000'),
                                      right=Side(border_style='thin', color='FF000000'))
             row += 1
 
         ws.merge_cells('A{}:B{}'.format(row, row))
+
         ws['A{}'.format(row)].value = 'TOTALS'
-        ws['A{}'.format(row)].font = Font(bold=True)
-        ws['A{}'.format(row)].alignment = Alignment(horizontal='center')
-
         ws['C{}'.format(row)].value = '=SUM(C6:C{})'.format(row - 1)
-        ws['C{}'.format(row)].font = Font(bold=True)
-        ws['C{}'.format(row)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
-
         ws['D{}'.format(row)].value = '=SUM(D6:D{})'.format(row - 1)
-        ws['D{}'.format(row)].font = Font(bold=True)
-        ws['D{}'.format(row)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
-
         ws['E{}'.format(row)].value = '=SUM(E6:E{})'.format(row - 1)
-        ws['E{}'.format(row)].font = Font(bold=True)
-        ws['E{}'.format(row)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
-        for column in ['A', 'B', 'C', 'D', 'E']:
+        for column in 'ABCDE':
             cell = ws[column + str(row)]
-            cell.style = color_style
+            cell.fill = color_fill
             cell.border = Border(
                 left=Side(border_style='medium', color='FF000000'),
                 right=Side(border_style='medium', color='FF000000'),
                 top=Side(border_style='medium', color='FF000000'),
                 bottom=Side(border_style='medium', color='FF000000')
             )
+            cell.font = Font(name='Lao UI', size=11)
+            cell.alignment = Alignment(horizontal='center')
 
-        ws.row_dimensions[1].height = 30
+            if column != 'A':
+                cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+
         for row in range(len(self.variations)):
             ws.row_dimensions[6 + row].height = 30
+
         ws.column_dimensions['A'].width = 5
         ws.column_dimensions['B'].width = 40
         ws.column_dimensions['C'].width = 13
@@ -175,12 +184,13 @@ class Project(db.Model):
 
         for index, variation in enumerate(self.variations):
             new_ws = wb.create_sheet()
+            """:type : Worksheet"""
             prepare(new_ws)
             new_ws.title = 'V{}'.format(index + 1)
 
             new_ws.merge_cells('A1:H1')
             new_ws['A1'].value = 'CONTRACT VARIATION'
-            new_ws['A1'].style = color_style
+            new_ws['A1'].fill = color_style
             new_ws['A1'].font = Font(name='Lao UI', size=16, bold=True)
             new_ws['A1'].alignment = Alignment(vertical='center', horizontal='center')
 
@@ -262,7 +272,8 @@ class Project(db.Model):
             new_ws.merge_cells('B{}:C{}'.format(row, row))
             for column in 'BCDEFGH':
                 new_ws['{}{}'.format(column, row)].style = color_style
-            new_ws['B' + str(row)] = 'TOTAL'
+            new_ws['B' + str(row)].value = 'TOTAL'
+            new_ws['B' + str(row)].font = Font(name='Lao UI', size=11, bold=True)
             new_ws['H' + str(row)].value = '=H{} + H{}'.format(row - 1, row - 2)
             new_ws['H' + str(row)].font = Font(bold=True)
 
