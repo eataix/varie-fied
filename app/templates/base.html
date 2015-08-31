@@ -24,6 +24,7 @@
         #complete-dialog .modal-dialog {
             width: 80%;
         }
+
         #new-project-dialog .modal-dialog {
             width: 55%;
         }
@@ -119,6 +120,7 @@
         $(function () {
             $.material.init();
             $('#picker_datetime').datetimepicker({showTodayButton: true});
+            $('#form-new-project').parsley();
             $('#form-new-variation').parsley();
         });
 
@@ -128,46 +130,57 @@
             });
 
             $('#btn-add-project').on('click', function (e) {
-                const data = {
-                    name: $('#extra_project_name').val(),
-                    margin: $('#extra_margin').val(),
-                    reference_number: $('#extra_reference_number').val(),
-                    admin_fee: $('#extra_admin_fee').val()
-                };
-                swal({
-                    title: 'Are you sure to add the project?',
-                    text: 'You can recover this project later!',
-                    type: 'info',
-                    showCancelButton: true,
-                    confirmButtonColor: '#DD6B55',
-                    confirmButtonText: 'Yes, add it!',
-                    cancelButtonText: 'No, cancel plx!',
-                    closeOnConfirm: false,
-                    closeOnCancel: false
-                }, function (isConfirm) {
-                    if (isConfirm) {
-                        $.ajax({
-                            url: '{{ url_for('api.new_project') }}',
-                            type: 'POST',
-                            data: JSON.stringify(data),
-                            contentType: 'application/json; charset=utf-8',
-                            dataType: 'json',
-                            success: function (data) {
-                                swal({
-                                    title: 'Nice!',
-                                    text: 'You created a new project: ' + data['name'],
-                                    type: 'success'
-                                }, function () {
-                                    location.reload()
-                                });
-                            },
-                            failure: function (err) {
-                            }
-                        });
-                    } else {
-                        swal('Cancelled', 'The project file is safe :)', 'error');
+                const instance = $('#form-new-project').parsley();
+                instance.validate();
+                if (instance.isValid()) {
+                    const project_name = $('#extra_project_name').val();
+                    const margin = $('#extra_margin').val();
+                    const reference_number = $('#extra_reference_number').val();
+                    let admin_fee = $('#extra_admin_fee').val();
+                    if (admin_fee === '') {
+                        admin_fee = null;
                     }
-                });
+
+                    swal({
+                        title: 'Are you sure to add the project?',
+                        text: 'You can recover this project later!',
+                        type: 'info',
+                        showCancelButton: true,
+                        confirmButtonColor: '#DD6B55',
+                        confirmButtonText: 'Yes, add it!',
+                        cancelButtonText: 'No, cancel plx!',
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            $.ajax({
+                                url: '{{ url_for('api.new_project') }}',
+                                type: 'POST',
+                                data: JSON.stringify({
+                                    name: project_name,
+                                    margin: margin,
+                                    reference_number: reference_number,
+                                    admin_fee: admin_fee
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
+                                success: function (data) {
+                                    swal({
+                                        title: 'Nice!',
+                                        text: 'You created a new project: ' + data['name'],
+                                        type: 'success'
+                                    }, function () {
+                                        location.reload()
+                                    });
+                                },
+                                failure: function (err) {
+                                }
+                            });
+                        } else {
+                            swal('Cancelled', 'The project file is safe :)', 'error');
+                        }
+                    });
+                }
             });
 
             $('#btn_submit').on('click', function (e) {
@@ -294,10 +307,12 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i class="fa fa-plus"></i> New Project</a>
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i class="fa fa-plus"></i>
+                        New Project</a>
                 </li>
                 <li>
-                    <a href="javascript:void(0)" data-toggle="modal" data-target="#complete-dialog"><i class="fa fa-plus"></i> New Variation</a>
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#complete-dialog"><i class="fa fa-plus"></i>
+                        New Variation</a>
                 </li>
             </ul>
         </div>
@@ -441,7 +456,7 @@
                     <h2 class="modal-title">Add Project</h2>
                 </div>
                 <div class="modal-body">
-                    <form class="form-horizontal">
+                    <form class="form-horizontal" id="form-new-project">
                         <div class="form-group">
                             <label for="extra_project_name" class="col-sm-3 control-label">Project Name*</label>
 
@@ -464,10 +479,10 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="extra_admin_fee" class="col-sm-3 control-label">Administration Fee*</label>
+                            <label for="extra_admin_fee" class="col-sm-3 control-label">Administration Fee</label>
 
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" id="extra_admin_fee" required data-parsley-type="number">
+                                <input type="text" class="form-control" id="extra_admin_fee" data-parsley-type="number" placeholder="optional">
                             </div>
                         </div>
                     </form>
