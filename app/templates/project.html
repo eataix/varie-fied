@@ -9,10 +9,8 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/extensions/editable/bootstrap-table-editable.min.js"></script>
 
     <script>
-        'use strict';
-
         function pendingClick(cb) {
-            const $tr = $(cb).parents('tr');
+            var $tr = $(cb).parents('tr');
             $tr.attr('class', 'info');
             $tr.find('.checkbox-approved').prop('checked', false);
             $tr.find('.checkbox-declined').prop('checked', false);
@@ -29,7 +27,7 @@
         }
 
         function approvedClick(cb) {
-            const $tr = $(cb).parents('tr');
+            var $tr = $(cb).parents('tr');
             $tr.attr('class', 'success');
             $tr.find('.checkbox-pending').prop('checked', false);
             $tr.find('.checkbox-declined').prop('checked', false);
@@ -46,7 +44,7 @@
         }
 
         function declinedClick(cb) {
-            const $tr = $(cb).parents('tr');
+            var $tr = $(cb).parents('tr');
             $tr.attr('class', 'danger');
             $tr.find('.checkbox-pending').prop('checked', false);
             $tr.find('.checkbox-approved').prop('checked', false);
@@ -102,7 +100,7 @@
         }
 
         function detailFormatter(index, row) {
-            const url = '/api/v1.0/variations/' + row['vid'] + '/items/';
+            var url = '/api/v1.0/variations/' + row['vid'] + '/items/';
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -110,7 +108,7 @@
                 dataType: 'json',
                 success: function (data) {
 
-                    const items = data['items'];
+                    var items = data['items'];
                     var html =
                             '<table class="table table-hover">' +
                             '<thead>' +
@@ -120,14 +118,14 @@
                             '</tr>' +
                             '</thead>' +
                             '<tbody>';
-                    const descriptionClass = 'new-editable-description-' + index;
-                    const amountClass = 'new-editable-amount-' + index;
+                    var descriptionClass = 'new-editable-description-' + index;
+                    var amountClass = 'new-editable-amount-' + index;
 
-                    for (let i = 0; i < items.length; ++i) {
-                        const item = items[i];
-                        const id = item['id'];
-                        const description = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
-                        const amount = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
+                    for (var i = 0; i < items.length; ++i) {
+                        var item = items[i];
+                        var id = item['id'];
+                        var description = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
+                        var amount = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
                         html += '<tr class="item-detail"><td>' + description + '</td><td style="text-align: right;width: 200px">' + amount + '</td></tr>';
                     }
                     html += '</tbody>' + '</table>';
@@ -140,10 +138,10 @@
                     });
                     $('.' + amountClass).on('save', function (e, params) {
                         $("#btn-save").prop('disabled', false);
-                        let total = 0.0;
+                        var total = 0.0;
                         $('.' + amountClass).each(function (i, o) {
                             if (o !== e['target']) {
-                                const val = $(o).html();
+                                var val = $(o).html();
                                 if (val !== "" && isNumeric(val)) {
                                     total += parseFloat(val);
                                 }
@@ -279,7 +277,7 @@
                         $.ajax({
                             url: '{{ url_for('api.delete_project', project_id=current_project.pid) }}',
                             type: 'DELETE',
-                            data: JSON.stringify({}),
+{#                            data: JSON.stringify({}),#}
                             contentType: 'application/json; charset=utf-8',
                             dataType: 'json',
                             success: function (data) {
@@ -300,7 +298,7 @@
                 });
             });
 
-            const action = '{% if current_project.active %}archive{% else %}unarchive{% endif %}';
+            var action = '{% if current_project.active %}archive{% else %}unarchive{% endif %}';
             $('#archive_project').on('click', function (e) {
                 swal({
                     title: 'Are you sure to " + action + " the project?',
@@ -342,7 +340,7 @@
             });
 
             $('#btn-save-meta').on('click', function (e) {
-                const instance = $('#edit-project-meta-form').parsley();
+                var instance = $('#edit-project-meta-form').parsley();
                 instance.validate();
                 if (instance.isValid()) {
                     swal({
@@ -357,10 +355,10 @@
                         closeOnCancel: false
                     }, function (isConfirmed) {
                         if (isConfirmed) {
-                            const new_name = $('#new_name').val();
-                            const new_margin = $('#new_margin').val();
-                            const new_reference_number = $('#new_ref_number').val();
-                            let new_admin_fee = $('#new_admin_fee').val();
+                            var new_name = $('#new_name').val();
+                            var new_margin = $('#new_margin').val();
+                            var new_reference_number = $('#new_ref_number').val();
+                            var new_admin_fee = $('#new_admin_fee').val();
                             if (new_admin_fee === '') {
                                 new_admin_fee = null;
                             }
@@ -394,7 +392,7 @@
                 }
             });
 
-            const $table = $('#table');
+            var $table = $('#table');
             $table.on('editable-save.bs.table', function (rows) {
                 $('#btn-save').prop('disabled', false);
             });
@@ -405,7 +403,7 @@
                 $('#btn-delete').prop('disabled', true);
             });
             $table.on('uncheck.bs.table	uncheck-some.bs.table', function (rows) {
-                const selected = $table.bootstrapTable('getSelections');
+                var selected = $table.bootstrapTable('getSelections');
                 if (selected == 0) {
                     $('#btn-delete').prop('disabled', true);
                 }
@@ -424,13 +422,13 @@
                     closeOnCancel: false
                 }, function (isConfirmed) {
                     if (isConfirmed) {
-                        let success = true;
-                        const selected = $table.bootstrapTable('getSelections');
-                        for (let i = 0; i < selected.length; ++i) {
+                        var success = true;
+                        var selected = $table.bootstrapTable('getSelections');
+                        for (var i = 0; i < selected.length; ++i) {
                             $.ajax({
                                 url: '/api/v1.0/variations/' + selected[i]['vid'],
                                 type: 'DELETE',
-                                data: JSON.stringify({}),
+{#                                data: JSON.stringify({}),#}
                                 contentType: 'application/json; charset=utf-8',
                                 dataType: 'json',
                                 success: function (data) {
@@ -467,13 +465,13 @@
                     closeOnCancel: false
                 }, function (isConfirm) {
                     if (isConfirm) {
-                        const data = $table.bootstrapTable('getData');
-                        for (let key = 0; key < data.length; ++key) {
-                            const value = data[key];
-                            const vid = value['vid'];
+                        var data = $table.bootstrapTable('getData');
+                        for (var key = 0; key < data.length; ++key) {
+                            var value = data[key];
+                            var vid = value['vid'];
 
-                            const selector = '[data-index=' + key + ']';
-                            const element = $(selector);
+                            var selector = '[data-index=' + key + ']';
+                            var element = $(selector);
                             value['pending'] = element.find('.pending').children().children().is(':checked');
                             value['approved'] = element.find('.approved').children().children().is(':checked');
                             value['declined'] = element.find('.declined').children().children().is(':checked');
@@ -493,12 +491,12 @@
                             });
                         }
                         $('.item-detail').each(function (i, o) {
-                            const itemData = $(o).find('a');
-                            const descriptionObj = $(itemData[0]);
-                            const amountObj = $(itemData[1]);
-                            const id = (descriptionObj.attr('pk'));
-                            const description = descriptionObj.html();
-                            const amount = parseFloat(amountObj.html());
+                            var itemData = $(o).find('a');
+                            var descriptionObj = $(itemData[0]);
+                            var amountObj = $(itemData[1]);
+                            var id = (descriptionObj.attr('pk'));
+                            var description = descriptionObj.html();
+                            var amount = parseFloat(amountObj.html());
 
                             $.ajax({
                                 url: '/api/v1.0/items/' + id,
@@ -540,7 +538,7 @@
 {% block content %}
     <div class="container-fluid">
         <h2>Variations for {{ current_project.name }}
-            <small>(ref no: {{ current_project.reference_number }}; OH/Profit: {{ current_project.margin * 100 }}%
+            <small>(Reference number: {{ current_project.reference_number }}; OH/Profit: {{ current_project.margin * 100 }}%
                 {% if current_project.admin_fee is not none %}, Admin fee: {{ current_project.admin_fee }}{% endif %},
                 <a href="javascript:void(0)" data-toggle="modal" data-target="#edit-dialog">edit</a>)
             </small>

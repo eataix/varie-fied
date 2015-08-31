@@ -23,10 +23,12 @@
     <style>
         #complete-dialog .modal-dialog {
             width: 80%;
+            margin: auto;
         }
 
         #new-project-dialog .modal-dialog {
             width: 55%;
+            margin: auto;
         }
     </style>
 {% endblock styles %}
@@ -46,18 +48,18 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/js/standalone/selectize.min.js"></script>
 
     <script>
-        'use strict';
         function onSelectChanged(e) {
-            const project_id = $('#select_project_id')[0].selectize.items[0];
+            var project_id = $('#select_project_id')[0].selectize.items[0];
+            console.log('/api/v1.0/projects/' + project_id);
             $.ajax({
                 url: '/api/v1.0/projects/' + project_id,
                 type: 'GET',
-                data: JSON.stringify({}),
+{#                data: JSON.stringify({}),#}
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 success: function (data) {
                     $('#margin').val(data['margin'] * 100 + '%');
-                    const el = $('#admin-fee');
+                    var el = $('#admin-fee');
                     if (data['admin_fee'] === null) {
                         el.parents('.form-group').hide();
                         el.val('');
@@ -77,17 +79,17 @@
         }
 
         function update() {
-            let total = 0.0;
+            var total = 0.0;
             $('.input-amount').each(function (i, o) {
-                const val = $(o).val();
+                var val = $(o).val();
                 if (val !== "" && isNumeric(val)) {
                     total += parseFloat(val);
                 }
             });
             $('#value-of-work').val(accounting.formatMoney(total));
-            let subtotal = 0.0;
+            var subtotal = 0.0;
             subtotal += total * (1.0 + parseFloat($('#margin').val()) / 100.0);
-            const adminFeeVal = $('#admin-fee').val();
+            var adminFeeVal = $('#admin-fee').val();
             if (adminFeeVal !== '') {
                 subtotal += accounting.parse(adminFeeVal);
             }
@@ -95,7 +97,7 @@
         }
 
         function addRow(s) {
-            const newRow = $('<tr class="variationItem">' +
+            var newRow = $('<tr class="variationItem">' +
                     '<td>' +
                     '<textarea name="description" class="input-desc form-control" required></textarea>' +
                     '</td>' +
@@ -112,7 +114,7 @@
         }
 
         function deleteRow(e) {
-            const row = e.parentNode.parentNode;
+            var row = e.parentNode.parentNode;
             row.parentNode.removeChild(row);
             update();
         }
@@ -130,13 +132,13 @@
             });
 
             $('#btn-add-project').on('click', function (e) {
-                const instance = $('#form-new-project').parsley();
+                var instance = $('#form-new-project').parsley();
                 instance.validate();
                 if (instance.isValid()) {
-                    const project_name = $('#extra_project_name').val();
-                    const margin = $('#extra_margin').val();
-                    const reference_number = $('#extra_reference_number').val();
-                    let admin_fee = $('#extra_admin_fee').val();
+                    var project_name = $('#extra_project_name').val();
+                    var margin = $('#extra_margin').val();
+                    var reference_number = $('#extra_reference_number').val();
+                    var admin_fee = $('#extra_admin_fee').val();
                     if (admin_fee === '') {
                         admin_fee = null;
                     }
@@ -184,16 +186,16 @@
             });
 
             $('#btn_submit').on('click', function (e) {
-                const instance = $('#form-new-variation').parsley();
+                var instance = $('#form-new-variation').parsley();
                 instance.validate();
                 if (instance.isValid()) {
-                    const project_id = $('#select_project_id')[0].selectize.items[0];
-                    const time = $('#picker_datetime').data("DateTimePicker").date();
-                    const timeUTC = time.utc().format();
-                    const subcontractor = $('#input_subcontractor').val();
-                    const invoice_no = $('#input_invoice_no').val();
-                    const input_amount = accounting.unformat($('#subtotal').val());
-                    const input_description = $("#input_description").val();
+                    var project_id = $('#select_project_id')[0].selectize.items[0];
+                    var time = $('#picker_datetime').data("DateTimePicker").date();
+                    var timeUTC = time.utc().format();
+                    var subcontractor = $('#input_subcontractor').val();
+                    var invoice_no = $('#input_invoice_no').val();
+                    var input_amount = accounting.unformat($('#subtotal').val());
+                    var input_description = $("#input_description").val();
                     swal({
                         title: 'Are you sure?',
                         text: 'Time: ' + time.format('Do MMMM YYYY h:mm:ss a') + '\nSubcontractor: ' + subcontractor + '\nAmount: ' + accounting.formatMoney(input_amount),
@@ -220,11 +222,11 @@
                                 contentType: 'application/json; charset=utf-8',
                                 dataType: 'json',
                                 success: function (data) {
-                                    const vid = data['vid'];
-                                    let successful = true;
+                                    var vid = data['vid'];
+                                    var successful = true;
                                     $('.variationItem').each(function (i, obj) {
-                                        const desc = $(obj.children[0].children[0]).val();
-                                        const amount = $(obj.children[1].children[0]).val();
+                                        var desc = $(obj.children[0].children[0]).val();
+                                        var amount = $(obj.children[1].children[0]).val();
                                         if (desc !== '' && amount !== '') {
                                             $.ajax({
                                                 url: '{{ url_for('api.new_item') }}',

@@ -71,7 +71,7 @@ class Project(db.Model):
 
         ws.merge_cells('A1:D1')
         ws['A1'].style.alignment.wrap_text = True
-        ws['A1'].value = '{}\nJOB #:'.format(self.name)
+        ws['A1'].value = '{}\nJOB #: {}'.format(self.name, self.reference_number)
         ws['A1'].fill = fill
         ws['A1'].font = Font(name='Lao UI', size=11, bold=True)
 
@@ -206,7 +206,7 @@ class Project(db.Model):
             new_ws['D5'].fill = fill
             new_ws['D5'].font = Font(name='Lao UI', size=14, bold=True)
             new_ws.merge_cells('G5:H5')
-            new_ws['G5'].value = 'TPC REF: {}'.format("")
+            new_ws['G5'].value = 'TPC REF: {}'.format(self.reference_number)
             new_ws['G5'].font = Font(name='Lao UI', size=14, bold=True)
             new_ws['G5'].alignment = Alignment(vertical='center', horizontal='left')
             for column in 'BCDE':
