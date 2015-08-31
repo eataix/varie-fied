@@ -9,11 +9,13 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/extensions/editable/bootstrap-table-editable.min.js"></script>
 
     <script>
+        'use strict';
+
         function pendingClick(cb) {
-            var tr = $(cb).parents('tr');
-            tr.attr('class', 'info');
-            tr.find('.checkbox-approved').prop('checked', false);
-            tr.find('.checkbox-declined').prop('checked', false);
+            const $tr = $(cb).parents('tr');
+            $tr.attr('class', 'info');
+            $tr.find('.checkbox-approved').prop('checked', false);
+            $tr.find('.checkbox-declined').prop('checked', false);
             $('#btn-save').prop('disabled', false);
         }
         function pendingFormatter(value, row, index) {
@@ -27,10 +29,10 @@
         }
 
         function approvedClick(cb) {
-            var tr = $(cb).parents('tr');
-            tr.attr('class', 'success');
-            tr.find('.checkbox-pending').prop('checked', false);
-            tr.find('.checkbox-declined').prop('checked', false);
+            const $tr = $(cb).parents('tr');
+            $tr.attr('class', 'success');
+            $tr.find('.checkbox-pending').prop('checked', false);
+            $tr.find('.checkbox-declined').prop('checked', false);
             $('#btn-save').prop('disabled', false);
         }
         function approvedFormatter(value, row, index) {
@@ -44,10 +46,10 @@
         }
 
         function declinedClick(cb) {
-            var tr = $(cb).parents('tr');
-            tr.attr('class', 'danger');
-            tr.find('.checkbox-pending').prop('checked', false);
-            tr.find('.checkbox-approved').prop('checked', false);
+            const $tr = $(cb).parents('tr');
+            $tr.attr('class', 'danger');
+            $tr.find('.checkbox-pending').prop('checked', false);
+            $tr.find('.checkbox-approved').prop('checked', false);
             $('#btn-save').prop('disabled', false);
         }
         function declinedFormatter(value, row, index) {
@@ -94,13 +96,13 @@
         }
 
         function validate_required(v) {
-            if (!v) {
+            if (v === null || v === '') {
                 return "Cannot be empty!";
             }
         }
 
         function detailFormatter(index, row) {
-            var url = '/api/v1.0/variations/' + row['vid'] + '/items/';
+            const url = '/api/v1.0/variations/' + row['vid'] + '/items/';
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -108,7 +110,7 @@
                 dataType: 'json',
                 success: function (data) {
 
-                    var items = data['items'];
+                    const items = data['items'];
                     var html =
                             '<table class="table table-hover">' +
                             '<thead>' +
@@ -118,14 +120,14 @@
                             '</tr>' +
                             '</thead>' +
                             '<tbody>';
-                    var descriptionClass = 'new-editable-description-' + index;
-                    var amountClass = 'new-editable-amount-' + index;
+                    const descriptionClass = 'new-editable-description-' + index;
+                    const amountClass = 'new-editable-amount-' + index;
 
-                    for (var i = 0; i < items.length; ++i) {
-                        var item = items[i];
-                        var id = item['id'];
-                        var description = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
-                        var amount = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
+                    for (let i = 0; i < items.length; ++i) {
+                        const item = items[i];
+                        const id = item['id'];
+                        const description = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
+                        const amount = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
                         html += '<tr class="item-detail"><td>' + description + '</td><td style="text-align: right;width: 200px">' + amount + '</td></tr>';
                     }
                     html += '</tbody>' + '</table>';
@@ -138,10 +140,10 @@
                     });
                     $('.' + amountClass).on('save', function (e, params) {
                         $("#btn-save").prop('disabled', false);
-                        var total = 0.0;
+                        let total = 0.0;
                         $('.' + amountClass).each(function (i, o) {
                             if (o !== e['target']) {
-                                var val = $(o).html();
+                                const val = $(o).html();
                                 if (val !== "" && isNumeric(val)) {
                                     total += parseFloat(val);
                                 }
@@ -259,9 +261,7 @@
         });
 
         $.fn.editable.defaults.mode = 'inline';
-    </script>
 
-    <script>
         $(document).ready(function () {
             $('#delete_project').on('click', function (e) {
                 swal({
@@ -300,7 +300,7 @@
                 });
             });
 
-            var action = '{% if current_project.active %}archive{% else %}unarchive{% endif %}';
+            const action = '{% if current_project.active %}archive{% else %}unarchive{% endif %}';
             $('#archive_project').on('click', function (e) {
                 swal({
                     title: 'Are you sure to " + action + " the project?',
@@ -342,7 +342,7 @@
             });
 
             $('#btn-save-meta').on('click', function (e) {
-                var instance = $('#edit-project-meta-form').parsley();
+                const instance = $('#edit-project-meta-form').parsley();
                 instance.validate();
                 if (instance.isValid()) {
                     swal({
@@ -357,10 +357,10 @@
                         closeOnCancel: false
                     }, function (isConfirmed) {
                         if (isConfirmed) {
-                            var new_name = $('#new_name').val();
-                            var new_margin = $('#new_margin').val();
-                            var new_admin_fee = $('#new_admin_fee').val();
-                            var new_reference_number = $('#new_ref_number').val();
+                            const new_name = $('#new_name').val();
+                            const new_margin = $('#new_margin').val();
+                            const new_reference_number = $('#new_ref_number').val();
+                            let new_admin_fee = $('#new_admin_fee').val();
                             if (new_admin_fee === '') {
                                 new_admin_fee = null;
                             }
@@ -394,7 +394,7 @@
                 }
             });
 
-            var $table = $('#table');
+            const $table = $('#table');
             $table.on('editable-save.bs.table', function (rows) {
                 $('#btn-save').prop('disabled', false);
             });
@@ -405,7 +405,7 @@
                 $('#btn-delete').prop('disabled', true);
             });
             $table.on('uncheck.bs.table	uncheck-some.bs.table', function (rows) {
-                var selected = $('table').bootstrapTable('getSelections');
+                const selected = $table.bootstrapTable('getSelections');
                 if (selected == 0) {
                     $('#btn-delete').prop('disabled', true);
                 }
@@ -424,9 +424,9 @@
                     closeOnCancel: false
                 }, function (isConfirmed) {
                     if (isConfirmed) {
-                        var success = true;
-                        var selected = $('table').bootstrapTable('getSelections');
-                        for (var i = 0; i < selected.length; ++i) {
+                        let success = true;
+                        const selected = $table.bootstrapTable('getSelections');
+                        for (let i = 0; i < selected.length; ++i) {
                             $.ajax({
                                 url: '/api/v1.0/variations/' + selected[i]['vid'],
                                 type: 'DELETE',
@@ -467,13 +467,13 @@
                     closeOnCancel: false
                 }, function (isConfirm) {
                     if (isConfirm) {
-                        var data = $('#table').bootstrapTable('getData');
-                        for (var key = 0; key < data.length; ++key) {
-                            var value = data[key];
-                            var vid = value['vid'];
+                        const data = $table.bootstrapTable('getData');
+                        for (let key = 0; key < data.length; ++key) {
+                            const value = data[key];
+                            const vid = value['vid'];
 
-                            var selector = '[data-index=' + key + ']';
-                            var element = $(selector);
+                            const selector = '[data-index=' + key + ']';
+                            const element = $(selector);
                             value['pending'] = element.find('.pending').children().children().is(':checked');
                             value['approved'] = element.find('.approved').children().children().is(':checked');
                             value['declined'] = element.find('.declined').children().children().is(':checked');
@@ -493,12 +493,12 @@
                             });
                         }
                         $('.item-detail').each(function (i, o) {
-                            var itemData = $(o).find('a');
-                            var descriptionObj = $(itemData[0]);
-                            var amountObj = $(itemData[1]);
-                            var id = (descriptionObj.attr('pk'));
-                            var description = descriptionObj.html();
-                            var amount = parseFloat(amountObj.html());
+                            const itemData = $(o).find('a');
+                            const descriptionObj = $(itemData[0]);
+                            const amountObj = $(itemData[1]);
+                            const id = (descriptionObj.attr('pk'));
+                            const description = descriptionObj.html();
+                            const amount = parseFloat(amountObj.html());
 
                             $.ajax({
                                 url: '/api/v1.0/items/' + id,
