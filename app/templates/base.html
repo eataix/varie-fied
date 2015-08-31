@@ -24,6 +24,9 @@
         #complete-dialog .modal-dialog {
             width: 80%;
         }
+        #new-project-dialog .modal-dialog {
+            width: 55%;
+        }
     </style>
 {% endblock styles %}
 
@@ -45,11 +48,11 @@
         function onSelectChanged(e) {
             var project_id = $('#select_project_id')[0].selectize.items[0];
             $.ajax({
-                url: "/api/v1.0/projects/" + project_id,
-                type: "GET",
+                url: '/api/v1.0/projects/' + project_id,
+                type: 'GET',
                 data: JSON.stringify({}),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
                 success: function (data) {
                     $('#margin').val(data['margin'] * 100 + '%');
                     var el = $('#admin-fee');
@@ -114,8 +117,8 @@
 
         $(function () {
             $.material.init();
-            $("#picker_datetime").datetimepicker({showTodayButton: true});
-            $("#form-new-variation").parsley();
+            $('#picker_datetime').datetimepicker({showTodayButton: true});
+            $('#form-new-variation').parsley();
         });
 
         $(document).ready(function () {
@@ -123,105 +126,85 @@
                 sortField: 'text'
             });
 
-            $("#add_project").on("click", function (e) {
+            $('#btn-add-project').on('click', function (e) {
+                var data = {
+                    name: $('#extra_project_name').val(),
+                    margin: $('#extra_margin').val(),
+                    reference_number: $('#extra_reference_number').val(),
+                    admin_fee: $('#extra_admin_fee').val()
+                };
                 swal({
-                    title: "New Project",
-                    text: "Project name:",
-                    type: "input",
+                    title: 'Are you sure to add the project?',
+                    text: 'You can recover this project later!',
+                    type: 'info',
                     showCancelButton: true,
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: 'Yes, add it!',
+                    cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
-                    animation: "slide-from-top",
-                    inputPlaceholder: "Project name"
-                }, function (projectName) {
-                    if (projectName === false) {
-                        return false;
-                    }
-                    if (projectName === "") {
-                        swal.showInputError("Project name must not be empty");
-                        return false
-                    }
-                    swal({
-                        title: "New Project",
-                        text: "OH/Profit:",
-                        type: "input",
-                        inputValue: "0.15",
-                        showCancelButton: true,
-                        closeOnConfirm: false,
-                        animation: "slide-from-top"
-                    }, function (margin) {
-                        swal({
-                            title: "New Project",
-                            text: "Administration fee (optional):",
-                            type: "input",
-                            inputValue: "",
-                            showCancelButton: true,
-                            closeOnConfirm: false,
-                            animation: "slide-from-top",
-                            inputPlaceholder: "e.g., 100"
-                        }, function (admin_fee) {
-                            var data = {"name": projectName, "margin": margin};
-                            if (admin_fee !== '') {
-                                data["admin_fee"]= admin_fee;
+                    closeOnCancel: false
+                }, function (isConfirm) {
+                    if (isConfirm) {
+                        $.ajax({
+                            url: '{{ url_for('api.new_project') }}',
+                            type: 'POST',
+                            data: JSON.stringify(data),
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            success: function (data) {
+                                swal({
+                                    title: 'Nice!',
+                                    text: 'You created a new project: ' + data['name'],
+                                    type: 'success'
+                                }, function () {
+                                    location.reload()
+                                });
+                            },
+                            failure: function (err) {
                             }
-                            $.ajax({
-                                url: '{{ url_for('api.new_project') }}',
-                                type: "POST",
-                                data: JSON.stringify(data),
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
-                                success: function (data) {
-                                    swal({
-                                        title: "Nice!",
-                                        text: "You created a new project: " + projectName,
-                                        type: "success"
-                                    }, function () {
-                                        location.reload()
-                                    });
-                                },
-                                failure: function (err) {
-                                }
-                            });
                         });
-                    });
+                    } else {
+                        swal('Cancelled', 'The project file is safe :)', 'error');
+                    }
                 });
             });
 
-            $("#btn_submit").on("click", function (e) {
-                var instance = $("#form-new-variation").parsley();
+            $('#btn_submit').on('click', function (e) {
+                var instance = $('#form-new-variation').parsley();
                 instance.validate();
                 if (instance.isValid()) {
                     var project_id = $('#select_project_id')[0].selectize.items[0];
                     var time = $('#picker_datetime').data("DateTimePicker").date();
                     var timeUTC = time.utc().format();
-                    var subcontractor = $("#input_subcontractor").val();
-                    var invoice_no = $("#input_invoice_no").val();
+                    var subcontractor = $('#input_subcontractor').val();
+                    var invoice_no = $('#input_invoice_no').val();
                     var input_amount = accounting.unformat($('#subtotal').val());
                     var input_description = $("#input_description").val();
                     swal({
-                        title: "Are you sure?",
-                        text: "Time: " + time.format('Do MMMM YYYY h:mm:ss a') + "\nSubcontractor: " + subcontractor + "\nAmount: " + accounting.formatMoney(input_amount),
-                        type: "warning",
+                        title: 'Are you sure?',
+                        text: 'Time: ' + time.format('Do MMMM YYYY h:mm:ss a') + '\nSubcontractor: ' + subcontractor + '\nAmount: ' + accounting.formatMoney(input_amount),
+                        type: 'warning',
                         showCancelButton: true,
-                        confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "Yes, add it!",
-                        cancelButtonText: "No, cancel plx!",
+                        confirmButtonColor: '#DD6B55',
+                        confirmButtonText: 'Yes, add it!',
+                        cancelButtonText: 'No, cancel plx!',
                         closeOnConfirm: false,
                         closeOnCancel: false
                     }, function (isConfirm) {
                         if (isConfirm) {
                             $.ajax({
                                 url: '{{ url_for('api.new_variation') }}',
-                                type: "POST",
+                                type: 'POST',
                                 data: JSON.stringify({
-                                    "project_id": project_id,
-                                    "date": timeUTC,
-                                    "subcontractor": subcontractor,
-                                    "invoice_no": invoice_no,
-                                    "amount": input_amount,
-                                    "description": input_description
+                                    project_id: project_id,
+                                    date: timeUTC,
+                                    subcontractor: subcontractor,
+                                    invoice_no: invoice_no,
+                                    amount: input_amount,
+                                    description: input_description
                                 }),
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
                                 success: function (data) {
                                     var vid = data['vid'];
                                     var successful = true;
@@ -231,14 +214,14 @@
                                         if (desc !== '' && amount !== '') {
                                             $.ajax({
                                                 url: '{{ url_for('api.new_item') }}',
-                                                type: "POST",
+                                                type: 'POST',
                                                 data: JSON.stringify({
                                                     "variation_id": vid,
                                                     "description": desc,
                                                     "amount": amount
                                                 }),
-                                                contentType: "application/json; charset=utf-8",
-                                                dataType: "json",
+                                                contentType: 'application/json; charset=utf-8',
+                                                dataType: 'json',
                                                 success: function (data) {
                                                 },
                                                 failure: function (err) {
@@ -249,9 +232,9 @@
                                     });
                                     if (successful) {
                                         swal({
-                                            title: "Nice!",
-                                            text: "You created a new variation",
-                                            type: "success"
+                                            title: 'Nice!',
+                                            text: 'You created a new variation',
+                                            type: 'success'
                                         }, function () {
                                             location.reload()
                                         });
@@ -262,7 +245,7 @@
                                 }
                             });
                         } else {
-                            swal("Cancelled", "Your imaginary file is safe :)", "error");
+                            swal('Cancelled', 'Your imaginary file is safe :)', 'error');
                         }
                     });
                 }
@@ -310,7 +293,7 @@
                     </ul>
                 </li>
                 <li>
-                    <a id="add_project" href="javascript:void(0)"><i class="fa fa-plus"></i> New Project</a>
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i class="fa fa-plus"></i> New Project</a>
                 </li>
                 <li>
                     <a href="javascript:void(0)" data-toggle="modal" data-target="#complete-dialog"><i class="fa fa-plus"></i> New Variation</a>
@@ -330,6 +313,7 @@
                     <form class="form-horizontal" id="form-new-variation">
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Project*</label>
+
                             <div class="col-sm-10">
                                 <select id="select_project_id" class="form-control" onchange="onSelectChanged(this);">
                                     <option value="">Select a project</option>
@@ -443,6 +427,54 @@
                     <p>* Required</p>
                     <button class="btn btn-primary" data-dismiss="modal">Dismiss</button>
                     <button id="btn_submit" class="btn btn-info">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="new-project-dialog" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h2 class="modal-title">Add Project</h2>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="extra_project_name" class="col-sm-3 control-label">Project Name*</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="extra_project_name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="extra_reference_number" class="col-sm-3 control-label">Reference Number*</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="extra_reference_number" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="extra_margin" class="col-sm-3 control-label">OH/Profit*</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="extra_margin" required data-parsley-type="number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="extra_admin_fee" class="col-sm-3 control-label">Administration Fee*</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="extra_admin_fee" required data-parsley-type="number">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <p>* Required</p>
+                    <button class="btn btn-primary" data-dismiss="modal">Dismiss</button>
+                    <button id="btn-add-project" class="btn btn-info">Save</button>
                 </div>
             </div>
         </div>

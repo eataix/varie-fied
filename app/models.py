@@ -8,6 +8,7 @@ import arrow
 class Project(db.Model):
     __tablename__ = 'projects'
     pid = db.Column(db.Integer, primary_key=True)
+    reference_number = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
     margin = db.Column(db.Float, nullable=False)
     active = db.Column(db.Boolean, default=True)
@@ -20,6 +21,7 @@ class Project(db.Model):
     def to_json(self):
         json_project = {
             'name': self.name,
+            'reference_number': self.reference_number,
             'active': self.active,
             'margin': self.margin,
             'admin_fee': self.admin_fee,
@@ -31,11 +33,12 @@ class Project(db.Model):
     @staticmethod
     def from_json(json_project):
         name = json_project.get('name')
+        reference_number = json_project.get('reference_number')
         margin = json_project.get('margin')
         admin_fee = json_project.get('admin_fee')
         if name is None or name == '':
             raise ValidationError('project does not have a name')
-        return Project(name=name, margin=margin, admin_fee=admin_fee)
+        return Project(name=name, margin=margin, admin_fee=admin_fee, reference_number=reference_number)
 
     def export(self):
         def cm_to_inch(cm: float):
@@ -138,7 +141,7 @@ class Project(db.Model):
                         cell.alignment = Alignment(vertical='center', horizontal='left')
                     else:
                         cell.alignment = Alignment(vertical='center')
-                    cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+                        cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
         ws.merge_cells('A{}:B{}'.format(row, row))
         ws['A{}'.format(row)].value = 'TOTALS'

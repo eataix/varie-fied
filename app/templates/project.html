@@ -14,7 +14,7 @@
             tr.attr('class', 'info');
             tr.find('.checkbox-approved').prop('checked', false);
             tr.find('.checkbox-declined').prop('checked', false);
-            $("#btn-save").prop("disabled", false);
+            $('#btn-save').prop('disabled', false);
         }
         function pendingFormatter(value, row, index) {
             var mid;
@@ -31,7 +31,7 @@
             tr.attr('class', 'success');
             tr.find('.checkbox-pending').prop('checked', false);
             tr.find('.checkbox-declined').prop('checked', false);
-            $("#btn-save").prop("disabled", false);
+            $('#btn-save').prop('disabled', false);
         }
         function approvedFormatter(value, row, index) {
             var mid;
@@ -40,7 +40,7 @@
             } else {
                 mid = '<input class="checkbox checkbox-approved" type="checkbox" onclick="approvedClick(this);">';
             }
-            return "<label>" + mid + "</label>";
+            return '<label>' + mid + '</label>';
         }
 
         function declinedClick(cb) {
@@ -48,7 +48,7 @@
             tr.attr('class', 'danger');
             tr.find('.checkbox-pending').prop('checked', false);
             tr.find('.checkbox-approved').prop('checked', false);
-            $("#btn-save").prop("disabled", false);
+            $('#btn-save').prop('disabled', false);
         }
         function declinedFormatter(value, row, index) {
             var mid;
@@ -57,11 +57,11 @@
             } else {
                 mid = '<input class="checkbox checkbox-declined" type="checkbox" onclick="declinedClick(this);">';
             }
-            return "<label>" + mid + "</label>";
+            return '<label>' + mid + '</label>';
         }
 
         function completeClick(cb) {
-            $("#btn-save").prop("disabled", false);
+            $('#btn-save').prop('disabled', false);
         }
         function completeFormatter(value, row, index) {
             var mid;
@@ -70,7 +70,7 @@
             } else {
                 mid = '<input class="checkbox checkbox-complete" type="checkbox" onclick="completeClick(this);">';
             }
-            return "<label>" + mid + "</label>";
+            return '<label>' + mid + '</label>';
         }
 
         function rowStyle(row, index) {
@@ -86,7 +86,7 @@
         }
 
         function timeFormatter(value, row, index) {
-            return "<p>" + moment(value).toDate() + "</p>";
+            return '<p>' + moment(value).toDate() + '</p>';
         }
 
         function moneyFormatter(value, row, index) {
@@ -103,9 +103,9 @@
             var url = '/api/v1.0/variations/' + row['vid'] + '/items/';
             $.ajax({
                 url: url,
-                type: "GET",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
                 success: function (data) {
 
                     var items = data['items'];
@@ -134,10 +134,10 @@
                     $('.' + descriptionClass).editable();
                     $('.' + amountClass).editable();
                     $('.' + descriptionClass).on('save', function (e, params) {
-                        $("#btn-save").prop("disabled", false);
+                        $("#btn-save").prop('disabled', false);
                     });
                     $('.' + amountClass).on('save', function (e, params) {
-                        $("#btn-save").prop("disabled", false);
+                        $("#btn-save").prop('disabled', false);
                         var total = 0.0;
                         $('.' + amountClass).each(function (i, o) {
                             if (o !== e['target']) {
@@ -162,9 +162,9 @@
 
         $.ajax({
             url: '{{ url_for('api.get_project_variations', project_id=current_project.pid) }}',
-            type: "GET",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
             success: function (data) {
                 $('#table').bootstrapTable({
                     columns: [{
@@ -219,41 +219,41 @@
                     }, {
                         field: 'pending',
                         title: 'Pending',
-                        formatter: "pendingFormatter",
+                        formatter: 'pendingFormatter',
                         halign: 'center',
                         valign: 'center',
                         sortable: true,
-                        'class': "pending"
+                        'class': 'pending'
                     }, {
                         field: 'approved',
                         title: 'Approved',
-                        formatter: "approvedFormatter",
+                        formatter: 'approvedFormatter',
                         halign: 'center',
                         valign: 'center',
                         sortable: true,
-                        'class': "approved"
+                        'class': 'approved'
                     }, {
                         field: 'declined',
                         title: 'Declined',
-                        formatter: "declinedFormatter",
+                        formatter: 'declinedFormatter',
                         halign: 'center',
                         valign: 'center',
                         sortable: true,
-                        'class': "declined"
+                        'class': 'declined'
                     }, {
                         field: 'completed',
                         title: 'Completed',
-                        formatter: "completeFormatter",
+                        formatter: 'completeFormatter',
                         halign: 'center',
                         valign: 'center',
                         sortable: true,
-                        'class': "completed"
+                        'class': 'completed'
                     }],
                     data: data['variations'],
-                    rowStyle: "rowStyle",
-                    toolbar: "#toolbar",
+                    rowStyle: 'rowStyle',
+                    toolbar: '#toolbar',
                     detailView: true,
-                    detailFormatter: "detailFormatter"
+                    detailFormatter: 'detailFormatter'
                 });
             }
         });
@@ -263,30 +263,30 @@
 
     <script>
         $(document).ready(function () {
-            $('#delete_project').on("click", function (e) {
+            $('#delete_project').on('click', function (e) {
                 swal({
-                    title: "Are you sure to delete the project?",
-                    text: "You are going to",
-                    type: "warning",
+                    title: 'Are you sure to delete the project?',
+                    text: 'You are going to',
+                    type: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: "#DD6B55",
-                    confirmButtonText: "Yes, delete it!",
-                    cancelButtonText: "No, cancel plx!",
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
                     closeOnCancel: false
                 }, function (isConfirm) {
                     if (isConfirm) {
                         $.ajax({
                             url: '{{ url_for('api.delete_project', project_id=current_project.pid) }}',
-                            type: "DELETE",
+                            type: 'DELETE',
                             data: JSON.stringify({}),
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
                             success: function (data) {
                                 swal({
-                                    title: "Nice!",
-                                    text: "You delete: {{ current_project.name }}",
-                                    type: "success"
+                                    title: 'Nice!',
+                                    text: 'You delete: {{ current_project.name }}',
+                                    type: 'success'
                                 }, function () {
                                     window.location.href = "/";
                                 });
@@ -295,38 +295,38 @@
                             }
                         });
                     } else {
-                        swal("Cancelled", "Your project is safe :)", "error");
+                        swal('Cancelled', 'Your project is safe :)', 'error');
                     }
                 });
             });
 
-            var action = "{% if current_project.active %}archive{% else %}unarchive{% endif %}";
-            $('#archive_project').on("click", function (e) {
+            var action = '{% if current_project.active %}archive{% else %}unarchive{% endif %}';
+            $('#archive_project').on('click', function (e) {
                 swal({
-                    title: "Are you sure to " + action + " the project?",
-                    text: "You can recover this project later!",
-                    type: "info",
+                    title: 'Are you sure to " + action + " the project?',
+                    text: 'You can recover this project later!',
+                    type: 'info',
                     showCancelButton: true,
-                    confirmButtonColor: "#DD6B55",
-                    confirmButtonText: "Yes, " + action + " it!",
-                    cancelButtonText: "No, cancel plx!",
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: 'Yes, " + action + " it!',
+                    cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
                     closeOnCancel: false
                 }, function (isConfirm) {
                     if (isConfirm) {
                         $.ajax({
                             url: '{{ url_for('api.edit_project', project_id=current_project.pid) }}',
-                            type: "PUT",
+                            type: 'PUT',
                             data: JSON.stringify({
                                 "active":{% if current_project.active %} false{% else %} true{% endif %}
                             }),
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
                             success: function (data) {
                                 swal({
-                                    title: "Nice!",
-                                    text: "You " + action + ": {{ current_project.name }}",
-                                    type: "success"
+                                    title: 'Nice!',
+                                    text: 'You ' + action + ': {{ current_project.name }}',
+                                    type: 'success'
                                 }, function () {
                                     location.reload()
                                 });
@@ -334,25 +334,25 @@
                             failure: function (err) {
                             }
                         });
-                        swal("Deleted!", "The project has been archived.", "success");
+                        swal('Deleted!', 'The project has been archived.', 'success');
                     } else {
-                        swal("Cancelled", "The project file is safe :)", "error");
+                        swal('Cancelled', 'The project file is safe :)', 'error');
                     }
                 });
             });
 
             $('#btn-save-meta').on('click', function (e) {
-                var instance = $("#edit-project-meta-form").parsley();
+                var instance = $('#edit-project-meta-form').parsley();
                 instance.validate();
                 if (instance.isValid()) {
                     swal({
-                        title: "Are you sure to save the changes?",
-                        text: "You cannot recover them later!",
-                        type: "warning",
+                        title: 'Are you sure to save the changes?',
+                        text: 'You cannot recover them later!',
+                        type: 'warning',
                         showCancelButton: true,
-                        confirmButtonColor: "teal",
-                        confirmButtonText: "Yes, save them!",
-                        cancelButtonText: "No, cancel plx!",
+                        confirmButtonColor: 'teal',
+                        confirmButtonText: 'Yes, save them!',
+                        cancelButtonText: 'No, cancel plx!',
                         closeOnConfirm: false,
                         closeOnCancel: false
                     }, function (isConfirmed) {
@@ -360,24 +360,26 @@
                             var new_name = $('#new_name').val();
                             var new_margin = $('#new_margin').val();
                             var new_admin_fee = $('#new_admin_fee').val();
+                            var new_reference_number = $('#new_ref_number').val();
                             if (new_admin_fee === '') {
                                 new_admin_fee = null;
                             }
                             $.ajax({
                                 url: '{{ url_for('api.edit_project', project_id=current_project.pid) }}',
-                                type: "PUT",
+                                type: 'PUT',
                                 data: JSON.stringify({
                                     "name": new_name,
                                     "margin": new_margin,
-                                    "admin_fee": new_admin_fee
+                                    "admin_fee": new_admin_fee,
+                                    "reference_number": new_reference_number
                                 }),
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
                                 success: function (data) {
                                     swal({
-                                        title: "Nice!",
-                                        text: "Save changes",
-                                        type: "success"
+                                        title: 'Nice!',
+                                        text: 'Save changes',
+                                        type: 'success'
                                     }, function () {
                                         location.reload()
                                     });
@@ -386,38 +388,38 @@
                                 }
                             });
                         } else {
-                            swal("Cancelled", "Your project is safe :)", "error");
+                            swal('Cancelled', 'Your project is safe :)', 'error');
                         }
                     });
                 }
             });
 
             var $table = $('#table');
-            $table.on("editable-save.bs.table", function (rows) {
-                $("#btn-save").prop("disabled", false);
+            $table.on('editable-save.bs.table', function (rows) {
+                $('#btn-save').prop('disabled', false);
             });
-            $table.on("check.bs.table check-all.bs.table check-some.bs.table", function (rows) {
-                $("#btn-delete").prop("disabled", false);
+            $table.on('check.bs.table check-all.bs.table check-some.bs.table', function (rows) {
+                $('#btn-delete').prop('disabled', false);
             });
-            $table.on("uncheck-all.bs.table", function (rows) {
-                $("#btn-delete").prop("disabled", true);
+            $table.on('uncheck-all.bs.table', function (rows) {
+                $('#btn-delete').prop('disabled', true);
             });
             $table.on('uncheck.bs.table	uncheck-some.bs.table', function (rows) {
                 var selected = $('table').bootstrapTable('getSelections');
                 if (selected == 0) {
-                    $("#btn-delete").prop("disabled", true);
+                    $('#btn-delete').prop('disabled', true);
                 }
             });
 
             $('#btn-delete').on('click', function (e) {
                 swal({
-                    title: "Are you sure to delete selected rows?",
-                    text: "You cannot recover them later!",
-                    type: "warning",
+                    title: 'Are you sure to delete selected rows?',
+                    text: 'You cannot recover them later!',
+                    type: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: "teal",
-                    confirmButtonText: "Yes, save them!",
-                    cancelButtonText: "No, cancel plx!",
+                    confirmButtonColor: 'teal',
+                    confirmButtonText: 'Yes, save them!',
+                    cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
                     closeOnCancel: false
                 }, function (isConfirmed) {
@@ -426,11 +428,11 @@
                         var selected = $('table').bootstrapTable('getSelections');
                         for (var i = 0; i < selected.length; ++i) {
                             $.ajax({
-                                url: "/api/v1.0/variations/" + selected[i]["vid"],
-                                type: "DELETE",
+                                url: '/api/v1.0/variations/' + selected[i]['vid'],
+                                type: 'DELETE',
                                 data: JSON.stringify({}),
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
                                 success: function (data) {
                                 },
                                 failure: function (err) {
@@ -440,28 +442,27 @@
                         }
                         if (success) {
                             swal({
-                                title: "Nice!",
-                                text: "Delete variations",
-                                type: "success"
+                                title: 'Nice!',
+                                text: 'Delete variations',
+                                type: 'success'
                             }, function () {
                                 location.reload()
                             });
                         }
                     } else {
-                        swal("Cancelled", "Your project is safe :)", "error");
+                        swal('Cancelled', 'Your project is safe :)', 'error');
                     }
                 });
             });
 
             $('#btn-save').on('click', function (e) {
                 swal({
-                    title: "Are you sure to save all the changes?",
-                    {#                    text: "You are going to",#}
-                    type: "info",
+                    title: 'Are you sure to save all the changes?',
+                    type: 'info',
                     showCancelButton: true,
-                    confirmButtonColor: "teal",
-                    confirmButtonText: "Yes, save them!",
-                    cancelButtonText: "No, cancel plx!",
+                    confirmButtonColor: 'teal',
+                    confirmButtonText: 'Yes, save them!',
+                    cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
                     closeOnCancel: false
                 }, function (isConfirm) {
@@ -471,20 +472,20 @@
                             var value = data[key];
                             var vid = value['vid'];
 
-                            var selector = "[data-index=" + key + "]";
+                            var selector = '[data-index=' + key + ']';
                             var element = $(selector);
-                            value['pending'] = element.find(".pending").children().children().is(':checked');
-                            value['approved'] = element.find(".approved").children().children().is(':checked');
-                            value['declined'] = element.find(".declined").children().children().is(':checked');
-                            value['completed'] = element.find(".completed").children().children().is(':checked');
+                            value['pending'] = element.find('.pending').children().children().is(':checked');
+                            value['approved'] = element.find('.approved').children().children().is(':checked');
+                            value['declined'] = element.find('.declined').children().children().is(':checked');
+                            value['completed'] = element.find('.completed').children().children().is(':checked');
                             value['amount'] = accounting.parse(element.find('.subtotal').html());
 
                             $.ajax({
-                                url: "/api/v1.0/variations/" + vid,
-                                type: "PUT",
+                                url: '/api/v1.0/variations/' + vid,
+                                type: 'PUT',
                                 data: JSON.stringify(value),
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
                                 success: function (data) {
                                 },
                                 failure: function (err) {
@@ -500,14 +501,14 @@
                             var amount = parseFloat(amountObj.html());
 
                             $.ajax({
-                                url: "/api/v1.0/items/" + id,
-                                type: "PUT",
+                                url: '/api/v1.0/items/' + id,
+                                type: 'PUT',
                                 data: JSON.stringify({
                                     "amount": amount,
                                     "description": description
                                 }),
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
                                 success: function (data) {
                                 },
                                 failure: function (err) {
@@ -515,14 +516,14 @@
                             });
                         });
                         swal({
-                            title: "Nice!",
-                            text: "You saved all changes.",
-                            type: "success"
+                            title: 'Nice!',
+                            text: 'You saved all changes.',
+                            type: 'success'
                         }, function () {
                             location.reload();
                         });
                     } else {
-                        swal("Cancelled", "Your saves are unsaved", "error");
+                        swal('Cancelled', 'Your saves are unsaved', 'error');
                     }
                 });
             });
@@ -538,7 +539,12 @@
 
 {% block content %}
     <div class="container-fluid">
-        <h2>Variations for {{ current_project.name }} <small>(OH/Profit: {{ current_project.margin * 100 }}%{% if current_project.admin_fee is not none%}, Admin fee: {{ current_project.admin_fee }}{% endif %}, <a href="javascript:void(0)" data-toggle="modal" data-target="#edit-dialog">edit</a>)</small></h2>
+        <h2>Variations for {{ current_project.name }}
+            <small>(ref no: {{ current_project.reference_number }}; OH/Profit: {{ current_project.margin * 100 }}%
+                {% if current_project.admin_fee is not none %}, Admin fee: {{ current_project.admin_fee }}{% endif %},
+                <a href="javascript:void(0)" data-toggle="modal" data-target="#edit-dialog">edit</a>)
+            </small>
+        </h2>
 
         <div class="btn-toolbar" role="toolbar" aria-label="...">
             <a class="btn btn-info btn-raised" href="/export/{{ current_project.pid }}">
@@ -572,44 +578,50 @@
                 </div>
             </div>
         </div>
+    </div>
 
+    <div id="edit-dialog" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h2 class="modal-title">Edit Project</h2>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="edit-project-meta-form">
+                        <div class="form-group">
+                            <label for="new_name" class="col-sm-4 control-label">Project Name</label>
 
-        <div id="edit-dialog" class="modal fade" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h2 class="modal-title">Edit Project</h2>
-                    </div>
-                    <div class="modal-body">
-                        <form class="form-horizontal" id="edit-project-meta-form">
-                            <div class="form-group">
-                                <label for="inputSubcontractor" class="col-sm-4 control-label">Project Name</label>
-
-                                <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="new_name" placeholder="Name" required value="{{ current_project.name }}">
-                                </div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="new_name" placeholder="Name" required value="{{ current_project.name }}">
                             </div>
-                            <div class="form-group">
-                                <label for="inputInvoiceNo" class="col-sm-4 control-label">OH/Profit</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="new_ref_number" class="col-sm-4 control-label">Reference Number</label>
 
-                                <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="new_margin" placeholder="Optional" required value="{{ current_project.margin }}" data-parsley-type="number">
-                                </div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="new_ref_number" placeholder="Reference Number" required value="{{ current_project.reference_number }}">
                             </div>
-                            <div class="form-group">
-                                <label for="inputAmount" class="col-sm-4 control-label">Fixed Administration fee</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="new_margin" class="col-sm-4 control-label">OH/Profit</label>
 
-                                <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="new_admin_fee" placeholder="(optional)" {% if current_project.admin_fee is not none %}value="{{ current_project.admin_fee }}"{% endif %}>
-                                </div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="new_margin" placeholder="Optional" required value="{{ current_project.margin }}" data-parsley-type="number">
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" data-dismiss="modal">Dismiss</button>
-                        <button id="btn-save-meta" class="btn btn-info">Save</button>
-                    </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="new_admin_fee" class="col-sm-4 control-label">Fixed Administration fee</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="new_admin_fee" placeholder="(optional)" {% if current_project.admin_fee is not none %}value="{{ current_project.admin_fee }}"{% endif %}>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-dismiss="modal">Dismiss</button>
+                    <button id="btn-save-meta" class="btn btn-info">Save</button>
                 </div>
             </div>
         </div>

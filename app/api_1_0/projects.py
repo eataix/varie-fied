@@ -35,6 +35,7 @@ def new_project():
 def edit_project(project_id):
     project = Project.query.get_or_404(project_id)
     project.name = request.json.get('name', project.name)
+    project.reference_number = request.json.get('reference_number', project.reference_number)
     project.active = bool(request.json.get('active', project.active))
     project.admin_fee = request.json.get('admin_fee', project.admin_fee)
     project.margin = request.json.get('margin', project.margin)
