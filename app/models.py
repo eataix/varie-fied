@@ -53,15 +53,18 @@ class Project(db.Model):
             worksheet.page_margins.right = cm_to_inch(1.1)
 
         from openpyxl import Workbook
-        from openpyxl.styles import Alignment, Border, Font, Side
+        from openpyxl.styles import Alignment, Border, Color, Font, Side, Style, PatternFill
         wb = Workbook()
         wb.title = 'Appendix A'
         ws = wb.active
         prepare(ws)
 
+        color_style = Style(fill=PatternFill(patternType='solid', fgColor=Color('D0E0AE')))
+
         ws.merge_cells('A1:D1')
         ws['A1'].style.alignment.wrap_text = True
         ws['A1'].value = '{}\nJOB #:'.format(self.name)
+        ws['A1'].style = color_style
         ws['A1'].font = Font(name='Lao UI', size=11, bold=True)
 
         ws.merge_cells('A3:B3')
@@ -78,6 +81,7 @@ class Project(db.Model):
         for cell in ['A5', 'B5', 'C5', 'D5', 'E5']:
             ws[cell].font = Font(name='Lao UI', size=10, bold=True)
             ws[cell].alignment = Alignment(horizontal='center')
+            ws[cell].style = color_style
             ws[cell].border = Border(
                 top=Side(border_style='medium', color='FF000000'),
                 bottom=Side(border_style='medium', color='FF000000'),
@@ -90,9 +94,10 @@ class Project(db.Model):
         for variation in self.variations:
             ws['A' + str(row)].value = row - 5
             ws['A' + str(row)].font = Font(name='Lao UI', size=10, bold=True)
-            ws['A' + str(row)].alignment = Alignment(horizontal='center')
+            ws['A' + str(row)].alignment = Alignment(horizontal='center', vertical='center')
 
-            ws['B' + str(row)].value = row - 5
+            ws['B' + str(row)].value = variation.description
+            ws['B' + str(row)].alignment = Alignment(vertical='top')
 
             column = None
             if variation.pending:
@@ -116,11 +121,10 @@ class Project(db.Model):
                 cell = ws[column + str(row)]
                 if column != 'A':
                     cell.font = Font(name='Lao UI', size=9)
-                    cell.alignment = Alignment(vertical='center', horizontal='left')
-                cell.border = Border(
-                    left=Side(border_style='thin', color='FF000000'),
-                    right=Side(border_style='thin', color='FF000000')
-                )
+                    if column != 'B':
+                        cell.alignment = Alignment(vertical='center', horizontal='left')
+                cell.border = Border(left=Side(border_style='thin', color='FF000000'),
+                                     right=Side(border_style='thin', color='FF000000'))
 
             row += 1
 
@@ -150,12 +154,23 @@ class Project(db.Model):
 
         for column in ['A', 'B', 'C', 'D', 'E']:
             cell = ws[column + str(row)]
+            cell.style = color_style
             cell.border = Border(
                 left=Side(border_style='medium', color='FF000000'),
                 right=Side(border_style='medium', color='FF000000'),
                 top=Side(border_style='medium', color='FF000000'),
                 bottom=Side(border_style='medium', color='FF000000')
             )
+
+        ws.row_dimensions[1].height = 30
+        for row in range(len(self.variations)):
+            ws.row_dimensions[6 + row].height = 30
+        ws.column_dimensions['A'].width = 5
+        ws.column_dimensions['B'].width = 40
+        ws.column_dimensions['C'].width = 13
+        ws.column_dimensions['D'].width = 13
+        ws.column_dimensions['E'].width = 13
+        wb.worksheets[0].title = 'Appendix A'
 
         for index, variation in enumerate(self.variations):
             new_ws = wb.create_sheet()
@@ -164,23 +179,31 @@ class Project(db.Model):
 
             new_ws.merge_cells('A1:H1')
             new_ws['A1'].value = 'CONTRACT VARIATION'
+            new_ws['A1'].style = color_style
             new_ws['A1'].font = Font(name='Lao UI', size=16, bold=True)
             new_ws['A1'].alignment = Alignment(vertical='center', horizontal='center')
 
             new_ws.merge_cells('B3:H3')
             new_ws['B3'].value = 'PROJECT: {}'.format(self.name)
+            new_ws['B3'].style = color_style
             new_ws['B3'].font = Font(name='Lao UI', size=12, bold=True)
+            for column in 'BCDEFGH':
+                new_ws['{}3'.format(column)].border = Border(top=Side(border_style='thin', color='FF000000'),
+                                                             bottom=Side(border_style='thin', color='FF000000'))
 
             new_ws['B5'].value = 'VARIATION NO:'
+            new_ws['B5'].style = color_style
+            new_ws['C5'].style = color_style
             new_ws['B5'].font = Font(name='Lao UI', size=12, bold=True)
             new_ws.merge_cells('D5:E5')
             new_ws['D5'].value = index + 1
+            new_ws['D5'].style = color_style
             new_ws['D5'].font = Font(name='Lao UI', size=14, bold=True)
             new_ws.merge_cells('G5:H5')
-            new_ws['D5'].value = 'TPC REF: {}'.format("")
-            new_ws['D5'].font = Font(name='Lao UI', size=14, bold=True)
-            new_ws['D5'].alignment = Alignment(vertical='center', horizontal='left')
-            for column in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']:
+            new_ws['G5'].value = 'TPC REF: {}'.format("")
+            new_ws['G5'].font = Font(name='Lao UI', size=14, bold=True)
+            new_ws['G5'].alignment = Alignment(vertical='center', horizontal='left')
+            for column in 'ABCDEFGH':
                 cell = new_ws[column + str(6)]
                 cell.border = Border(bottom=Side(border_style='medium', color='FF000000'))
 
@@ -189,11 +212,15 @@ class Project(db.Model):
                 new_ws.merge_cells('B{}:G{}'.format(row, row))
                 new_ws['B{}'.format(row)].value = item.description
                 new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11, bold=True)
+                new_ws['B{}'.format(row)].alignment = Alignment(vertical='center')
 
                 new_ws['H{}'.format(row)].value = item.amount
                 new_ws['H{}'.format(row)].font = Font(name='Lao UI', size=11, bold=True)
+                new_ws['H{}'.format(row)].alignment = Alignment(vertical='center')
+                new_ws['H{}'.format(row)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
-                ws['H{}'.format(row)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+                new_ws.row_dimensions[row].height = 40
+
                 row += 1
 
             row = max(row, 13)
@@ -232,6 +259,8 @@ class Project(db.Model):
             row += 1
 
             new_ws.merge_cells('B{}:C{}'.format(row, row))
+            for column in 'BCDEFGH':
+                new_ws['{}{}'.format(column, row)].style = color_style
             new_ws['B' + str(row)] = 'TOTAL'
             new_ws['H' + str(row)].value = '=H{} + H{}'.format(row - 1, row - 2)
             new_ws['H' + str(row)].font = Font(bold=True)
@@ -253,6 +282,9 @@ class Project(db.Model):
             new_ws['B{}'.format(row)].value = 'Date:'
             new_ws['C{}'.format(row)].value = '=TODAY()'
             new_ws['G{}'.format(row)].value = 'Date:'
+
+            new_ws.row_dimensions[1].height = 60
+            new_ws.row_dimensions[3].height = 40
 
         fn = self.name + '.xlsx'
         wb.save('generated/' + fn)
