@@ -23,12 +23,10 @@
     <style>
         #complete-dialog .modal-dialog {
             width: 80%;
-{#            margin: auto;#}
         }
 
         #new-project-dialog .modal-dialog {
             width: 55%;
-{#            margin: auto;#}
         }
     </style>
 {% endblock styles %}
@@ -54,7 +52,6 @@
             $.ajax({
                 url: '/api/v1.0/projects/' + project_id,
                 type: 'GET',
-{#                data: JSON.stringify({}),#}
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 success: function (data) {

@@ -277,7 +277,6 @@
                         $.ajax({
                             url: '{{ url_for('api.delete_project', project_id=current_project.pid) }}',
                             type: 'DELETE',
-{#                            data: JSON.stringify({}),#}
                             contentType: 'application/json; charset=utf-8',
                             dataType: 'json',
                             success: function (data) {
@@ -428,7 +427,6 @@
                             $.ajax({
                                 url: '/api/v1.0/variations/' + selected[i]['vid'],
                                 type: 'DELETE',
-{#                                data: JSON.stringify({}),#}
                                 contentType: 'application/json; charset=utf-8',
                                 dataType: 'json',
                                 success: function (data) {
