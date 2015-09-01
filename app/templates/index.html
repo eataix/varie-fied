@@ -1,12 +1,20 @@
 {% extends "base.html" %}
 
+{% block style %}
+    <style>
+        .ball-grid-pulse > div {
+            background: orange;
+        }
+    </style>
+{% endblock %}
+
 {% block page_content %}
     <h1>Active projects</h1>
     <div>
         <ul>
             {% for project in projects %}
                 {%- if project.active -%}
-                    <li><a href="project/{{ project.pid }}">{{ project.name }}</a></li>
+                    <li><a href="project/{{ project.pid }}" style="font-size:1.3em">{{ project.name }}</a></li>
                 {%- endif -%}
             {% endfor %}
         </ul>
@@ -16,9 +24,10 @@
         <ul>
             {% for project in projects -%}
                 {%- if not project.active %}
-                    <li><a href="project/{{ project.pid }}">{{ project.name }}</a></li>
+                    <li><a href="project/{{ project.pid }}" style="font-size:1.2em">{{ project.name }}</a></li>
                 {% endif -%}
             {% endfor %}
         </ul>
     </div>
 {% endblock %}
+
