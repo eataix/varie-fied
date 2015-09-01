@@ -78,7 +78,9 @@ class Project(db.Model):
         ws.merge_cells('A3:B3')
         ws['A3'].value = "Appendix 'A' - Contract variations"
         ws['A3'].font = Font(name='Lao UI', size=10, bold=True)
-        ws['E3'].value = '=TODAY()'
+        # ws['E3'].value = '=TODAY()'
+        ws['E3'].value = datetime.today()
+        ws['E3'].number_format = 'mm-dd-yy'
         ws['E3'].font = Font(name='Lao UI', size=9)
 
         ws['A5'].value = 'NO.'
@@ -170,6 +172,9 @@ class Project(db.Model):
         ws.column_dimensions['C'].width = 13
         ws.column_dimensions['D'].width = 13
         ws.column_dimensions['E'].width = 13
+
+        ws.cell('A1').alignment = Alignment(wrapText=True)
+        ws.sheet_view.view = 'pageLayout'
 
         for index, variation in enumerate(self.variations):
             new_ws = wb.create_sheet()
@@ -287,7 +292,7 @@ class Project(db.Model):
             new_ws['H' + str(row)].value = '=H{} + H{}'.format(row - 1, row - 2)
             new_ws['H' + str(row)].font = Font(name='Lao UI', size=11, bold=True)
 
-            for idx in range(7, row):
+            for idx in range(7, row + 1):
                 new_ws['H' + str(idx)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
             row += 4
@@ -306,7 +311,9 @@ class Project(db.Model):
 
             row += 3
             new_ws['B{}'.format(row)].value = 'Date:'
-            new_ws['C{}'.format(row)].value = '=TODAY()'
+            # new_ws['C{}'.format(row)].value = '=TODAY()'
+            new_ws['C{}'.format(row)].value = datetime.today()
+            new_ws['C{}'.format(row)].number_format = 'mm-dd-yy'
             new_ws['G{}'.format(row)].value = 'Date:'
             new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11)
             new_ws['C{}'.format(row)].font = Font(name='Lao UI', size=11)
@@ -314,6 +321,11 @@ class Project(db.Model):
 
             new_ws.row_dimensions[1].height = 60
             new_ws.row_dimensions[3].height = 40
+            new_ws.column_dimensions['A'].width = 3
+            new_ws.column_dimensions['D'].width = 6
+            new_ws.column_dimensions['F'].width = 4
+            new_ws.column_dimensions['H'].width = 12
+            new_ws.sheet_view.view = 'pageLayout'
 
         fn = self.name + '.xlsx'
         wb.save('generated/' + fn)

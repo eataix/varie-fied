@@ -271,9 +271,14 @@
                     confirmButtonText: 'Yes, delete it!',
                     cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
-                    closeOnCancel: false
+                    closeOnCancel: false,
+                    customClass: 'deleteConfirmation'
                 }, function (isConfirm) {
                     if (isConfirm) {
+                        var $button = $('.deleteConfirmation').find('.confirm');
+                        var html = $button.html();
+                        $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+
                         $.ajax({
                             url: '{{ url_for('api.delete_project', project_id=current_project.pid) }}',
                             type: 'DELETE',
@@ -308,9 +313,14 @@
                     confirmButtonText: 'Yes, " + action + " it!',
                     cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
-                    closeOnCancel: false
+                    closeOnCancel: false,
+                    customClass: 'archiveConfirmation'
                 }, function (isConfirm) {
                     if (isConfirm) {
+                        var $button = $('.archiveConfirmation').find('.confirm');
+                        var html = $button.html();
+                        $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+
                         $.ajax({
                             url: '{{ url_for('api.edit_project', project_id=current_project.pid) }}',
                             type: 'PUT',
@@ -351,9 +361,14 @@
                         confirmButtonText: 'Yes, save them!',
                         cancelButtonText: 'No, cancel plx!',
                         closeOnConfirm: false,
-                        closeOnCancel: false
+                        closeOnCancel: false,
+                        customClass: 'saveMetaConfirmation'
                     }, function (isConfirmed) {
                         if (isConfirmed) {
+                            var $button = $('.saveMetaConfirmation').find('.confirm');
+                            var html = $button.html();
+                            $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+
                             var new_name = $('#new_name').val();
                             var new_margin = $('#new_margin').val();
                             var new_reference_number = $('#new_ref_number').val();
@@ -418,9 +433,13 @@
                     confirmButtonText: 'Yes, save them!',
                     cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
-                    closeOnCancel: false
+                    closeOnCancel: false,
+                    customClass: 'deleteRowsConfirmation'
                 }, function (isConfirmed) {
                     if (isConfirmed) {
+                        var $button = $('.deleteRowsConfirmation').find('.confirm');
+                        var html = $button.html();
+                        $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
                         var success = true;
                         var selected = $table.bootstrapTable('getSelections');
                         for (var i = 0; i < selected.length; ++i) {
@@ -460,9 +479,13 @@
                     confirmButtonText: 'Yes, save them!',
                     cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
-                    closeOnCancel: false
+                    closeOnCancel: false,
+                    customClass: 'saveVariationsConfirmation'
                 }, function (isConfirm) {
                     if (isConfirm) {
+                        var $button = $('.saveVariationsConfirmation').find('.confirm');
+                        var html = $button.html();
+                        $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
                         var data = $table.bootstrapTable('getData');
                         for (var key = 0; key < data.length; ++key) {
                             var value = data[key];
