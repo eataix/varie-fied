@@ -136,34 +136,35 @@
                         closeOnCancel: false,
                         customClass: 'newProjectConfirmation'
                     }, function (isConfirm) {
-                        if (isConfirm) {
-                            var $button = $('.newProjectConfirmation').find('.confirm');
-                            var html = $button.html();
-                            $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
-
-                            $.ajax({
-                                url: '{{ url_for('api.new_project') }}',
-                                type: 'POST',
-                                data: JSON.stringify({
-                                    name: project_name,
-                                    margin: margin,
-                                    reference_number: reference_number,
-                                    admin_fee: admin_fee
-                                }),
-                                contentType: 'application/json; charset=utf-8',
-                                dataType: 'json'
-                            }).done(function () {
-                                swal({
-                                    title: 'Nice!',
-                                    text: 'You created a new project: ' + data['name'],
-                                    type: 'success'
-                                }, function () {
-                                    location.reload()
-                                });
-                            });
-                        } else {
+                        if (!isConfirm) {
                             swal('Cancelled', 'The project file is safe :)', 'error');
+                            return;
                         }
+
+                        var $button = $('.newProjectConfirmation').find('.confirm');
+                        var html = $button.html();
+                        $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+
+                        $.ajax({
+                            url: '{{ url_for('api.new_project') }}',
+                            type: 'POST',
+                            data: JSON.stringify({
+                                name: project_name,
+                                margin: margin,
+                                reference_number: reference_number,
+                                admin_fee: admin_fee
+                            }),
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json'
+                        }).done(function (data) {
+                            swal({
+                                title: 'Nice!',
+                                text: 'You created a new project: ' + data['name'],
+                                type: 'success'
+                            }, function () {
+                                location.reload()
+                            });
+                        });
                     });
                 }
             });
@@ -228,12 +229,7 @@
                                             "amount": amount
                                         }),
                                         contentType: 'application/json; charset=utf-8',
-                                        dataType: 'json',
-                                        success: function (data) {
-                                        },
-                                        failure: function (err) {
-                                            successful = false;
-                                        }
+                                        dataType: 'json'
                                     });
                                 }
                             });
