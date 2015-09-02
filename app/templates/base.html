@@ -8,8 +8,6 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 {% endblock %}
 
-{% block title %} Varie-fied {% endblock %}
-
 {% block styles %}
     {{ super() }}
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -38,26 +36,22 @@
     <script>
         function onSelectChanged(e) {
             var project_id = $('#select_project_id')[0].selectize.items[0];
-            console.log('/api/v1.0/projects/' + project_id);
             $.ajax({
                 url: '/api/v1.0/projects/' + project_id,
                 type: 'GET',
                 contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                success: function (data) {
-                    $('#margin').val(data['margin'] * 100 + '%');
-                    var el = $('#admin-fee');
-                    if (data['admin_fee'] === null) {
-                        el.parents('.form-group').hide();
-                        el.val('');
-                    } else {
-                        el.parents('.form-group').show();
-                        el.val(accounting.formatMoney(data['admin_fee']));
-                    }
-                    update();
-                },
-                failure: function (err) {
+                dataType: 'json'
+            }).done(function (data) {
+                $('#margin').val(data['margin'] * 100 + '%');
+                var el = $('#admin-fee');
+                if (data['admin_fee'] === null) {
+                    el.parents('.form-group').hide();
+                    el.val('');
+                } else {
+                    el.parents('.form-group').show();
+                    el.val(accounting.formatMoney(data['admin_fee']));
                 }
+                update();
             });
         }
 
@@ -157,18 +151,15 @@
                                     admin_fee: admin_fee
                                 }),
                                 contentType: 'application/json; charset=utf-8',
-                                dataType: 'json',
-                                success: function (data) {
-                                    swal({
-                                        title: 'Nice!',
-                                        text: 'You created a new project: ' + data['name'],
-                                        type: 'success'
-                                    }, function () {
-                                        location.reload()
-                                    });
-                                },
-                                failure: function (err) {
-                                }
+                                dataType: 'json'
+                            }).done(function () {
+                                swal({
+                                    title: 'Nice!',
+                                    text: 'You created a new project: ' + data['name'],
+                                    type: 'success'
+                                }, function () {
+                                    location.reload()
+                                });
                             });
                         } else {
                             swal('Cancelled', 'The project file is safe :)', 'error');
@@ -200,73 +191,67 @@
                         closeOnCancel: false,
                         customClass: 'newVariationConfirmation'
                     }, function (isConfirm) {
-                        if (isConfirm) {
-                            var $button = $('.newVariationConfirmation').find('.confirm');
-                            var html = $button.html();
-                            $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+                        if (!isConfirm) {
+                            swal('Cancelled', 'Your imaginary file is safe :)', 'error');
+                            return;
+                        }
+                        var $button = $('.newVariationConfirmation').find('.confirm');
+                        var html = $button.html();
+                        $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
-                            $.ajax({
-                                url: '{{ url_for('api.new_variation') }}',
-                                type: 'POST',
-                                data: JSON.stringify({
-                                    project_id: project_id,
-                                    date: timeUTC,
-                                    subcontractor: subcontractor,
-                                    invoice_no: invoice_no,
-                                    amount: input_amount,
-                                    description: input_description
-                                }),
-                                contentType: 'application/json; charset=utf-8',
-                                dataType: 'json',
-                                success: function (data) {
-                                    var vid = data['vid'];
-                                    var successful = true;
-                                    $('.variationItem').each(function (i, obj) {
-                                        var desc = $(obj.children[0].children[0]).val();
-                                        var amount = $(obj.children[1].children[0]).val();
-                                        if (desc !== '' && amount !== '') {
-                                            $.ajax({
-                                                url: '{{ url_for('api.new_item') }}',
-                                                type: 'POST',
-                                                data: JSON.stringify({
-                                                    "variation_id": vid,
-                                                    "description": desc,
-                                                    "amount": amount
-                                                }),
-                                                contentType: 'application/json; charset=utf-8',
-                                                dataType: 'json',
-                                                success: function (data) {
-                                                },
-                                                failure: function (err) {
-                                                    successful = false;
-                                                }
-                                            });
+                        $.ajax({
+                            url: '{{ url_for('api.new_variation') }}',
+                            type: 'POST',
+                            data: JSON.stringify({
+                                project_id: project_id,
+                                date: timeUTC,
+                                subcontractor: subcontractor,
+                                invoice_no: invoice_no,
+                                amount: input_amount,
+                                description: input_description
+                            }),
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json'
+                        }).done(function (data) {
+                            var vid = data['vid'];
+                            var successful = true;
+                            $('.variationItem').each(function (i, obj) {
+                                var desc = $(obj.children[0].children[0]).val();
+                                var amount = $(obj.children[1].children[0]).val();
+                                if (desc !== '' && amount !== '') {
+                                    $.ajax({
+                                        url: '{{ url_for('api.new_item') }}',
+                                        type: 'POST',
+                                        data: JSON.stringify({
+                                            "variation_id": vid,
+                                            "description": desc,
+                                            "amount": amount
+                                        }),
+                                        contentType: 'application/json; charset=utf-8',
+                                        dataType: 'json',
+                                        success: function (data) {
+                                        },
+                                        failure: function (err) {
+                                            successful = false;
                                         }
                                     });
-                                    if (successful) {
-                                        swal({
-                                            title: 'Nice!',
-                                            text: 'You created a new variation',
-                                            type: 'success'
-                                        }, function () {
-                                            location.reload()
-                                        });
-                                    } else {
-                                    }
-                                },
-                                failure: function (err) {
                                 }
                             });
-                        } else {
-                            swal('Cancelled', 'Your imaginary file is safe :)', 'error');
-                        }
+                            if (successful) {
+                                swal({
+                                    title: 'Nice!',
+                                    text: 'You created a new variation',
+                                    type: 'success'
+                                }, function () {
+                                    location.reload()
+                                });
+                            }
+                        });
                     });
                 }
             });
 
-
             $('.input-amount').on('change', update);
-
         });
     </script>
 {% endblock %}
@@ -470,7 +455,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="extra_reference_number" class="col-sm-3 control-label">Reference
-                                                                                                   Number*</label>
+                                    Number*</label>
 
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="extra_reference_number" required>
