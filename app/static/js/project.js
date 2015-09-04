@@ -298,7 +298,7 @@
                 }).done(function () {
                     swal({
                         title: 'Nice!',
-                        text: 'You delete: {{ current_project.name }}',
+                        text: 'You delete: ' + projectName,
                         type: 'success'
                     }, function () {
                         window.location.href = "/";
@@ -347,7 +347,7 @@
                 }).done(function () {
                     swal({
                         title: 'Nice!',
-                        text: 'You ' + action + ': {{ current_project.name }}',
+                        text: 'You ' + action + ': ' + projectName,
                         type: 'success'
                     }, function () {
                         location.reload()
