@@ -274,16 +274,16 @@
                     confirmButtonText: 'Yes, delete it!',
                     cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
-                    closeOnCancel: false,
-                    customClass: 'deleteConfirmation'
+                    closeOnCancel: false
                 }, function (isConfirm) {
                     if (!isConfirm) {
                         swal('Cancelled', 'Your project is safe :)', 'error');
                         return;
                     }
-                    var $button = $('.deleteConfirmation').find('.confirm');
+                    var $button = $(this);
                     var html = $button.html();
                     $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+                    $button.off('click');
 
                     $.ajax({
                         url: '{{ url_for('api.delete_project', project_id=current_project.pid) }}',
@@ -313,16 +313,16 @@
                     confirmButtonText: 'Yes, ' + action + ' it!',
                     cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
-                    closeOnCancel: false,
-                    customClass: 'archiveConfirmation'
+                    closeOnCancel: false
                 }, function (isConfirm) {
                     if (!isConfirm) {
                         swal('Cancelled', 'The project file is safe :)', 'error');
                         return;
                     }
-                    var $button = $('.archiveConfirmation').find('.confirm');
+                    var $button = $(this);
                     var html = $button.html();
                     $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+                    $button.off('click');
 
                     $.ajax({
                         url: '{{ url_for('api.edit_project', project_id=current_project.pid) }}',
@@ -357,16 +357,16 @@
                         confirmButtonText: 'Yes, save them!',
                         cancelButtonText: 'No, cancel plx!',
                         closeOnConfirm: false,
-                        closeOnCancel: false,
-                        customClass: 'saveMetaConfirmation'
+                        closeOnCancel: false
                     }, function (isConfirmed) {
                         if (!isConfirmed) {
                             swal('Cancelled', 'Your project is safe :)', 'error');
                             return;
                         }
-                        var $button = $('.saveMetaConfirmation').find('.confirm');
+                        var $button = $(this);
                         var html = $button.html();
                         $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+                        $button.off('click');
 
                         var new_name = $('#new_name').val();
                         var new_margin = $('#new_margin').val();
@@ -426,16 +426,17 @@
                     confirmButtonText: 'Yes, save them!',
                     cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
-                    closeOnCancel: false,
-                    customClass: 'deleteRowsConfirmation'
+                    closeOnCancel: false
                 }, function (isConfirmed) {
                     if (!isConfirmed) {
                         swal('Cancelled', 'Your project is safe :)', 'error');
                         return;
                     }
-                    var $button = $('.deleteRowsConfirmation').find('.confirm');
+                    var $button = $(this);
                     var html = $button.html();
                     $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+                    $button.off('click');
+
                     var success = true;
                     var selected = $table.bootstrapTable('getSelections');
                     for (var i = 0; i < selected.length; ++i) {
@@ -469,17 +470,18 @@
                     confirmButtonText: 'Yes, save them!',
                     cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
-                    closeOnCancel: false,
-                    customClass: 'saveVariationsConfirmation'
+                    closeOnCancel: false
                 }, function (isConfirm) {
                     if (!isConfirm) {
                         swal('Cancelled', 'Your saves are unsaved', 'error');
                         return;
                     }
 
-                    var $button = $('.saveVariationsConfirmation').find('.confirm');
+                    var $button = $(this);
                     var html = $button.html();
                     $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+                    $button.off('click');
+
                     var data = $table.bootstrapTable('getData');
                     for (var key = 0; key < data.length; ++key) {
                         var value = data[key];
