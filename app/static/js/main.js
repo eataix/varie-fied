@@ -94,7 +94,6 @@
                     admin_fee = null;
                 }
 
-                var that = this;
                 swal({
                     title: 'Are you sure to add the project?',
                     text: 'You can recover this project later!',
@@ -104,14 +103,15 @@
                     confirmButtonText: 'Yes, add it!',
                     cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
-                    closeOnCancel: false
+                    closeOnCancel: false,
+                    customClass: 'newProjectConfirmation'
                 }, function (isConfirm) {
                     if (!isConfirm) {
                         swal('Cancelled', 'The project file is safe :)', 'error');
                         return;
                     }
 
-                    var $button = $(that);
+                    var $button = $('.newProjectConfirmation').find('.confirm');
                     var html = $button.html();
                     $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
                     $button.off('click');
@@ -152,7 +152,6 @@
                 var input_amount = accounting.unformat($('#subtotal').val());
                 var input_description = $("#input_description").val();
 
-                var that = this;
                 swal({
                     title: 'Are you sure?',
                     text: 'Time: ' + time.format('Do MMMM YYYY h:mm:ss a') + '\nSubcontractor: ' + subcontractor + '\nAmount: ' + accounting.formatMoney(input_amount),
@@ -162,13 +161,14 @@
                     confirmButtonText: 'Yes, add it!',
                     cancelButtonText: 'No, cancel plx!',
                     closeOnConfirm: false,
-                    closeOnCancel: false
+                    closeOnCancel: false,
+                    customClass: 'newVariationConfirmation'
                 }, function (isConfirm) {
                     if (!isConfirm) {
                         swal('Cancelled', 'Your imaginary file is safe :)', 'error');
                         return;
                     }
-                    var $button = $(that);
+                    var $button = $('.newVariationConfirmation').find('.confirm');
                     var html = $button.html();
                     $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
                     $button.off('click');
