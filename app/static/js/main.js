@@ -72,7 +72,7 @@ function deleteRow(e) {
     update();
     var $variationItems = $('.variationItem');
     console.log($variationItems);
-    if ($variationItems.length === 2) {
+    if ($variationItems.length === 1) {
         console.log('fired');
         var $descriptionDiv = $('#descriptionDiv');
         $descriptionDiv.hide();
