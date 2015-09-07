@@ -6,7 +6,8 @@ arrow
 flask-script
 flask-migrate
 flask-httpauth
-gunicorn
 psycopg2
 ipython
 openpyxl
+gevent==1.1b4
+-e git+https://github.com/benoitc/gunicorn.git#egg=gunicorn
