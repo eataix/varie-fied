@@ -61,12 +61,21 @@ function addRow(s) {
         '</td>' +
         '</tr>');
     $('#items').append(newRow);
+    var $descriptionDiv = $('#descriptionDiv');
+    $descriptionDiv.show();
+    $descriptionDiv.val('');
 }
 
 function deleteRow(e) {
     var row = e.parentNode.parentNode;
     row.parentNode.removeChild(row);
     update();
+    var $variationItems = $('.variationItem');
+    if ($variationItems === 1) {
+        var $descriptionDiv = $('#descriptionDiv');
+        $descriptionDiv.show();
+        $descriptionDiv.val($variationItems.find('textarea').val());
+    }
 }
 
 $(function () {
@@ -149,7 +158,13 @@ $(document).ready(function () {
             var subcontractor = $('#input_subcontractor').val();
             var invoice_no = $('#input_invoice_no').val();
             var input_amount = accounting.unformat($('#subtotal').val());
-            var input_description = $("#input_description").val();
+            var input_description = '';
+            var $item = $('.variationItem');
+            if ($item === 1) {
+                input_description = $item.find('textarea').val();
+            } else {
+                input_description = $("#input_description").val();
+            }
 
             swal({
                 title: 'Are you sure?',
