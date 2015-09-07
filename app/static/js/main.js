@@ -71,7 +71,9 @@ function deleteRow(e) {
     row.parentNode.removeChild(row);
     update();
     var $variationItems = $('.variationItem');
-    if ($variationItems === 1) {
+    console.log($variationItems);
+    if ($variationItems.length === 2) {
+        console.log('fired');
         var $descriptionDiv = $('#descriptionDiv');
         $descriptionDiv.hide();
         $descriptionDiv.val($variationItems.find('textarea').val());
