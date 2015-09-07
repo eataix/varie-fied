@@ -73,7 +73,7 @@ function deleteRow(e) {
     var $variationItems = $('.variationItem');
     if ($variationItems === 1) {
         var $descriptionDiv = $('#descriptionDiv');
-        $descriptionDiv.show();
+        $descriptionDiv.hide();
         $descriptionDiv.val($variationItems.find('textarea').val());
     }
 }
