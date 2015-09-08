@@ -1,0 +1,11 @@
+machine:
+  python:
+    version: 3.4.2
+  services:
+    - postgresql
+test:
+  override:
+    - python manage.py test
+database:
+  override:
+    - psql -c 'create database "test-database";' -U ubuntu
