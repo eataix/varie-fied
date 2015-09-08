@@ -3,6 +3,8 @@ machine:
     version: 3.4.2
   services:
     - postgresql
+  environment:
+    FLASK_CONFIG: testing
 test:
   override:
     - python manage.py test
