@@ -64,6 +64,7 @@ function addRow(s) {
     var $descriptionDiv = $('#descriptionDiv');
     $descriptionDiv.show();
     $descriptionDiv.val('');
+    $descriptionDiv.attr('required', '')
 }
 
 function deleteRow(e) {
@@ -73,10 +74,10 @@ function deleteRow(e) {
     var $variationItems = $('.variationItem');
     console.log($variationItems);
     if ($variationItems.length === 1) {
-        console.log('fired');
         var $descriptionDiv = $('#descriptionDiv');
         $descriptionDiv.hide();
         $descriptionDiv.val($variationItems.find('textarea').val());
+        $descriptionDiv.find('textarea').removeAttr('required');
     }
 }
 
@@ -161,9 +162,9 @@ $(document).ready(function () {
             var invoice_no = $('#input_invoice_no').val();
             var input_amount = accounting.unformat($('#subtotal').val());
             var input_description = '';
-            var $item = $('.variationItem');
-            if ($item === 1) {
-                input_description = $item.find('textarea').val();
+            var $variationItems = $('.variationItem');
+            if ($variationItems.length === 1) {
+                input_description = $variationItems.find('textarea').val();
             } else {
                 input_description = $("#input_description").val();
             }

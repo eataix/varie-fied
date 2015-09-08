@@ -224,6 +224,13 @@ class Project(db.Model):
                 cell.border = Border(bottom=Side(border_style='medium', color='FF000000'))
 
             row = 7
+            if len(variation.items) > 1:
+                new_ws.merge_cells('B{}:G{}'.format(row, row))
+                new_ws['B{}'.format(row)].value = variation.description
+                new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11, bold=True)
+                new_ws['B{}'.format(row)].alignment = Alignment(vertical='center')
+                row += 1
+
             for item in variation.items:
                 new_ws.merge_cells('B{}:G{}'.format(row, row))
                 new_ws['B{}'.format(row)].value = item.description
