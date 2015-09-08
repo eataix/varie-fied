@@ -13,7 +13,9 @@ class Project(db.Model):
     margin = db.Column(db.Float, nullable=False)
     active = db.Column(db.Boolean, default=True)
     admin_fee = db.Column(db.Float, nullable=True)
+
     variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan")
+    progress_items = db.relation('ProgressItem', backref='project', cascade="all, delete-orphan")
 
     def __repr__(self):
         return u'<Project Name: {}, Active: {}, Margin: {}>'.format(self.name, self.active, self.margin)
@@ -429,3 +431,30 @@ class Item(db.Model):
         amount = json.get('amount')
         description = json.get('description')
         return Item(variation=variation, amount=amount, description=description)
+
+
+class ProgressItem(db.Model):
+    __tablename__ = 'progress_item'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    contract_value = db.Column(db.Float, nullable=False)
+    completed_value = db.Column(db.Float, default=0.0)
+
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'))
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'contract_value': self.contract_value,
+            'completed_value': self.completed_value
+        }
+
+    @staticmethod
+    def from_json(json):
+        name = json['name']
+        contract_value = json['contract_value']
+        completed_value = None
+        if 'completed_value' in json:
+            completed_value = json['completed_value']
+        return ProgressItem(name=name, contract_value=contract_value, completed_value=completed_value)

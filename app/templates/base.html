@@ -58,24 +58,15 @@
                     <a href="/"><i class="fa fa-home"></i>Home</a></li>
                 {% for project in projects -%}
                     {% if project.active %}
-                        <li {% if current_project is defined and current_project.pid == project.pid %}class="active"{% endif %}>
-                            <a href="/project/{{ project.pid }}">
-                                <i class="fa {% if current_project is defined and current_project.pid == project.pid %}fa-folder-open{% else %}fa-folder{% endif %}"></i> {{ project.name }}
-                            </a>
+                        <li class="dropdown">
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ project.name }} <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/project/{{ project.pid }}/progress">Progress</a></li>
+                                <li><a href="/project/{{ project.pid }}/variation">Variations</a></li>
+                            </ul>
                         </li>
                     {% endif %}
                 {% endfor %}
-                <li class="dropdown{% if current_project is defined and not current_project.active %} active{% endif %}">
-                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"> Archived Projects
-                        <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        {% for project in projects %}
-                            {% if not project.active %}
-                                <li><a href="/project/{{ project.pid }}">{{ project.name }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </li>
                 <li>
                     <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i class="fa fa-plus"></i>
                         New Project</a>

@@ -11,3 +11,5 @@ ipython
 openpyxl
 gevent==1.1b4
 -e git+https://github.com/benoitc/gunicorn.git#egg=gunicorn
+flask-testing
+requests
