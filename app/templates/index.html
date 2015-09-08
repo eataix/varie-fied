@@ -2,26 +2,52 @@
 
 {% block title %} Varie-fied {% endblock %}
 
-{% block page_content %}
-    <h1>Active projects</h1>
-    <div>
-        <ul>
-            {% for project in projects %}
-                {%- if project.active -%}
-                    <li><a href="project/{{ project.pid }}" style="font-size:1.3em">{{ project.name }}</a></li>
-                {%- endif -%}
-            {% endfor %}
-        </ul>
+{% block scripts %}
+    {{ super() }}
+    <script>
+        $(document).on('ready', function () {
+            setTimeout(function () {
+                $('body').addClass('loaded');
+            }, 1000);
+        })
+    </script>
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div id="loader-wrapper">
+        <div id="loader"></div>
+        <div class="loader-section section-left"></div>
+        <div class="loader-section section-right"></div>
     </div>
-    <h1>Previous projects</h1>
-    <div>
-        <ul>
-            {% for project in projects -%}
-                {%- if not project.active %}
-                    <li><a href="project/{{ project.pid }}" style="font-size:1.2em">{{ project.name }}</a></li>
-                {% endif -%}
-            {% endfor %}
-        </ul>
+
+    <div id="content" class="container">
+        <h1>Active projects</h1>
+
+        <div>
+            <ul>
+                {% for project in projects %}
+                    {%- if project.active -%}
+                        <li><a href="project/{{ project.pid }}" style="font-size:1.3em">{{ project.name }}</a></li>
+                    {%- endif -%}
+                {% endfor %}
+            </ul>
+        </div>
+        <h1>Previous projects</h1>
+
+        <div>
+            <ul>
+                {% for project in projects -%}
+                    {%- if not project.active %}
+                        <li><a href="project/{{ project.pid }}" style="font-size:1.2em">{{ project.name }}</a></li>
+                    {% endif -%}
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 {% endblock %}
 
