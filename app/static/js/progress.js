@@ -43,11 +43,12 @@ $.ajax({
     $('#table').bootstrapTable({
         columns: [{
             checkbox: true
-        }, {
-            field: 'virtual_id',
-            title: '#',
-            halign: 'center',
-            sortable: true
+            //}, {
+            //    field: 'virtual_id',
+            //    title: '#',
+            //    halign: 'center',
+            //    valign: 'center',
+            //    sortable: true
         }, {
             field: 'name',
             title: 'Name',
@@ -92,7 +93,6 @@ $(document).on('ready', function () {
         var instance = $('#new-progress-items-form').parsley();
         instance.validate();
         if (instance.isValid()) {
-
             $('.progressItem').each(function (i, o) {
                 var name = $(o).find('textarea').val();
                 var contract_value = accounting.parse($(o).find('input').val());

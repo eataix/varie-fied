@@ -18,20 +18,20 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
-    {#    <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>#}
+    <script src="{{ url_for('static', filename='js/progress.min.js') }}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
 {% endblock %}
 
 {% block styles %}
     {{ super() }}
-    {#    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-center-simple.css"/>#}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-center-simple.css"/>
 {% endblock %}
 
 {% block content %}
     <div id="content" class="container-fluid">
         <h2>Progress for {{ current_project.name }}
             <small>(Reference number: {{ current_project.reference_number }};
-                OH/Profit: {{ current_project.margin * 100 }}%
+                   OH/Profit: {{ current_project.margin * 100 }}%
                 {% if current_project.admin_fee is not none %}, Admin fee: {{ current_project.admin_fee }}{% endif %},
                 <a href="javascript:void(0)" data-toggle="modal" data-target="#edit-dialog">edit</a>)
             </small>
@@ -41,8 +41,8 @@
             <a class="btn btn-info btn-raised" href="/export/{{ current_project.pid }}">
                 <i class="fa fa-download"></i> Export Project
             </a>
-            <button class="btn btn-primary btn-raised" data-toggle="modal" data-target="#new-progress-item-dialog">
-                <i class="fa fa-plus"></i> New Item
+            <button class="btn btn-material-deep-purple btn-raised" data-toggle="modal" data-target="#new-progress-item-dialog">
+                <i class="fa fa-plus"></i> New Items
             </button>
             <button class="btn btn-primary btn-raised" data-toggle="modal" data-target="#complete-dialog">
                 <i class="fa fa-plus"></i> Add Variation
@@ -155,7 +155,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="new_admin_fee" class="col-sm-3 control-label">Fixed Administration
-                                    fee</label>
+                                                                                          fee</label>
 
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="new_admin_fee" placeholder="(optional)" {% if current_project.admin_fee is not none %}value="{{ current_project.admin_fee }}"{% endif %}>
