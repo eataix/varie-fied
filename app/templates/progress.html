@@ -1,79 +1,12 @@
-{% extends "base.html" %}
-
-{% block title %} Varie-fied - {{ current_project.name }} {% endblock %}
-
-{% block metas %}
-    {{ super() }}
-    <meta id="project-data"
-          data-project-id="{{ current_project.pid }}"
-          data-project-active="{{ current_project.active }}"
-          data-project-name="{{ current_project.name }}"
-          data-project-margin="{{ current_project.margin }}"
-          data-project-admin-fee="{{ current_project.admin_fee }}"
-          data-get-project-progress-items-url="{{ url_for('api.get_project_progress_items', project_id=current_project.pid) }}"
-          data-new-progress-item-url="{{ url_for('api.new_progress_item') }}"
-          data-delete-project-url="{{ url_for('api.delete_project', project_id=current_project.pid) }}"
-          data-edit-project-url="{{ url_for('api.edit_project', project_id=current_project.pid) }}">
-{% endblock %}
+{% extends "project_base.html" %}
 
 {% block scripts %}
     {{ super() }}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
     <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
 {% endblock %}
 
-{% block styles %}
-    {{ super() }}
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-center-simple.css"/>
-{% endblock %}
-
 {% block content %}
-    <div id="content" class="container-fluid">
-        <h2>Progress for {{ current_project.name }}
-            <small>(Reference number: {{ current_project.reference_number }};
-                   OH/Profit: {{ current_project.margin * 100 }}%
-                {% if current_project.admin_fee is not none %}, Admin fee: {{ current_project.admin_fee }}{% endif %},
-                <a href="javascript:void(0)" data-toggle="modal" data-target="#edit-dialog">edit</a>)
-            </small>
-        </h2>
-
-        <div class="btn-toolbar" role="toolbar" aria-label="...">
-            <a class="btn btn-info btn-raised" href="/export/{{ current_project.pid }}">
-                <i class="fa fa-download"></i> Export Project
-            </a>
-            <button class="btn btn-material-deep-purple btn-raised" data-toggle="modal" data-target="#new-progress-item-dialog">
-                <i class="fa fa-plus"></i> New Items
-            </button>
-            <button class="btn btn-primary btn-raised" data-toggle="modal" data-target="#complete-dialog">
-                <i class="fa fa-plus"></i> Add Variation
-            </button>
-            <button id="archive_project" type="button" class="btn btn-info btn-raised">
-                <i class="fa fa-check-square-o"></i>
-                {% if current_project.active %}
-                    Archive Project
-                {% else %}
-                    Unarchive Project
-                {% endif %}
-            </button>
-            <button id="delete_project" type="button" class="btn btn-danger btn-raised">
-                <i class="fa fa-trash"></i> Delete Project
-            </button>
-        </div>
-
-        <table id="table" class="table table-condensed"></table>
-
-        <div id="toolbar">
-            <div class="form-inline" role="form">
-                <div class="form-group">
-                    <button id="btn-save" type="button" class="btn btn-info btn-raised" disabled>Save</button>
-                </div>
-                <div class="form-group">
-                    <button id="btn-delete" type="button" class="btn btn-danger btn-raised" disabled>Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    {{ super() }}
     <div id="new-progress-item-dialog" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -116,57 +49,6 @@
                 <div class="modal-footer">
                     <button class="btn btn-primary btn-raised" data-dismiss="modal">Dismiss</button>
                     <button id="btn-add-new-progress-items" class="btn btn-info btn-raised">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="edit-dialog" class="modal fade" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span></button>
-                    <h2 class="modal-title">Edit Project</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <form class="form-horizontal" id="edit-project-meta-form">
-                            <div class="form-group">
-                                <label for="new_name" class="col-sm-3 control-label">Project Name</label>
-
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="new_name" placeholder="Name" required value="{{ current_project.name }}">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="new_ref_number" class="col-sm-3 control-label">Reference Number</label>
-
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="new_ref_number" placeholder="Reference Number" required value="{{ current_project.reference_number }}">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="new_margin" class="col-sm-3 control-label">OH/Profit</label>
-
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="new_margin" placeholder="Optional" required value="{{ current_project.margin }}" data-parsley-type="number">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="new_admin_fee" class="col-sm-3 control-label">Fixed Administration
-                                                                                          fee</label>
-
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="new_admin_fee" placeholder="(optional)" {% if current_project.admin_fee is not none %}value="{{ current_project.admin_fee }}"{% endif %}>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary btn-raised" data-dismiss="modal">Dismiss</button>
-                    <button id="btn-save-meta" class="btn btn-info btn-raised">Save</button>
                 </div>
             </div>
         </div>
