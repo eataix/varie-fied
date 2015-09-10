@@ -1,3 +1,6 @@
+var metaData = $('#project-data').data();
+var newProgressItemUrl = metaData.newProgressItemUrl;
+
 $.fn.editable.defaults.mode = 'inline';
 
 $('#delete_project').on('click', function(e) {
@@ -84,6 +87,55 @@ $('#archive_project').on('click', function() {
 });
 
 
+$('#btn-add-new-progress-items').on('click', function() {
+  var instance = $('#new-progress-items-form').parsley();
+  instance.validate();
+  if (instance.isValid()) {
+    swal({
+      title: 'Are you sure to delete selected rows?',
+      text: 'You cannot recover them later!',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: 'teal',
+      confirmButtonText: 'Yes, save them!',
+      cancelButtonText: 'No, cancel plx!',
+      closeOnConfirm: false,
+      closeOnCancel: false,
+      customClass: 'deleteRowsConfirmation'
+    }, function(isConfirmed) {
+      if (!isConfirmed) {
+        swal('Cancelled', 'Your project is safe :)', 'error');
+        return;
+      }
+
+      $('.progressItem').each(function(i, o) {
+        var name = $(o).find('textarea').val();
+        var contract_value = accounting.parse($(o).find('input').val());
+
+        $.ajax({
+          url: newProgressItemUrl,
+          type: 'POST',
+          data: JSON.stringify({
+            name: name,
+            contract_value: contract_value,
+            project_id: projectId
+          }),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        });
+      });
+
+      swal({
+        title: 'Nice!',
+        text: 'You saved all changes',
+        type: 'success'
+      }, function() {
+        location.reload();
+      });
+    });
+  }
+});
+
 var $table = $('#table');
 
 $table.on('editable-save.bs.table', function() {
@@ -104,3 +156,5 @@ $table.on('uncheck.bs.table	uncheck-some.bs.table', function() {
     $('#btn-delete').prop('disabled', true);
   }
 });
+
+
