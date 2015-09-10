@@ -1,6 +1,4 @@
-$(document).on('ready', function() {
-  setTimeout(function() {
-    $('body').addClass('loaded');
-  }, 1000);
-});
-
+setTimeout(function() {
+  'use strict';
+  document.body.classList.add('loaded');
+}, 1000);
