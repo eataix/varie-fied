@@ -64,8 +64,14 @@
                     <a href="/"><i class="fa fa-home"></i>Home</a></li>
                 {% for project in projects -%}
                     {% if project.active %}
-                        <li class="dropdown">
-                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ project.name }} <span class="caret"></span></a>
+                        <li class="dropdown{% if current_project is defined and current_project is not none and current_project.pid == project.pid %} active{% endif %}">
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                {% if current_project is defined and current_project is not none and current_project.pid == project.pid %}
+                                    <i class="fa fa-folder-open"></i>
+                                {% else %}
+                                    <i class="fa fa-folder"></i>
+                                {% endif %}
+                                {{ project.name }} <span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="/project/{{ project.pid }}/progress">Progress</a></li>
                                 <li><a href="/project/{{ project.pid }}/variation">Variations</a></li>
