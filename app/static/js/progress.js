@@ -1,13 +1,13 @@
 var metaData = $('#project-data').data();
-var deleteProjectUrl = metaData['deleteProjectUrl'];
-var editProjectUrl = metaData['editProjectUrl'];
-var getProjectProgressItemsUrl = metaData['getProjectProgressItemsUrl'];
-var newProgressItemUrl = metaData['newProgressItemUrl'];
-var projectActive = metaData['projectActive'];
-var projectAdminFee = metaData['projectAdminFee'];
-var projectId = metaData['projectId'];
-var projectMargin = metaData['projectMargin'];
-var projectName = metaData['projectName'];
+var deleteProjectUrl = metaData.deleteProjectUrl;
+var editProjectUrl = metaData.editProjectUrl;
+var getProjectProgressItemsUrl = metaData.getProjectProgressItemsUrl;
+var newProgressItemUrl = metaData.newProgressItemUrl;
+var projectActive = metaData.projectActive;
+var projectAdminFee = metaData.projectAdminFee;
+var projectId = metaData.projectId;
+var projectMargin = metaData.projectMargin;
+var projectName = metaData.projectName;
 
 function addProgressItemRow() {
     var newRow = $(
@@ -79,10 +79,10 @@ $.ajax({
             halign: 'center',
             sortable: true
         }],
-        data: data['progress_items'],
+        data: data.progress_items,
         rowStyle: 'rowStyle',
         toolbar: '#toolbar'
-    })
+    });
 });
 
 $.fn.editable.defaults.mode = 'inline';
@@ -152,7 +152,7 @@ $table.on('uncheck-all.bs.table', function (rows) {
 });
 $table.on('uncheck.bs.table	uncheck-some.bs.table', function (rows) {
     var selected = $table.bootstrapTable('getSelections');
-    if (selected == 0) {
+    if (selected === 0) {
         $('#btn-delete').prop('disabled', true);
     }
 });
@@ -180,7 +180,7 @@ $('#btn-delete').on('click', function (e) {
         var selected = $table.bootstrapTable('getSelections');
         for (var i = 0; i < selected.length; ++i) {
             $.ajax({
-                url: '/api/v1.0/progress_items/' + selected[i]['id'],
+                url: '/api/v1.0/progress_items/' + selected[i].id,
                 type: 'DELETE',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json'
@@ -194,7 +194,7 @@ $('#btn-delete').on('click', function (e) {
                 text: 'Delete variations',
                 type: 'success'
             }, function () {
-                location.reload()
+                location.reload();
             });
         }
     });
@@ -220,10 +220,10 @@ $('#btn-save').on('click', function (e) {
         var data = $table.bootstrapTable('getData');
         for (var key = 0; key < data.length; ++key) {
             var value = data[key];
-            var id = value['id'];
-            var name = value['name'];
-            var contract_value = value['contract_value'];
-            var completed_value = value['completed_value'];
+            var id = value.id;
+            var name = value.name;
+            var contract_value = value.contract_value;
+            var completed_value = value.completed_value;
 
             $.ajax({
                 url: '/api/v1.0/progress_items/' + id,

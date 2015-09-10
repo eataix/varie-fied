@@ -1,12 +1,12 @@
 var metaData = $('#project-data').data();
-var deleteProjectUrl = metaData['deleteProjectUrl'];
-var editProjectUrl = metaData['editProjectUrl'];
-var getProjectVariationsUrl = metaData['getProjectVariationsUrl'];
-var projectActive = metaData['projectActive'];
-var projectAdminFee = metaData['projectAdminFee'];
-var projectId = metaData['projectId'];
-var projectMargin = metaData['projectMargin'];
-var projectName = metaData['projectName'];
+var deleteProjectUrl = metaData.deleteProjectUrl;
+var editProjectUrl = metaData.editProjectUrl;
+var getProjectVariationsUrl = metaData.getProjectVariationsUrl;
+var projectActive = metaData.projectActive;
+var projectAdminFee = metaData.projectAdminFee;
+var projectId = metaData.projectId;
+var projectMargin = metaData.projectMargin;
+var projectName = metaData.projectName;
 
 function pendingClick(cb) {
     var $tr = $(cb).parents('tr');
@@ -77,11 +77,11 @@ function completeFormatter(value, row, index) {
 }
 
 function rowStyle(row, index) {
-    if (row['pending']) {
+    if (row.pending) {
         return {classes: 'info'};
-    } else if (row['approved']) {
+    } else if (row.approved) {
         return {classes: 'success'};
-    } else if (row['declined']) {
+    } else if (row.declined) {
         return {classes: 'danger'};
     } else {
         return {classes: 'active'};
@@ -98,12 +98,12 @@ function moneyFormatter(value, row, index) {
 
 function validate_required(v) {
     if (v === null || v === '') {
-        return "Cannot be empty!";
+        return 'Cannot be empty!';
     }
 }
 
 function detailFormatter(index, row) {
-    var url = '/api/v1.0/variations/' + row['vid'] + '/items/';
+    var url = '/api/v1.0/variations/' + row.vid + '/items/';
     var that = this;
     setTimeout(function () {
         $.ajax({
@@ -112,7 +112,7 @@ function detailFormatter(index, row) {
             contentType: 'application/json; charset=utf-8',
             dataType: 'json'
         }).done(function (data) {
-            var items = data['items'];
+            var items = data.items;
             var html =
                 '<table class="table table-hover">' +
                 '<thead>' +
@@ -127,7 +127,7 @@ function detailFormatter(index, row) {
 
             for (var i = 0; i < items.length; ++i) {
                 var item = items[i];
-                var id = item['id'];
+                var id = item.id;
                 var description = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
                 var amount = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
                 html += '<tr class="item-detail"><td>' + description + '</td><td style="text-align: right;width: 200px">' + amount + '</td></tr>';
@@ -138,15 +138,15 @@ function detailFormatter(index, row) {
             $('.' + descriptionClass).editable();
             $('.' + amountClass).editable();
             $('.' + descriptionClass).on('save', function (e, params) {
-                $("#btn-save").prop('disabled', false);
+                $('#btn-save').prop('disabled', false);
             });
             $('.' + amountClass).on('save', function (e, params) {
-                $("#btn-save").prop('disabled', false);
+                $('#btn-save').prop('disabled', false);
                 var total = 0.0;
                 $('.' + amountClass).each(function (i, o) {
-                    if (o !== e['target']) {
+                    if (o !== e.target) {
                         var val = $(o).html();
-                        if (val !== "" && isNumeric(val)) {
+                        if (val !== '' && isNumeric(val)) {
                             total += parseFloat(val);
                         }
                     } else {
@@ -254,7 +254,7 @@ $.ajax({
             sortable: true,
             'class': 'completed'
         }],
-        data: data['variations'],
+        data: data.variations,
         rowStyle: 'rowStyle',
         toolbar: '#toolbar',
         detailView: true,
@@ -301,10 +301,10 @@ $('#btn-save-meta').on('click', function (e) {
                 url: editProjectUrl,
                 type: 'PUT',
                 data: JSON.stringify({
-                    "name": new_name,
-                    "margin": new_margin,
-                    "admin_fee": new_admin_fee,
-                    "reference_number": new_reference_number
+                    name: new_name,
+                    margin: new_margin,
+                    admin_fee: new_admin_fee,
+                    reference_number: new_reference_number
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json'
@@ -314,7 +314,7 @@ $('#btn-save-meta').on('click', function (e) {
                     text: 'Save changes',
                     type: 'success'
                 }, function () {
-                    location.reload()
+                    location.reload();
                 });
             });
         });
@@ -348,7 +348,7 @@ $('#btn-delete').on('click', function (e) {
         var selected = $table.bootstrapTable('getSelections');
         for (var i = 0; i < selected.length; ++i) {
             $.ajax({
-                url: '/api/v1.0/variations/' + selected[i]['vid'],
+                url: '/api/v1.0/variations/' + selected[i].vid,
                 type: 'DELETE',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json'
@@ -362,7 +362,7 @@ $('#btn-delete').on('click', function (e) {
                 text: 'Delete variations',
                 type: 'success'
             }, function () {
-                location.reload()
+                location.reload();
             });
         }
     });
@@ -393,14 +393,14 @@ $('#btn-save').on('click', function (e) {
         var data = $table.bootstrapTable('getData');
         for (var key = 0; key < data.length; ++key) {
             var value = data[key];
-            var vid = value['vid'];
+            var vid = value.vid;
             var selector = '[data-index=' + key + ']';
             var element = $(selector);
-            value['pending'] = element.find('.pending').children().children().is(':checked');
-            value['approved'] = element.find('.approved').children().children().is(':checked');
-            value['declined'] = element.find('.declined').children().children().is(':checked');
-            value['completed'] = element.find('.completed').children().children().is(':checked');
-            value['amount'] = accounting.parse(element.find('.subtotal').html());
+            value.pending = element.find('.pending').children().children().is(':checked');
+            value.approved = element.find('.approved').children().children().is(':checked');
+            value.declined = element.find('.declined').children().children().is(':checked');
+            value.completed = element.find('.completed').children().children().is(':checked');
+            value.amount = accounting.parse(element.find('.subtotal').html());
 
             $.ajax({
                 url: '/api/v1.0/variations/' + vid,
@@ -422,8 +422,8 @@ $('#btn-save').on('click', function (e) {
                 url: '/api/v1.0/items/' + id,
                 type: 'PUT',
                 data: JSON.stringify({
-                    "amount": amount,
-                    "description": description
+                    amount: amount,
+                    description: description
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json'

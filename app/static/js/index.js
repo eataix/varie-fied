@@ -3,3 +3,4 @@ $(document).on('ready', function () {
         $('body').addClass('loaded');
     }, 1000);
 });
+

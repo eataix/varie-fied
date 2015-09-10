@@ -33,7 +33,7 @@ $('#delete_project').on('click', function (e) {
                 text: 'You delete: ' + projectName,
                 type: 'success'
             }, function () {
-                window.location.href = "/";
+                window.location.href = '/';
             });
         });
     });
@@ -72,7 +72,7 @@ $('#archive_project').on('click', function (e) {
             url: editProjectUrl,
             type: 'PUT',
             data: JSON.stringify({
-                "active": active
+                active: active
             }),
             contentType: 'application/json; charset=utf-8',
             dataType: 'json'
@@ -82,7 +82,7 @@ $('#archive_project').on('click', function (e) {
                 text: 'You ' + action + ': ' + projectName,
                 type: 'success'
             }, function () {
-                location.reload()
+                location.reload();
             });
         });
     });
@@ -101,7 +101,7 @@ $table.on('uncheck-all.bs.table', function (rows) {
 });
 $table.on('uncheck.bs.table	uncheck-some.bs.table', function (rows) {
     var selected = $table.bootstrapTable('getSelections');
-    if (selected == 0) {
+    if (selected.length() === 0) {
         $('#btn-delete').prop('disabled', true);
     }
 });

@@ -1,7 +1,7 @@
 var metaData = $('#meta-data').data();
-var newProjectUrl = metaData['newProjectUrl'];
-var newVariationUrl = metaData['newVariationUrl'];
-var newItemUrl = metaData['newItemUrl'];
+var newProjectUrl = metaData.newProjectUrl;
+var newVariationUrl = metaData.newVariationUrl;
+var newItemUrl = metaData.newItemUrl;
 
 function onSelectChanged(e) {
     var project_id = $('#select_project_id')[0].selectize.items[0];
@@ -11,14 +11,14 @@ function onSelectChanged(e) {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
     }).done(function (data) {
-        $('#margin').val(data['margin'] * 100 + '%');
+        $('#margin').val(data.margin * 100 + '%');
         var el = $('#admin-fee');
-        if (data['admin_fee'] === null) {
+        if (data.admin_fee === null) {
             el.parents('.form-group').hide();
             el.val('');
         } else {
             el.parents('.form-group').show();
-            el.val(accounting.formatMoney(data['admin_fee']));
+            el.val(accounting.formatMoney(data.admin_fee));
         }
         update();
     });
@@ -32,7 +32,7 @@ function update() {
     var total = 0.0;
     $('.input-amount').each(function (i, o) {
         var val = $(o).val();
-        if (val !== "" && isNumeric(val)) {
+        if (val !== '' && isNumeric(val)) {
             total += parseFloat(val);
         }
     });
@@ -64,7 +64,7 @@ function addRow() {
     var $descriptionDiv = $('#descriptionDiv');
     $descriptionDiv.show();
     $descriptionDiv.val('');
-    $descriptionDiv.attr('required', '')
+    $descriptionDiv.attr('required', '');
 }
 
 function deleteRow(e) {
@@ -137,10 +137,10 @@ $('#btn-add-project').on('click', function (e) {
             }).done(function (data) {
                 swal({
                     title: 'Nice!',
-                    text: 'You created a new project: ' + data['name'],
+                    text: 'You created a new project: ' + data.name,
                     type: 'success'
                 }, function () {
-                    location.reload()
+                    location.reload();
                 });
             });
         });
@@ -152,7 +152,7 @@ $('#btn_submit').on('click', function (e) {
     instance.validate();
     if (instance.isValid()) {
         var project_id = $('#select_project_id')[0].selectize.items[0];
-        var time = $('#picker_datetime').data("DateTimePicker").date();
+        var time = $('#picker_datetime').data('DateTimePicker').date();
         var timeUTC = time.utc().format();
         var subcontractor = $('#input_subcontractor').val();
         var invoice_no = $('#input_invoice_no').val();
@@ -162,7 +162,7 @@ $('#btn_submit').on('click', function (e) {
         if ($variationItems.length === 1) {
             input_description = $variationItems.find('textarea').val();
         } else {
-            input_description = $("#input_description").val();
+            input_description = $('#input_description').val();
         }
 
         swal({
@@ -200,7 +200,7 @@ $('#btn_submit').on('click', function (e) {
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json'
             }).done(function (data) {
-                var vid = data['vid'];
+                var vid = data.vid;
                 var successful = true;
                 $('.variationItem').each(function (i, obj) {
                     var desc = $(obj.children[0].children[0]).val();
@@ -210,9 +210,9 @@ $('#btn_submit').on('click', function (e) {
                             url: newItemUrl,
                             type: 'POST',
                             data: JSON.stringify({
-                                "variation_id": vid,
-                                "description": desc,
-                                "amount": amount
+                                variation_id: vid,
+                                description: desc,
+                                amount: amount
                             }),
                             contentType: 'application/json; charset=utf-8',
                             dataType: 'json'
@@ -225,7 +225,7 @@ $('#btn_submit').on('click', function (e) {
                         text: 'You created a new variation',
                         type: 'success'
                     }, function () {
-                        location.reload()
+                        location.reload();
                     });
                 }
             });
