@@ -10,36 +10,26 @@
           data-project-name="{{ current_project.name }}"
           data-project-margin="{{ current_project.margin }}"
           data-project-admin-fee="{{ current_project.admin_fee }}"
-          data-get-project-variations-url="{{ url_for('api.get_project_variations', project_id=current_project.pid) }}"
+          data-get-project-progress-items-url="{{ url_for('api.get_project_progress_items', project_id=current_project.pid) }}"
+          data-new-progress-item-url="{{ url_for('api.new_progress_item') }}"
           data-delete-project-url="{{ url_for('api.delete_project', project_id=current_project.pid) }}"
           data-edit-project-url="{{ url_for('api.edit_project', project_id=current_project.pid) }}">
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/extensions/editable/bootstrap-table-editable.min.js"></script>
-    <script src="{{ url_for('static', filename='js/project.min.js') }}"> </script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+    <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
+    {#    <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>#}
 {% endblock %}
 
 {% block styles %}
     {{ super() }}
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-center-simple.css"/>
+    {#    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-center-simple.css"/>#}
 {% endblock %}
 
 {% block content %}
-    <div id="loader-wrapper">
-        <div id="loader"></div>
-        <div class="loader-section section-left"></div>
-        <div class="loader-section section-right"></div>
-    </div>
-
     <div id="content" class="container-fluid">
-        <h2>Variations for {{ current_project.name }}
+        <h2>Progress for {{ current_project.name }}
             <small>(Reference number: {{ current_project.reference_number }};
                 OH/Profit: {{ current_project.margin * 100 }}%
                 {% if current_project.admin_fee is not none %}, Admin fee: {{ current_project.admin_fee }}{% endif %},
@@ -51,6 +41,9 @@
             <a class="btn btn-info btn-raised" href="/export/{{ current_project.pid }}">
                 <i class="fa fa-download"></i> Export Project
             </a>
+            <button class="btn btn-primary btn-raised" data-toggle="modal" data-target="#new-progress-item-dialog">
+                <i class="fa fa-plus"></i> New Item
+            </button>
             <button class="btn btn-primary btn-raised" data-toggle="modal" data-target="#complete-dialog">
                 <i class="fa fa-plus"></i> Add Variation
             </button>
@@ -76,6 +69,53 @@
                 </div>
                 <div class="form-group">
                     <button id="btn-delete" type="button" class="btn btn-danger btn-raised" disabled>Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="new-progress-item-dialog" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h2 class="modal-title">New Progress Items</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <form class="form-horizontal" id="new-progress-items-form">
+                            <div class="form-group">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th style="text-align: center">Name</th>
+                                        <th style="text-align: center">Contract Value</th>
+                                        <th style="text-align: center"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="progressItems">
+                                    <tr class="progressItem">
+                                        <td>
+                                            <textarea name="name" class="input-progress-item-name form-control" required></textarea>
+                                        </td>
+                                        <td style="vertical-align: middle;">
+                                            <input type="text" name="amount" class="input-progress-item-value form-control" required data-parsley-type="number"/>
+                                        </td>
+                                        <td style="width:150px;text-align:center;vertical-align:middle">
+                                            <a href="javascript:void(0)" class="add-progress-item-row" onclick="addProgressItemRow();"><i class="fa fa-plus"></i>
+                                                Add</a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary btn-raised" data-dismiss="modal">Dismiss</button>
+                    <button id="btn-add-new-progress-items" class="btn btn-info btn-raised">Save</button>
                 </div>
             </div>
         </div>

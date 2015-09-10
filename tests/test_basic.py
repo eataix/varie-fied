@@ -1,28 +1,10 @@
 from flask import current_app
-from app import create_app, db
-from flask.ext.testing import LiveServerTestCase
 import requests
-from requests.auth import HTTPBasicAuth
+from tests.utils import get_with_password
+from tests.base import CustomTestCase
 
-auth = HTTPBasicAuth(username='admin', password='password')
 
-
-class BasicTestCase(LiveServerTestCase):
-    def create_app(self):
-        app = create_app('testing')
-        app.config['LIVESERVER_PORT'] = 8943
-        return app
-
-    def setUp(self):
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
-
+class BasicTestCase(CustomTestCase):
     def test_app_exists(self):
         self.assertIsNotNone(current_app)
 
@@ -34,5 +16,5 @@ class BasicTestCase(LiveServerTestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_app_is_accessible_with_password(self):
-        response = requests.get(self.get_server_url(), auth=auth)
+        response = get_with_password(self.get_server_url())
         self.assertEqual(response.status_code, 200)

@@ -13,10 +13,10 @@ def get_progress_items():
     return jsonify({'progress_items': [progress_item.to_json() for progress_item in progress_items]})
 
 
-@api.route('/progress_items/<int:item_id>')
+@api.route('/progress_items/<int:progress_item_id>')
 @auth.login_required
-def get_progress_item(item_id):
-    progress_item = ProgressItem.query.get_or_404(item_id)
+def get_progress_item(progress_item_id):
+    progress_item = ProgressItem.query.get_or_404(progress_item_id)
     return jsonify(progress_item.to_json())
 
 

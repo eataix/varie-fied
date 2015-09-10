@@ -43,7 +43,7 @@ class Project(db.Model):
         return Project(name=name, margin=margin, admin_fee=admin_fee, reference_number=reference_number)
 
     def export(self):
-        def cm_to_inch(cm: float):
+        def cm_to_inch(cm):
             return cm * 0.393701
 
         def prepare(worksheet):
@@ -440,21 +440,24 @@ class ProgressItem(db.Model):
     contract_value = db.Column(db.Float, nullable=False)
     completed_value = db.Column(db.Float, default=0.0)
 
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'))
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)
 
     def to_json(self):
         return {
             'id': self.id,
             'name': self.name,
             'contract_value': self.contract_value,
-            'completed_value': self.completed_value
+            'completed_value': self.completed_value,
+            'project_id': self.project_id,
+            'percentage': self.completed_value / self.contract_value
         }
 
     @staticmethod
     def from_json(json):
+        project = Project.query.get_or_404(int(json.get('project_id')))
         name = json['name']
         contract_value = json['contract_value']
         completed_value = None
         if 'completed_value' in json:
             completed_value = json['completed_value']
-        return ProgressItem(name=name, contract_value=contract_value, completed_value=completed_value)
+        return ProgressItem(name=name, contract_value=contract_value, completed_value=completed_value, project=project)

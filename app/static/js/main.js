@@ -46,7 +46,7 @@ function update() {
     $('#subtotal').val(accounting.formatMoney(subtotal));
 }
 
-function addRow(s) {
+function addRow() {
     var newRow = $('<tr class="variationItem">' +
         '<td>' +
         '<textarea name="description" class="input-desc form-control" required></textarea>' +
@@ -68,11 +68,9 @@ function addRow(s) {
 }
 
 function deleteRow(e) {
-    var row = e.parentNode.parentNode;
-    row.parentNode.removeChild(row);
+    $(e).closest('tr').remove();
     update();
     var $variationItems = $('.variationItem');
-    console.log($variationItems);
     if ($variationItems.length === 1) {
         var $descriptionDiv = $('#descriptionDiv');
         $descriptionDiv.hide();

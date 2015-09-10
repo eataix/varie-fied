@@ -69,6 +69,21 @@ def get_project_variations(project_id):
     return jsonify({'variations': jsons})
 
 
+@api.route('/projects/<int:project_id>/progress_items/')
+@auth.login_required
+def get_project_progress_items(project_id):
+    project = Project.query.get_or_404(project_id)
+
+    project.progress_items.sort(key=lambda p: p.id)
+    jsons = []
+    for (idx, variation) in enumerate(project.progress_items):
+        json = variation.to_json()
+        json['virtual_id'] = idx + 1
+        jsons.append(json)
+
+    return jsonify({'progress_items': jsons})
+
+
 @api.route('/projects/<int:project_id>', methods=['DELETE'])
 @auth.login_required
 def delete_project(project_id):

@@ -2,7 +2,6 @@ from flask import render_template, redirect, send_file
 
 from . import main
 from .authentication import auth
-from .. import db
 from ..models import Project
 
 
