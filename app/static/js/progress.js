@@ -89,8 +89,10 @@ $.fn.editable.defaults.mode = 'inline';
 
 
 $('#btn-add-new-progress-items').on('click', function () {
+    console.log('here');
     var instance = $('#new-progress-items-form').parsley();
     instance.validate();
+    console.log(instance.isValid());
     if (instance.isValid()) {
         swal({
             title: 'Are you sure to delete selected rows?',
