@@ -27,6 +27,7 @@
 
 {% block scripts %}
     {{ super() }}
+    {{ moment.include_moment() }}
 
     <script src="{{ url_for('static', filename='js/vendor/arrive.min.js') }}"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/js/ripples.min.js"></script>

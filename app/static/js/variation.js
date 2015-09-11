@@ -264,61 +264,6 @@ $.ajax({
 });
 
 
-$('#btn-save-meta').on('click', function() {
-  var instance = $('#edit-project-meta-form').parsley();
-  instance.validate();
-  if (instance.isValid()) {
-    swal({
-      title: 'Are you sure to save the changes?',
-      text: 'You cannot recover them later!',
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: 'teal',
-      confirmButtonText: 'Yes, save them!',
-      cancelButtonText: 'No, cancel plx!',
-      closeOnConfirm: false,
-      closeOnCancel: false,
-      customClass: 'saveMetaConfirmation'
-    }, function(isConfirmed) {
-      if (!isConfirmed) {
-        swal('Cancelled', 'Your project is safe :)', 'error');
-        return;
-      }
-      var $button = $('.saveMetaConfirmation').find('.confirm');
-      var html = $button.html();
-      $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
-      $button.off('click');
-
-      var new_name = $('#new_name').val();
-      var new_margin = $('#new_margin').val();
-      var new_reference_number = $('#new_ref_number').val();
-      var new_admin_fee = $('#new_admin_fee').val();
-      if (new_admin_fee === '') {
-        new_admin_fee = null;
-      }
-      $.ajax({
-        url: editProjectUrl,
-        type: 'PUT',
-        data: JSON.stringify({
-          name: new_name,
-          margin: new_margin,
-          admin_fee: new_admin_fee,
-          reference_number: new_reference_number
-        }),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json'
-      }).done(function() {
-        swal({
-          title: 'Nice!',
-          text: 'Save changes',
-          type: 'success'
-        }, function() {
-          location.reload();
-        });
-      });
-    });
-  }
-});
 
 
 $('#btn-delete').on('click', function() {
