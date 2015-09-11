@@ -64,7 +64,7 @@ $.ajax({
       sortable: true
     }, {
       field: 'completed_value',
-      title: 'Completed Value',
+      title: 'Completed To Date',
       halign: 'center',
       editable: {
         type: 'text'
@@ -72,7 +72,7 @@ $.ajax({
       sortable: true
     }, {
       field: 'percentage',
-      title: 'Percentage',
+      title: '%',
       halign: 'center',
       sortable: true
     }],
