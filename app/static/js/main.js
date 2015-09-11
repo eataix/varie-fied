@@ -4,6 +4,7 @@ var newVariationUrl = metaData.newVariationUrl;
 var newItemUrl = metaData.newItemUrl;
 
 function onSelectChanged(e) {
+  'use strict';
   var project_id = $('#select_project_id')[0].selectize.items[0];
   $.ajax({
     url: '/api/v1.0/projects/' + project_id,
@@ -25,10 +26,12 @@ function onSelectChanged(e) {
 }
 
 function isNumeric(n) {
+  'use strict';
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
 function update() {
+  'use strict';
   var total = 0.0;
   $('.input-amount').each(function(i, o) {
     var val = $(o).val();
@@ -47,6 +50,7 @@ function update() {
 }
 
 function addRow() {
+  'use strict';
   var newRow = $('<tr class="variationItem">' +
       '<td>' +
       '<textarea name="description" class="input-desc form-control" required></textarea>' +
@@ -68,6 +72,7 @@ function addRow() {
 }
 
 function deleteRow(e) {
+  'use strict';
   $(e).closest('tr').remove();
   update();
   var $variationItems = $('.variationItem');
@@ -80,6 +85,7 @@ function deleteRow(e) {
 }
 
 (function() {
+  'use strict';
   $.material.init();
   $('#picker_datetime').datetimepicker({showTodayButton: true});
   $('#form-new-project').parsley();
@@ -90,6 +96,7 @@ function deleteRow(e) {
 })();
 
 $('#btn-add-project').on('click', function() {
+  'use strict';
   var instance = $('#form-new-project').parsley();
   instance.validate();
   if (instance.isValid()) {
@@ -148,6 +155,7 @@ $('#btn-add-project').on('click', function() {
 });
 
 $('#btn_submit').on('click', function() {
+  'use strict';
   var instance = $('#form-new-variation').parsley();
   instance.validate();
   if (instance.isValid()) {

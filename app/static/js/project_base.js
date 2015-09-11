@@ -3,7 +3,8 @@ var newProgressItemUrl = metaData.newProgressItemUrl;
 
 $.fn.editable.defaults.mode = 'inline';
 
-$('#delete_project').on('click', function(e) {
+$('#delete_project').on('click', function() {
+  'use strict';
   swal({
     title: 'Are you sure to delete the project?',
     text: 'You are going to',
@@ -43,6 +44,7 @@ $('#delete_project').on('click', function(e) {
 });
 
 $('#archive_project').on('click', function() {
+  'use strict';
   var action = 'archive';
   swal({
     title: 'Are you sure to ' + action + ' the project?',
@@ -88,6 +90,7 @@ $('#archive_project').on('click', function() {
 
 
 $('#btn-add-new-progress-items').on('click', function() {
+  'use strict';
   var instance = $('#new-progress-items-form').parsley();
   instance.validate();
   if (instance.isValid()) {
@@ -137,6 +140,7 @@ $('#btn-add-new-progress-items').on('click', function() {
 });
 
 $('#btn-save-meta').on('click', function() {
+  'use strict';
   var instance = $('#edit-project-meta-form').parsley();
   instance.validate();
   if (instance.isValid()) {
@@ -195,23 +199,25 @@ $('#btn-save-meta').on('click', function() {
 var $table = $('#table');
 
 $table.on('editable-save.bs.table', function() {
+  'use strict';
   $('#btn-save').prop('disabled', false);
 });
 
 $table.on('check.bs.table check-all.bs.table check-some.bs.table', function() {
+  'use strict';
   $('#btn-delete').prop('disabled', false);
 });
 
 $table.on('uncheck-all.bs.table', function() {
+  'use strict';
   $('#btn-delete').prop('disabled', true);
 });
 
 $table.on('uncheck.bs.table	uncheck-some.bs.table', function() {
+  'use strict';
   var selected = $table.bootstrapTable('getSelections');
   if (selected.length() === 0) {
     $('#btn-delete').prop('disabled', true);
   }
 });
-
-
 

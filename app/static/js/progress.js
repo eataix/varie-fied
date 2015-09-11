@@ -10,6 +10,7 @@ var projectMargin = metaData.projectMargin;
 var projectName = metaData.projectName;
 
 function addProgressItemRow() {
+  'use strict';
   var newRow = $('<tr class="progressItem">' +
       '<td>' +
       '<textarea name="name" class="input-progress-item-name form-control" required></textarea>' +
@@ -29,6 +30,7 @@ function addProgressItemRow() {
 }
 
 function deleteProgressItemRow(e) {
+  'use strict';
   $(e).closest('tr').remove();
 }
 
@@ -37,6 +39,7 @@ $.ajax({
   type: 'GET',
   contentType: 'application/json; charset=utf-8'
 }).done(function(data) {
+  'use strict';
   $('#table').bootstrapTable({
     columns: [{
       checkbox: true
@@ -85,6 +88,7 @@ $.ajax({
 $.fn.editable.defaults.mode = 'inline';
 
 $('#btn-delete').on('click', function() {
+  'use strict';
   swal({
     title: 'Are you sure to delete selected rows?',
     text: 'You cannot recover them later!',
@@ -104,7 +108,7 @@ $('#btn-delete').on('click', function() {
 
     var success = true;
     var selected = $table.bootstrapTable('getSelections');
-    for (var i = 0; i < selected.length; ++i) {
+    for (var i = 0; i < selected.length; i += 1) {
       $.ajax({
         url: '/api/v1.0/progress_items/' + selected[i].id,
         type: 'DELETE',
@@ -127,6 +131,7 @@ $('#btn-delete').on('click', function() {
 });
 
 $('#btn-save').on('click', function() {
+  'use strict';
   swal({
     title: 'Are you sure to save all the changes?',
     type: 'info',
@@ -144,7 +149,7 @@ $('#btn-save').on('click', function() {
     }
 
     var data = $table.bootstrapTable('getData');
-    for (var key = 0; key < data.length; ++key) {
+    for (var key = 0; key < data.length; key += 1) {
       var value = data[key];
       var id = value.id;
       var name = value.name;

@@ -9,6 +9,7 @@ var projectMargin = metaData.projectMargin;
 var projectName = metaData.projectName;
 
 function pendingClick(cb) {
+  'use strict';
   var $tr = $(cb).parents('tr');
   $tr.attr('class', 'info');
   $tr.find('.checkbox-approved').prop('checked', false);
@@ -17,6 +18,7 @@ function pendingClick(cb) {
 }
 
 function pendingFormatter(value, row, index) {
+  'use strict';
   var mid;
   if (value) {
     mid = '<input class="checkbox checkbox-pending" type="checkbox" checked="" onclick="pendingClick(this);">';
@@ -27,6 +29,7 @@ function pendingFormatter(value, row, index) {
 }
 
 function approvedClick(cb) {
+  'use strict';
   var $tr = $(cb).parents('tr');
   $tr.attr('class', 'success');
   $tr.find('.checkbox-pending').prop('checked', false);
@@ -35,6 +38,7 @@ function approvedClick(cb) {
 }
 
 function approvedFormatter(value, row, index) {
+  'use strict';
   var mid;
   if (value) {
     mid = '<input class="checkbox checkbox-approved" type="checkbox" checked="" onclick="approvedClick(this);">';
@@ -45,6 +49,7 @@ function approvedFormatter(value, row, index) {
 }
 
 function declinedClick(cb) {
+  'use strict';
   var $tr = $(cb).parents('tr');
   $tr.attr('class', 'danger');
   $tr.find('.checkbox-pending').prop('checked', false);
@@ -53,6 +58,7 @@ function declinedClick(cb) {
 }
 
 function declinedFormatter(value, row, index) {
+  'use strict';
   var mid;
   if (value) {
     mid = '<input class="checkbox checkbox-declined" type="checkbox" checked="" onclick="declinedClick(this);">';
@@ -63,10 +69,12 @@ function declinedFormatter(value, row, index) {
 }
 
 function completeClick() {
+  'use strict';
   $('#btn-save').prop('disabled', false);
 }
 
 function completeFormatter(value, row, index) {
+  'use strict';
   var mid;
   if (value) {
     mid = '<input class="checkbox checkbox-complete" type="checkbox" checked="" onclick="completeClick();">';
@@ -77,6 +85,7 @@ function completeFormatter(value, row, index) {
 }
 
 function rowStyle(row, index) {
+  'use strict';
   if (row.pending) {
     return {classes: 'info'};
   } else if (row.approved) {
@@ -89,22 +98,27 @@ function rowStyle(row, index) {
 }
 
 function timeFormatter(value, row, index) {
+  'use strict';
   return '<p>' + moment(value).toDate() + '</p>';
 }
 
 function moneyFormatter(value, row, index) {
+  'use strict';
   return accounting.formatMoney(value);
 }
 
 function validate_required(v) {
+  'use strict';
   if (v === null || v === '') {
     return 'Cannot be empty!';
   }
 }
 
+var result;
+
 function detailFormatter(index, row) {
+  'use strict';
   var url = '/api/v1.0/variations/' + row.vid + '/items/';
-  var that = this;
   setTimeout(function() {
     $.ajax({
       url: url,
@@ -124,7 +138,7 @@ function detailFormatter(index, row) {
       var descriptionClass = 'new-editable-description-' + index;
       var amountClass = 'new-editable-amount-' + index;
 
-      for (var i = 0; i < items.length; ++i) {
+      for (var i = 0; i < items.length; i += 1) {
         var item = items[i];
         var id = item.id;
         var description = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
@@ -153,10 +167,10 @@ function detailFormatter(index, row) {
           }
         });
         total *= 1.0 + projectMargin;
-        if (projectAdminFee !== '') {
+        if (projectAdminFee !== 'None') {
           total += projectAdminFee;
         }
-        $(that).closest('.detail-view').prev().children('.subtotal').html('<b>' + accounting.formatMoney(total) + '</b>');
+        $(e.target).closest('.detail-view').prev().children('.subtotal').html('<b>' + accounting.formatMoney(total) + '</b>');
       });
     });
   }, 0);
@@ -170,6 +184,7 @@ $.ajax({
   contentType: 'application/json; charset=utf-8',
   dataType: 'json'
 }).done(function(data) {
+  'use strict';
   $('#table').bootstrapTable({
     columns: [{
       checkbox: true
@@ -260,13 +275,12 @@ $.ajax({
     detailFormatter: 'detailFormatter'
   });
 }).always(function() {
+  'use strict';
   $('body').addClass('loaded');
 });
 
-
-
-
 $('#btn-delete').on('click', function() {
+  'use strict';
   swal({
     title: 'Are you sure to delete selected rows?',
     text: 'You cannot recover them later!',
@@ -290,7 +304,7 @@ $('#btn-delete').on('click', function() {
 
     var success = true;
     var selected = $table.bootstrapTable('getSelections');
-    for (var i = 0; i < selected.length; ++i) {
+    for (var i = 0; i < selected.length; i += 1) {
       $.ajax({
         url: '/api/v1.0/variations/' + selected[i].vid,
         type: 'DELETE',
@@ -313,6 +327,7 @@ $('#btn-delete').on('click', function() {
 });
 
 $('#btn-save').on('click', function() {
+  'use strict';
   swal({
     title: 'Are you sure to save all the changes?',
     type: 'info',
@@ -335,7 +350,7 @@ $('#btn-save').on('click', function() {
     $button.off('click');
 
     var data = $table.bootstrapTable('getData');
-    for (var key = 0; key < data.length; ++key) {
+    for (var key = 0; key < data.length; key += 1) {
       var value = data[key];
       var vid = value.vid;
       var selector = '[data-index=' + key + ']';
