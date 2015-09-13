@@ -1,8 +1,8 @@
 from flask import render_template, redirect, send_file
 
-from . import main
-from .authentication import auth
-from ..models import Project
+from app.main import main
+from app.main.authentication import auth
+from app.models import Project
 
 
 @main.route('/')

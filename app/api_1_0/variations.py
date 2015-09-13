@@ -1,15 +1,16 @@
 from flask import jsonify, request
 
-from . import api
-from .. import db
-from .authentication import auth
-from ..models import Variation
+from app import db
+from app.models import Variation
+from app.api_1_0 import api
+from app.api_1_0.authentication import auth
 
 
 @api.route('/variations/')
 @auth.login_required
 def get_variations():
     variations = Variation.query.all()
+    """:type : list[Variation]"""
     return jsonify({'variations': [project.to_json() for project in variations]})
 
 

@@ -1,16 +1,15 @@
 from flask import jsonify, request
 
-from . import api
-from .. import db
-from .authentication import auth
-from ..models import Project, Variation
+from app import db
+from app.models import Project, Variation
+from app.api_1_0 import api
+from app.api_1_0.authentication import auth
 
 
 @api.route('/projects/')
 @auth.login_required
 def get_projects():
     projects = Project.query.all()
-
     return jsonify({'projects': [project.to_json() for project in projects]})
 
 

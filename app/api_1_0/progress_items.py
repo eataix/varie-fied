@@ -1,15 +1,16 @@
 from flask import jsonify, request
 
-from . import api
-from .. import db
-from .authentication import auth
-from ..models import ProgressItem
+from app import db
+from app.models import ProgressItem
+from app.api_1_0 import api
+from app.api_1_0.authentication import auth
 
 
 @api.route('/progress_items/')
 @auth.login_required
 def get_progress_items():
     progress_items = ProgressItem.query.all()
+    """:type : list[ProgressItem]"""
     return jsonify({'progress_items': [progress_item.to_json() for progress_item in progress_items]})
 
 

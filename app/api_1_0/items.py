@@ -1,15 +1,16 @@
 from flask import jsonify, request
 
-from . import api
-from .. import db
-from .authentication import auth
-from ..models import Item
+from app import db
+from app.models import Item
+from app.api_1_0 import api
+from app.api_1_0.authentication import auth
 
 
 @api.route('/items/')
 @auth.login_required
 def get_items():
     items = Item.query.all()
+    """:type: list[Item]"""
     return jsonify({'items': [item.to_json() for item in items]})
 
 
