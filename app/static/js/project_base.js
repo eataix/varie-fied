@@ -111,10 +111,17 @@ $('#btn-add-new-progress-items').on('click', function() {
         return;
       }
 
-      $('.progressItem').each(function(i, o) {
-        var name = $(o).find('textarea').val();
-        var contract_value = accounting.parse($(o).find('input').val());
+      var $progressItems = $('.progressItem');
 
+      function createItem(offset) {
+        if (offset >= $progressItems.length) {
+          return true;
+        }
+        var $o = $($progressItems[offset]);
+        var name = $o.find('textarea').val();
+        var contract_value = accounting.parse($o.find('input').val());
+
+        var successful = true;
         $.ajax({
           url: newProgressItemUrl,
           type: 'POST',
@@ -125,16 +132,25 @@ $('#btn-add-new-progress-items').on('click', function() {
           }),
           contentType: 'application/json; charset=utf-8',
           dataType: 'json'
+        }).done(function(res) {
+          successful = createItem(offset + 1);
+        }).error(function() {
+          successful = false;
         });
-      });
+        return successful;
+      }
 
-      swal({
-        title: 'Nice!',
-        text: 'You saved all changes',
-        type: 'success'
-      }, function() {
-        location.reload();
-      });
+      var status = createItem(0);
+
+      if (status) {
+        swal({
+          title: 'Nice!',
+          text: 'You saved all changes',
+          type: 'success'
+        }, function() {
+          location.reload();
+        });
+      }
     });
   }
 });

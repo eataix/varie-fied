@@ -209,11 +209,18 @@ $('#btn_submit').on('click', function() {
         dataType: 'json'
       }).done(function(data) {
         var vid = data.vid;
-        var successful = true;
-        $('.variationItem').each(function(i, obj) {
+        var $variationItems = $('.variationItem');
+
+        function createVariationItem(offset) {
+          if (offset >= $variationItems.length) {
+            return true;
+          }
+          var obj = $variationItems[offset];
           var desc = $(obj.children[0].children[0]).val();
           var amount = $(obj.children[1].children[0]).val();
+
           if (desc !== '' && amount !== '') {
+            var successful = true;
             $.ajax({
               url: newItemUrl,
               type: 'POST',
@@ -224,10 +231,20 @@ $('#btn_submit').on('click', function() {
               }),
               contentType: 'application/json; charset=utf-8',
               dataType: 'json'
+            }).success(function() {
+              successful = createVariationItem(offset + 1);
+            }).error(function() {
+              successful = false;
             });
+            return successful;
+          } else {
+            return createVariationItem(offset + 1);
           }
-        });
-        if (successful) {
+        }
+
+        var status = createVariationItem(0);
+
+        if (status) {
           swal({
             title: 'Nice!',
             text: 'You created a new variation',
