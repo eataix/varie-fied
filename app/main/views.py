@@ -1,4 +1,4 @@
-from flask import render_template, redirect, send_file
+from flask import render_template, send_file
 
 from app.main import main
 from app.main.authentication import auth

@@ -89,16 +89,223 @@ class Project(db.Model):
 
         ws = wb.active
         """:type : openpyxl.worksheet.Worksheet"""
-        ws.title = 'Progress report'
+        ws.title = 'Claim - TOTAL'
         prepare(ws)
 
-        row = 7
+        ws['A1'].value = 'Client:'
+        ws['A1'].font = Font(name='Lao UI', size=10, bold=True)
+        ws['C1'].value = 'Reference #:'
+        ws['C1'].font = Font(name='Lao UI', size=10, bold=True)
+        ws['C3'].value = 'Date: {}'.format(datetime.now())
+        ws['C3'].font = Font(name='Lao UI', size=10)
+
+        ws['A4'].value = 'PROGRESS CLAIM No.'
+        ws['A4'].font = Font(name='Lao UI', size=14)
+        ws['A4'].fill = fill
+        ws['B4'].value = 'Project No: {}'.format(self.reference_number)
+        ws['B4'].font = Font(name='Lao UI', size=10)
+        ws['B5'].value = 'Approval terms: '
+        ws['B5'].font = Font(name='Lao UI', size=10)
+
+        ws['A6'].value = 'Project: {}'.format(self.name)
+        ws['A6'].font = Font(name='Lao UI', size=11, bold=True)
+        ws['B6'].value = 'Contract'
+        ws['B6'].font = Font(name='Lao UI', size=10, bold=True)
+        ws['B6'].alignment = Alignment(horizontal='center')
+        ws['C6'].value = 'Completed'
+        ws['C6'].font = Font(name='Lao UI', size=10, bold=True)
+        ws['C6'].alignment = Alignment(horizontal='center')
+        ws['A7'].value = ''
+        ws['B7'].value = 'Value'
+        ws['B7'].font = Font(name='Lao UI', size=10, bold=True)
+        ws['B7'].alignment = Alignment(horizontal='center')
+        ws['C7'].value = 'To Date'
+        ws['C7'].font = Font(name='Lao UI', size=10, bold=True)
+        ws['C7'].alignment = Alignment(horizontal='center')
+        ws.merge_cells('D6:D7')
+        ws['D6'].value = '%'
+        ws['D6'].font = Font(name='Arial', size=12, bold=True)
+        ws['D6'].alignment = Alignment(horizontal='center', vertical='center')
+
+        for row in [6, 7]:
+            for column in 'ABCD':
+                cell = ws['{}{}'.format(column, row)]
+                cell.fill = fill
+
+        ws['A1'].border = Border(top=Side(border_style='medium', color='FF000000'))
+        ws['B1'].border = Border(
+            top=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
+        )
+        ws['C1'].border = Border(top=Side(border_style='medium', color='FF000000'))
+        ws['D1'].border = Border(top=Side(border_style='medium', color='FF000000'))
+
+        ws['B2'].border = Border(right=Side(border_style='medium', color='FF000000'))
+
+        ws['A3'].border = Border(bottom=Side(border_style='medium', color='FF000000'))
+        ws['B3'].border = Border(
+            bottom=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
+        )
+
+        ws['A4'].border = Border(
+            top=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
+        )
+        ws['A6'].border = Border(
+            top=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
+        )
+        ws['B6'].border = Border(
+            top=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
+        )
+        ws['C6'].border = Border(
+            top=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
+        )
+        ws['D6'].border = Border(
+            top=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
+        )
+        ws['A7'].border = Border(
+            top=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
+        )
+        ws['B7'].border = Border(
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
+        )
+        ws['C7'].border = Border(
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
+        )
+        ws['D7'].border = Border(
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
+        )
+
+        row = 8
         for progress_item in self.progress_items:
             ws['A{}'.format(row)].value = progress_item.name
             ws['B{}'.format(row)].value = progress_item.contract_value
             ws['C{}'.format(row)].value = progress_item.completed_value
             ws['D{}'.format(row)].value = '= C{}/B{}'.format(row, row)
+            print(ws['B{}'.format(row)].number_format)
+            print(ws['C{}'.format(row)].number_format)
             row += 1
+
+        for irow in range(8, row):
+            for column in 'ABCD':
+                cell = ws['{}{}'.format(column, irow)]
+                cell.font = Font(name='Lao UI', size=9)
+                cell.border = Border(
+                    left=Side(border_style='thin', color='FF000000'),
+                    right=Side(border_style='thin', color='FF000000'),
+                )
+                if column == 'D':
+                    cell.alignment = Alignment(vertical='center', horizontal='center')
+
+        ws['A{}'.format(row)].value = 'TOTAL OF CONTRACT'
+        ws['B{}'.format(row)].value = '=SUM(B{}:B{})'.format(8, row - 1)
+        ws['C{}'.format(row)].value = '=SUM(C{}:C{})'.format(8, row - 1)
+        ws['D{}'.format(row)].value = '=C{}/B{}'.format(row, row)
+
+        for column in 'ABCD':
+            cell = ws['{}{}'.format(column, row)]
+            cell.font = Font(name='Lao UI', size=9, bold=True)
+
+        row += 1
+
+        ws['A{}'.format(row)].value = 'Variations - See Appendix A attached'
+        ws['B{}'.format(row)].value = r"='Appendix A'!D34"
+        ws['C{}'.format(row)].value = r"='Appendix A'!E34"
+        ws['D{}'.format(row)].value = '=C{}/B{}'.format(row, row)
+        for row in [row - 1, row]:
+            for column in 'ABCD':
+                cell = ws['{}{}'.format(column, row)]
+                cell.fill = fill
+                cell.border = Border(
+                    top=Side(border_style='thin', color='FF000000'),
+                    bottom=Side(border_style='thin', color='FF000000'),
+                    left=Side(border_style='thin', color='FF000000'),
+                    right=Side(border_style='thin', color='FF000000')
+                )
+
+        row += 1
+        ws['A{}'.format(row)].value = 'Totals Excluding GST'
+        ws['B{}'.format(row)].value = '=B{} + B{}'.format(row - 1, row - 2)
+        ws['C{}'.format(row)].value = '=C{} + C{}'.format(row - 1, row - 2)
+        ws['D{}'.format(row)].value = '=C{}/B{}'.format(row, row)
+        for column in 'BCD':
+            cell = ws['{}{}'.format(column, row)]
+            cell.fill = fill
+            cell.border = Border(
+                top=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000')
+            )
+
+        row += 1
+        ws['A{}'.format(row)].value = 'Less paid to date'
+        ws['C{}'.format(row)].border = Border(
+            left=Side(border_style='thin', color='FF000000'),
+            right=Side(border_style='thin', color='FF000000')
+        )
+
+        row += 1
+        ws['A{}'.format(row)].value = 'Value of work completed this period'
+        ws['C{}'.format(row)].value = '=C{} - C{}'.format(row - 2, row - 1)
+        ws['C{}'.format(row)].border = Border(
+            left=Side(border_style='thin', color='FF000000'),
+            right=Side(border_style='thin', color='FF000000')
+        )
+
+        row += 1
+        ws['A{}'.format(row)].value = 'GST this period'
+        ws['C{}'.format(row)].value = '=C{} * 10%'.format(row - 1)
+        ws['C{}'.format(row)].border = Border(
+            left=Side(border_style='thin', color='FF000000'),
+            right=Side(border_style='thin', color='FF000000')
+        )
+        for irow in range(row - 3, row + 1):
+            for column in 'ABCD':
+                cell = ws['{}{}'.format(column, irow)]
+                cell.font = Font(name='Lao UI', size=9)
+
+        row += 1
+        ws['A{}'.format(row)].value = 'TOTAL PAYABLE THIS CLAIM'
+        ws['A{}'.format(row)].font = Font(name='Lao UI', size=9, bold=True)
+        ws['C{}'.format(row)].value = '=C{} + C{}'.format(row - 2, row - 1)
+        ws['C{}'.format(row)].font = Font(name='Lao UI', size=9, bold=True)
+        ws['C{}'.format(row)].border = Border(
+            top=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000')
+        )
+
+        for irow in range(8, row + 1):
+            ws['B{}'.format(irow)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+            ws['C{}'.format(irow)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+            ws['D{}'.format(irow)].number_format = r'0.00%'
+
+        ws.column_dimensions['A'].width = 40
+        ws.column_dimensions['B'].width = 15
+        ws.column_dimensions['C'].width = 15
+        ws.column_dimensions['D'].width = 8
+        ws.sheet_view.view = 'pageLayout'
 
         ws = wb.create_sheet()
         """:type : openpyxl.worksheet.Worksheet"""
