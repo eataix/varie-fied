@@ -233,7 +233,7 @@ $('#btn_submit').on('click', function() {
               dataType: 'json'
             }).success(function() {
               successful = createVariationItem(offset + 1);
-            }).error(function() {
+            }).fail(function() {
               successful = false;
             });
             return successful;
