@@ -233,7 +233,7 @@ $table.on('uncheck-all.bs.table', function() {
 $table.on('uncheck.bs.table	uncheck-some.bs.table', function() {
   'use strict';
   var selected = $table.bootstrapTable('getSelections');
-  if (selected.length() === 0) {
+  if (selected.length === 0) {
     $('#btn-delete').prop('disabled', true);
   }
 });
