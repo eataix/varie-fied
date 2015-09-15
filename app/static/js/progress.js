@@ -162,19 +162,25 @@ $('#btn-delete').on('click', function() {
       return;
     }
 
-    var success = true;
     var selected = $table.bootstrapTable('getSelections');
-    for (var i = 0; i < selected.length; i += 1) {
+
+    function saveSelections(offset) {
+      if (offset >= selected.length) {
+        return true;
+      }
       $.ajax({
-        url: '/api/v1.0/progress_items/' + selected[i].id,
+        url: '/api/v1.0/progress_items/' + selected[offset].id,
         type: 'DELETE',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
+      }).done(function() {
+        return saveSelections(offset + 1);
       }).fail(function() {
-        success = false;
+        return false;
       });
     }
-    if (success) {
+
+    if (saveSelections(0)) {
       swal({
         title: 'Nice!',
         text: 'Delete variations',

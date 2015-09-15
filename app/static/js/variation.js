@@ -114,8 +114,6 @@ function validate_required(v) {
   }
 }
 
-var result;
-
 function detailFormatter(index, row) {
   'use strict';
   var url = '/api/v1.0/variations/' + row.vid + '/items/';
@@ -302,19 +300,25 @@ $('#btn-delete').on('click', function() {
     $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
     $button.off('click');
 
-    var success = true;
     var selected = $table.bootstrapTable('getSelections');
-    for (var i = 0; i < selected.length; i += 1) {
+
+    function deleteVariation(offset) {
+      if (offset >= selected.length) {
+        return true;
+      }
       $.ajax({
-        url: '/api/v1.0/variations/' + selected[i].vid,
+        url: '/api/v1.0/variations/' + selected[offset].vid,
         type: 'DELETE',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
+      }).done(function() {
+        return deleteVariation(offset + 1);
       }).fail(function() {
-        success = false;
+        return false;
       });
     }
-    if (success) {
+
+    if (deleteVariation(0)) {
       swal({
         title: 'Nice!',
         text: 'Delete variations',
