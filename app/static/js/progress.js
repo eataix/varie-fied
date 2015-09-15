@@ -34,6 +34,34 @@ function deleteProgressItemRow(e) {
   $(e).closest('tr').remove();
 }
 
+function onClickUp(e) {
+  'use strict';
+  var $thisRow = $(e).closest('tr');
+  var $prevRow = $thisRow.prev();
+  if ($prevRow.length !== 0) {
+    $thisRow.after($prevRow);
+  }
+  $('#btn-save').prop('disabled', false);
+}
+
+function onClickDown(e) {
+  'use strict';
+  var $thisRow = $(e).closest('tr');
+  var $nextRow = $thisRow.next();
+  if ($nextRow.length !== 0) {
+    $thisRow.before($nextRow);
+  }
+  $('#btn-save').prop('disabled', false);
+}
+
+function reorderFormatter(value, row, index) {
+  'use strict';
+  return '<div style="text-align: middle">' +
+      '<a href="javascript:void(0)" onclick="onClickUp(this);"><i class="fa fa-caret-up"></i> </a>' +
+      '<a href="javascript:void(0)" onclick="onClickDown(this);"><i class="fa fa-caret-down"></i> </a>' +
+      '</div>';
+}
+
 $.ajax({
   url: getProjectProgressItemsUrl,
   type: 'GET',
@@ -78,6 +106,10 @@ $.ajax({
       title: '%',
       halign: 'center',
       sortable: true
+    }, {
+      title: 'Action',
+      halign: 'center',
+      formatter: 'reorderFormatter'
     }],
     data: data.progress_items,
     rowStyle: 'rowStyle',

@@ -28,7 +28,7 @@ def create_app(config_name):
     from flask_bootstrap import WebCDN
 
     app.extensions['bootstrap']['cdns']['jquery'] = WebCDN(
-        '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/'
+        '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/'
     )
 
     return app
