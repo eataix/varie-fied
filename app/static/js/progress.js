@@ -62,6 +62,21 @@ function reorderFormatter(value, row, index) {
       '</div>';
 }
 
+function paddingFormatterA(value, row, index) {
+  'use strict';
+  return value.toFixed(2);
+}
+
+function paddingFormatterB(value, row, index) {
+  'use strict';
+  return value.toFixed(2);
+}
+
+function percentageFormatter(value, row, index) {
+  'use strict';
+  return (value * 100).toFixed(2) + '%';
+}
+
 $.ajax({
   url: getProjectProgressItemsUrl,
   type: 'GET',
@@ -92,7 +107,9 @@ $.ajax({
       editable: {
         type: 'text'
       },
+      align: 'right',
       sortable: true
+      //formatter: 'paddingFormatterA'
     }, {
       field: 'completed_value',
       title: 'Completed To Date',
@@ -100,16 +117,23 @@ $.ajax({
       editable: {
         type: 'text'
       },
+      align: 'right',
       sortable: true
+      //formatter: 'paddingFormatterB'
     }, {
       field: 'percentage',
       title: '%',
       halign: 'center',
-      sortable: true
+      sortable: true,
+      formatter: 'percentageFormatter',
+      align: 'right',
+      valign: 'center',
+      width: '100px'
     }, {
       title: 'Action',
-      halign: 'center',
-      formatter: 'reorderFormatter'
+      align: 'center',
+      formatter: 'reorderFormatter',
+      width: '100px'
     }],
     data: data.progress_items,
     rowStyle: 'rowStyle',
