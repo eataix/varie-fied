@@ -40,7 +40,3 @@ def export_project(project_id):
     return send_file('../generated/' + fn, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                      as_attachment=True)
 
-
-@main.route('/robots.txt')
-def static_from_root():
-    return send_from_directory(main.static_folder, request.path[1:])
