@@ -1,4 +1,4 @@
-from flask import render_template, send_file
+from flask import render_template, send_file, send_from_directory, request
 
 from app.main import main
 from app.main.authentication import auth
@@ -39,3 +39,8 @@ def export_project(project_id):
     fn = current_project.export()
     return send_file('../generated/' + fn, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                      as_attachment=True)
+
+
+@main.route('/robots.txt')
+def static_from_root():
+    return send_from_directory(main.static_folder, request.path[1:])
