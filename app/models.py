@@ -210,7 +210,7 @@ class Project(db.Model):
         )
 
         row = 8
-        self.variations.sort(key=lambda v: v.vid)
+        self.progress_items.sort(key=lambda p: p.id)
         for progress_item in self.progress_items:
             ws['A{}'.format(row)].value = progress_item.name
             ws['B{}'.format(row)].value = progress_item.contract_value
