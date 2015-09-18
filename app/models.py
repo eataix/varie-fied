@@ -108,7 +108,7 @@ class Project(db.Model):
             [client.second_line_address for client in self.clients if client.second_line_address is not None])
         ws['C1'].value = 'Reference #:'
         ws['C1'].font = Font(name='Lao UI', size=10, bold=True)
-        ws['C3'].value = 'Date: {}'.format(datetime.now())
+        ws['C3'].value = 'Date: {}'.format(datetime.today())
         ws['C3'].font = Font(name='Lao UI', size=10)
 
         ws['A4'].value = 'PROGRESS CLAIM No.'
@@ -116,6 +116,8 @@ class Project(db.Model):
         ws['A4'].fill = fill
         ws['B4'].value = 'Project No: {}'.format(self.reference_number)
         ws['B4'].font = Font(name='Lao UI', size=10)
+        ws['B5'].value = '{}'.format(datetime.month)
+        ws['B5'].font = Font(name='Lao UI', size=10)
         ws['B5'].value = 'Approval terms: '
         ws['B5'].font = Font(name='Lao UI', size=10)
 
