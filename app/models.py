@@ -216,8 +216,8 @@ class Project(db.Model):
             ws['B{}'.format(row)].value = progress_item.contract_value
             ws['C{}'.format(row)].value = progress_item.completed_value
             ws['D{}'.format(row)].value = '= C{}/B{}'.format(row, row)
-            print(ws['B{}'.format(row)].number_format)
-            print(ws['C{}'.format(row)].number_format)
+            # print(ws['B{}'.format(row)].number_format)
+            # print(ws['C{}'.format(row)].number_format)
             row += 1
 
         for irow in range(8, row):
@@ -781,7 +781,7 @@ class Client(db.Model):
         :param json: dict[str, any]
         :rtype: ProgressItem
         """
-        print(json)
+        # print(json)
         project = Project.query.get_or_404(int(json.get('project_id')))  # type : Project
         """:type : Project"""
         name = json['name']

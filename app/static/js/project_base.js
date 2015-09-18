@@ -133,7 +133,7 @@ $('#btn-add-new-progress-items').on('click', function() {
           contentType: 'application/json; charset=utf-8',
           dataType: 'json'
         }).done(function(res) {
-          console.log(res);
+          //console.log(res);
           successful = createItem(offset + 1);
         }).fail(function() {
           successful = false;

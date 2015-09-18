@@ -178,7 +178,6 @@ $('#btn-add-project').on('click', function() {
             return true;
           }
           var obj = $clients[offset];
-          console.log(obj);
           var name = $(obj.children[0].children[0]).val();
           var first_line_address = $(obj.children[1].children[0]).val();
           if (first_line_address === '') {
@@ -188,15 +187,12 @@ $('#btn-add-project').on('click', function() {
           if (second_line_address === '') {
             second_line_address = null;
           }
-          console.log(name);
-          console.log(first_line_address);
-          console.log(second_line_address);
           var status = true;
           $.ajax({
             url: newClientUrl,
             type: 'POST',
             data: JSON.stringify({
-              name: project_name,
+              name: name,
               first_line_address: first_line_address,
               second_line_address: second_line_address,
               project_id: data.id
@@ -217,10 +213,10 @@ $('#btn-add-project').on('click', function() {
             text: 'You created a new project: ' + data.name,
             type: 'success'
           }, function() {
-            location.reload();
+            setTimeout(function() {
+              location.reload();
+            }, 100);
           });
-        } else {
-          console.log('failed!');
         }
       });
     });
