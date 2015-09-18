@@ -39,4 +39,3 @@ def export_project(project_id):
     fn = current_project.export()
     return send_file('../generated/' + fn, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                      as_attachment=True)
-
