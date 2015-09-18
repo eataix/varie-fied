@@ -25,6 +25,8 @@ class Project(db.Model):
     progress_items = db.relation('ProgressItem', backref='project',
                                  cascade="all, delete-orphan")  # type : List[ProgressItem]
     """:type : list[ProgressItem]"""
+    clients = db.relation('Client', backref='project', cascade="all, delete-orphan")  # type : List[Client]
+    """:type : list[Client]"""
 
     def __repr__(self):
         return u'<Project Name: {}, Active: {}, Margin: {}>'.format(self.name, self.active, self.margin)
@@ -34,12 +36,15 @@ class Project(db.Model):
         :rtype: dict[str, any]
         """
         json_project = {
+            "id": self.pid,
             'name': self.name,
             'reference_number': self.reference_number,
             'active': self.active,
             'margin': self.margin,
             'admin_fee': self.admin_fee,
             'variations': url_for('api.get_project_variations', project_id=self.pid, _external=True),
+            'progress_items': url_for('api.get_project_progress_items', project_id=self.pid, _external=True),
+            'clients': url_for('api.get_project_clients', project_id=self.pid, _external=True),
             'url': url_for('api.get_project', project_id=self.pid, _external=True),
         }
         return json_project
@@ -92,8 +97,15 @@ class Project(db.Model):
         ws.title = 'Claim - TOTAL'
         prepare(ws)
 
-        ws['A1'].value = 'Client:'
+        ws['A1'].value = 'Client:      '
+        ws['A1'].value += '    '.join([client.name for client in self.clients])
         ws['A1'].font = Font(name='Lao UI', size=10, bold=True)
+        ws['A2'].value = '             '
+        ws['A2'].value += '    '.join(
+            [client.first_line_address for client in self.clients if client.first_line_address is not None])
+        ws['A3'].value = '             '
+        ws['A3'].value += '    '.join(
+            [client.second_line_address for client in self.clients if client.second_line_address is not None])
         ws['C1'].value = 'Reference #:'
         ws['C1'].font = Font(name='Lao UI', size=10, bold=True)
         ws['C3'].value = 'Date: {}'.format(datetime.now())
@@ -694,7 +706,7 @@ class Item(db.Model):
 
 
 class ProgressItem(db.Model):
-    __tablename__ = 'progress_item'
+    __tablename__ = 'progress_items'
     id = db.Column(db.Integer, primary_key=True)
     """:type : int"""
     name = db.Column(db.String, nullable=False)
@@ -734,3 +746,47 @@ class ProgressItem(db.Model):
         if 'completed_value' in json:
             completed_value = json['completed_value']
         return ProgressItem(name=name, contract_value=contract_value, completed_value=completed_value, project=project)
+
+
+class Client(db.Model):
+    __tablename__ = 'clients'
+    id = db.Column(db.Integer, primary_key=True)
+    """:type : int"""
+    name = db.Column(db.String, nullable=False)
+    """:type : str"""
+    first_line_address = db.Column(db.String, nullable=True)
+    """:type : str"""
+    second_line_address = db.Column(db.String, nullable=True)
+    """:type : str"""
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)
+    """:type : int"""
+
+    def to_json(self):
+        """
+        :rtype: dict[str, any]
+        """
+        return {
+            'id': self.id,
+            'name': self.name,
+            'first_line_address': self.first_line_address,
+            'second_line_address': self.second_line_address
+        }
+
+    @staticmethod
+    def from_json(json):
+        """
+        :param json: dict[str, any]
+        :rtype: ProgressItem
+        """
+        print(json)
+        project = Project.query.get_or_404(int(json.get('project_id')))  # type : Project
+        """:type : Project"""
+        name = json['name']
+        first_line_address = None
+        if 'first_line_address' in json:
+            first_line_address = json['first_line_address']
+        second_line_address = None
+        if 'second_line_address' in json:
+            second_line_address = json['second_line_address']
+        return Client(name=name, project=project, first_line_address=first_line_address,
+                      second_line_address=second_line_address)

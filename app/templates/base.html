@@ -9,7 +9,8 @@
     <meta id="meta-data"
           data-new-project-url="{{ url_for('api.new_project') }}"
           data-new-variation-url="{{ url_for('api.new_variation') }}"
-          data-new-item-url="{{ url_for('api.new_item') }}">
+          data-new-item-url="{{ url_for('api.new_item') }}"
+          data-new-client-url="{{ url_for('api.new_client') }}">
 
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
 {% endblock %}
@@ -256,6 +257,40 @@
 
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="extra_admin_fee" data-parsley-type="number" placeholder="optional">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Clients</label>
+
+                                <div class="col-sm-9">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th style="text-align: center">Client Name</th>
+                                            <th style="text-align: center">Address First Line</th>
+                                            <th style="text-align: center">Address Second Line</th>
+                                            <th style="text-align: center"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="clients">
+                                        <tr class="client">
+                                            <td>
+                                                <textarea name="clientName" class="input-desc form-control" required></textarea>
+                                            </td>
+                                            <td style="vertical-align: middle;">
+                                                <input type="text" name="firstAddressLine" class="input-amount form-control" required/>
+                                            </td>
+                                            <td style="vertical-align: middle;">
+                                                <input type="text" name="secondAddressLine" class="input-amount form-control" required/>
+                                            </td>
+                                            <td style="width:80px;text-align:center;vertical-align:middle">
+                                                <a href="javascript:void(0)" class="add-client-row" onclick="addClientRow();"><i class="fa fa-plus"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </form>

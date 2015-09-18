@@ -83,6 +83,21 @@ def get_project_progress_items(project_id):
     return jsonify({'progress_items': jsons})
 
 
+@api.route('/projects/<int:project_id>/clients/')
+@auth.login_required
+def get_project_clients(project_id):
+    project = Project.query.get_or_404(project_id)
+
+    project.clients.sort(key=lambda p: p.id)
+    jsons = []
+    for (idx, variation) in enumerate(project.clients):
+        json = variation.to_json()
+        json['virtual_id'] = idx + 1
+        jsons.append(json)
+
+    return jsonify({'clients': jsons})
+
+
 @api.route('/projects/<int:project_id>', methods=['DELETE'])
 @auth.login_required
 def delete_project(project_id):

@@ -168,16 +168,18 @@ $('#btn-delete').on('click', function() {
       if (offset >= selected.length) {
         return true;
       }
+      var status = true;
       $.ajax({
         url: '/api/v1.0/progress_items/' + selected[offset].id,
         type: 'DELETE',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
       }).done(function() {
-        return saveSelections(offset + 1);
+        status = saveSelections(offset + 1);
       }).fail(function() {
-        return false;
+        status = false;
       });
+      return status;
     }
 
     if (saveSelections(0)) {

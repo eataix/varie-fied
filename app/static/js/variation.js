@@ -306,16 +306,18 @@ $('#btn-delete').on('click', function() {
       if (offset >= selected.length) {
         return true;
       }
+      var status = true;
       $.ajax({
         url: '/api/v1.0/variations/' + selected[offset].vid,
         type: 'DELETE',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
       }).done(function() {
-        return deleteVariation(offset + 1);
+        status = deleteVariation(offset + 1);
       }).fail(function() {
-        return false;
+        status = false;
       });
+      return status;
     }
 
     if (deleteVariation(0)) {

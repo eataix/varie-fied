@@ -2,6 +2,7 @@ var metaData = $('#meta-data').data();
 var newProjectUrl = metaData.newProjectUrl;
 var newVariationUrl = metaData.newVariationUrl;
 var newItemUrl = metaData.newItemUrl;
+var newClientUrl = metaData.newClientUrl;
 
 function onSelectChanged(e) {
   'use strict';
@@ -71,6 +72,7 @@ function addRow() {
   $descriptionDiv.attr('required', '');
 }
 
+
 function deleteRow(e) {
   'use strict';
   $(e).closest('tr').remove();
@@ -82,6 +84,33 @@ function deleteRow(e) {
     $descriptionDiv.val($variationItems.find('textarea').val());
     $descriptionDiv.find('textarea').removeAttr('required');
   }
+}
+
+
+function addClientRow() {
+  'use strict';
+  var newRow = $('<tr class="client">' +
+      '<td>' +
+      '<textarea name="clientName" class="input-desc form-control" required></textarea>' +
+      '</td>' +
+      '<td style="vertical-align: middle;">' +
+      '<input type="text" name="firstAddressLine" class="input-amount form-control" required/>' +
+      '</td>' +
+      '<td style="vertical-align: middle;">' +
+      '<input type="text" name="secondAddressLine" class="input-amount form-control" required/>' +
+      '</td>' +
+      '<td style="width:80px;text-align:center;vertical-align:middle;">' +
+      '<a href="javascript:void(0)" class="add-row" onclick="addClientRow();"><i class="fa fa-plus"></i></a>' +
+      ' / ' +
+      '<a href="javascript:void(0)" class="delete-row" onclick="deleteClientRow(this);"><i class="fa fa-minus"></i></a>' +
+      '</td>' +
+      '</tr>');
+  $('#clients').append(newRow);
+}
+
+function deleteClientRow(e) {
+  'use strict';
+  $(e).closest('tr').remove();
 }
 
 (function() {
@@ -142,13 +171,57 @@ $('#btn-add-project').on('click', function() {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
       }).done(function(data) {
-        swal({
-          title: 'Nice!',
-          text: 'You created a new project: ' + data.name,
-          type: 'success'
-        }, function() {
-          location.reload();
-        });
+        var $clients = $('.client');
+
+        function createClient(offset) {
+          if (offset >= $clients.length) {
+            return true;
+          }
+          var obj = $clients[offset];
+          console.log(obj);
+          var name = $(obj.children[0].children[0]).val();
+          var first_line_address = $(obj.children[1].children[0]).val();
+          if (first_line_address === '') {
+            first_line_address = null;
+          }
+          var second_line_address = $(obj.children[2].children[0]).val();
+          if (second_line_address === '') {
+            second_line_address = null;
+          }
+          console.log(name);
+          console.log(first_line_address);
+          console.log(second_line_address);
+          var status = true;
+          $.ajax({
+            url: newClientUrl,
+            type: 'POST',
+            data: JSON.stringify({
+              name: project_name,
+              first_line_address: first_line_address,
+              second_line_address: second_line_address,
+              project_id: data.id
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          }).done(function(data) {
+            status = createClient(offset + 1);
+          }).fail(function() {
+            status = false;
+          });
+          return status;
+        }
+
+        if (createClient(0)) {
+          swal({
+            title: 'Nice!',
+            text: 'You created a new project: ' + data.name,
+            type: 'success'
+          }, function() {
+            location.reload();
+          });
+        } else {
+          console.log('failed!');
+        }
       });
     });
   }
