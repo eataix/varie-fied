@@ -1,14 +1,16 @@
+from typing import Any, Dict
+
 from flask import jsonify, request
 
 from app import db
-from app.models import Variation
 from app.api_1_0 import api
 from app.api_1_0.authentication import auth
+from app.models import Variation
 
 
 @api.route('/variations/')
 @auth.login_required
-def get_variations():
+def get_variations() -> Dict[str, Any]:
     variations = Variation.query.all()
     """:type : list[Variation]"""
     return jsonify({'variations': [project.to_json() for project in variations]})
@@ -16,14 +18,14 @@ def get_variations():
 
 @api.route('/variations/<int:variation_id>')
 @auth.login_required
-def get_variation(variation_id):
+def get_variation(variation_id: int) -> Dict[str, Any]:
     variation = Variation.query.get_or_404(variation_id)
     return jsonify(variation.to_json())
 
 
 @api.route('/variations/', methods=['POST'])
 @auth.login_required
-def new_variation():
+def new_variation() -> Dict[str, Any]:
     variation = Variation.from_json(request.json)
     db.session.add(variation)
     db.session.commit()
@@ -32,7 +34,7 @@ def new_variation():
 
 @api.route('/variations/<int:variation_id>', methods=['PUT'])
 @auth.login_required
-def edit_variation(variation_id):
+def edit_variation(variation_id: int) -> Dict[str, Any]:
     variation = Variation.query.get_or_404(variation_id)
     variation.subcontractor = request.json.get('subcontractor', variation.subcontractor)
     variation.invoice_no = request.json.get('invoice_no', variation.invoice_no)
@@ -50,7 +52,7 @@ def edit_variation(variation_id):
 
 @api.route('/variations/<int:variation_id>/items/')
 @auth.login_required
-def get_variation_items(variation_id):
+def get_variation_items(variation_id: int) -> Dict[str, Any]:
     variation = Variation.query.get_or_404(variation_id)
     variation.items.sort(key=lambda i: i.id)
     return jsonify({'items': [item.to_json() for item in variation.items]})
@@ -58,7 +60,7 @@ def get_variation_items(variation_id):
 
 @api.route('/variations/<int:variation_id>', methods=['DELETE'])
 @auth.login_required
-def delete_variation(variation_id):
+def delete_variation(variation_id: int) -> Dict[str, Any]:
     variation = Variation.query.get_or_404(variation_id)
     db.session.delete(variation)
     db.session.commit()

@@ -1,40 +1,31 @@
-from flask import url_for
-from . import db
-from datetime import datetime, date
-from app.exceptions import ValidationError
+from datetime import datetime
+from typing import Dict, Any
+
 import arrow
+from flask import url_for
+
+from app.exceptions import ValidationError
+from . import db
 
 
 class Project(db.Model):
     __tablename__ = 'projects'
     pid = db.Column(db.Integer, primary_key=True)  # type: int
-    """:type : int"""
-    reference_number = db.Column(db.String, nullable=False)  # type : str
-    """:type : str"""
-    name = db.Column(db.String, nullable=False)  # type : str
-    """:type : str"""
-    margin = db.Column(db.Float, nullable=False)  # type : float
-    """:type : float"""
-    active = db.Column(db.Boolean, default=True)  # type : bool
-    """:type : bool"""
-    admin_fee = db.Column(db.Float, nullable=True)  # type : float
-    """:type : float"""
+    reference_number = db.Column(db.String, nullable=False)  # type: str
+    name = db.Column(db.String, nullable=False)  # type: str
+    margin = db.Column(db.Float, nullable=False)  # type: float
+    active = db.Column(db.Boolean, default=True)  # type: bool
+    admin_fee = db.Column(db.Float, nullable=True)  # type: float
 
-    variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan")  # type : List[Variation]
-    """:type : list[Variation]"""
+    variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan")  # type: List[Variation]
     progress_items = db.relation('ProgressItem', backref='project',
-                                 cascade="all, delete-orphan")  # type : List[ProgressItem]
-    """:type : list[ProgressItem]"""
+                                 cascade="all, delete-orphan")  # type: List[ProgressItem]
     clients = db.relation('Client', backref='project', cascade="all, delete-orphan")  # type : List[Client]
-    """:type : list[Client]"""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return u'<Project Name: {}, Active: {}, Margin: {}>'.format(self.name, self.active, self.margin)
 
-    def to_json(self):
-        """
-        :rtype: dict[str, any]
-        """
+    def to_json(self) -> Dict[str, Any]:
         json_project = {
             "id": self.pid,
             'name': self.name,
@@ -50,11 +41,7 @@ class Project(db.Model):
         return json_project
 
     @staticmethod
-    def from_json(json_project):
-        """
-        :param json_project: dict[str, any]
-        :rtype: Project
-        """
+    def from_json(json_project: Dict[str, Any]):
         name = json_project.get('name')
         reference_number = json_project.get('reference_number')
         margin = json_project.get('margin')
@@ -63,18 +50,14 @@ class Project(db.Model):
             raise ValidationError('project does not have a name')
         return Project(name=name, margin=margin, admin_fee=admin_fee, reference_number=reference_number)
 
-    def export(self):
-        def cm_to_inch(cm):
-            """
-            :param cm: float
-            :rtype: float
-            """
+    def export(self) -> str:
+        def cm_to_inch(cm: float) -> float:
             return cm * 0.393701
 
-        def prepare(worksheet):
-            """
-            :param worksheet : openpyxl.worksheet.Worksheet
-            """
+        from openpyxl import Workbook, worksheet
+        from openpyxl.styles import Alignment, Border, Color, Font, Side, PatternFill
+
+        def prepare(worksheet: worksheet.Worksheet) -> None:
             worksheet.header_footer.setHeader(
                 '&L&"Calibri,Regular"&K000000&G&C&"Lao UI,Bold"&8Total Project Construction Pty. Ltd.&"Lao UI,Regular"&K000000_x000D_ACN 117 578 560  ABN 84 117 578 560_x000D_PO Box 313 HALL ACT_x000D_P: 02-6230 2455   F:02-6230 2488_x000D_E: troy@totalproject.com.au')
             worksheet.header_footer.setFooter(
@@ -85,15 +68,11 @@ class Project(db.Model):
             worksheet.page_margins.left = cm_to_inch(1.2)
             worksheet.page_margins.right = cm_to_inch(1.1)
 
-        from openpyxl import Workbook
-        from openpyxl.styles import Alignment, Border, Color, Font, Side, PatternFill
-
         fill = PatternFill(patternType='solid', fgColor=Color('D8E4BC'))
 
-        wb = Workbook()
+        wb = Workbook()  # type: Workbook
 
-        ws = wb.active
-        """:type : openpyxl.worksheet.Worksheet"""
+        ws = wb.active  # type: worksheet.Worksheet
         ws.title = 'Claim - TOTAL'
         prepare(ws)
 
@@ -599,39 +578,25 @@ class Project(db.Model):
 
 class Variation(db.Model):
     __tablename__ = 'variations'
-    vid = db.Column(db.Integer, primary_key=True)
-    """:type : int"""
-    date = db.Column(db.DateTime, default=datetime.utcnow())
-    """:type : datetime"""
-    subcontractor = db.Column(db.String(64), default="")
-    """:type : str"""
-    invoice_no = db.Column(db.String(64), nullable=True)
-    """:type : str"""
-    description = db.Column(db.Text, nullable=False)
-    """:type : str"""
-    amount = db.Column(db.Float, default=0.0)
-    """:type : float"""
-    pending = db.Column(db.Boolean, default=True)
-    """:type : bool"""
-    approved = db.Column(db.Boolean, default=False)
-    """:type : bool"""
-    declined = db.Column(db.Boolean, default=False)
-    """:type : bool"""
-    completed = db.Column(db.Boolean, default=False)
-    """:type : bool"""
-    note = db.Column(db.Text, nullable=True)
-    """:type : str"""
+    vid = db.Column(db.Integer, primary_key=True)  # type: int
+    date = db.Column(db.DateTime, default=datetime.utcnow())  # type: datetime
+    subcontractor = db.Column(db.String(64), default="")  # type: str
+    invoice_no = db.Column(db.String(64), nullable=True)  # type: str
+    description = db.Column(db.Text, nullable=False)  # type: str
+    amount = db.Column(db.Float, default=0.0)  # type: float
+    pending = db.Column(db.Boolean, default=True)  # type : bool
+    approved = db.Column(db.Boolean, default=False)  # type: bool
+    declined = db.Column(db.Boolean, default=False)  # type: bool
+    completed = db.Column(db.Boolean, default=False)  # type: bool
+    note = db.Column(db.Text, nullable=True)  # type: str
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'))  # type: int
+    items = db.relationship('Item', backref='variation', cascade="all, delete-orphan")  # type: List[Item]
 
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'))
-    """:type : int"""
-    items = db.relationship('Item', backref='variation', cascade="all, delete-orphan")
-    """:type : list[Item]"""
-
-    def __repr__(self):
+    def __repr__(self) -> str:
         return u'<Variation Id: {}, Project id: {}, Description: {}, Amount: {}, Subcontractor: {}>' \
             .format(self.vid, self.project_id, self.description, self.amount, self.subcontractor)
 
-    def to_json(self):
+    def to_json(self) -> Dict[str, Any]:
         json_variation = {
             'vid': self.vid,
             'url': url_for('api.get_variation', variation_id=self.vid, _external=True),
@@ -651,7 +616,7 @@ class Variation(db.Model):
         return json_variation
 
     @staticmethod
-    def from_json(json_variation):
+    def from_json(json_variation: Dict[str, Any]):
         date = arrow.get(json_variation.get('date')).datetime
         subcontractor = json_variation.get('subcontractor')
         invoice_no = json_variation.get('invoice_no')
@@ -671,23 +636,16 @@ class Variation(db.Model):
 
 class Item(db.Model):
     __tablename__ = 'items'
-    id = db.Column(db.Integer, primary_key=True)
-    """:type : int"""
-    amount = db.Column(db.Float, nullable=False)
-    """:type : float"""
-    description = db.Column(db.Text, nullable=False)
-    """:type : str"""
-    variation_id = db.Column(db.Integer, db.ForeignKey('variations.vid'))
-    """:type : int"""
+    id = db.Column(db.Integer, primary_key=True)  # type: int
+    amount = db.Column(db.Float, nullable=False)  # type: float
+    description = db.Column(db.Text, nullable=False)  # type: str
+    variation_id = db.Column(db.Integer, db.ForeignKey('variations.vid'))  # type: int
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return u'<Item Id: {}, Variation: {}, Amount: {}, Description: {}>'.format(self.id, self.variation_id,
                                                                                    self.amount, self.description)
 
-    def to_json(self):
-        """
-        :rtype: dict[str, any]
-        """
+    def to_json(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "variation_id": self.variation_id,
@@ -697,11 +655,7 @@ class Item(db.Model):
         }
 
     @staticmethod
-    def from_json(json):
-        """
-        :param json: dict[str, any]
-        :rtype: Item
-        """
+    def from_json(json: Dict[str, Any]):
         variation = Variation.query.get_or_404(int(json.get('variation_id')))
         amount = json.get('amount')
         description = json.get('description')
@@ -710,22 +664,14 @@ class Item(db.Model):
 
 class ProgressItem(db.Model):
     __tablename__ = 'progress_items'
-    id = db.Column(db.Integer, primary_key=True)
-    """:type : int"""
-    name = db.Column(db.String, nullable=False)
-    """:type : str"""
-    contract_value = db.Column(db.Float, nullable=False)
-    """:type : float"""
-    completed_value = db.Column(db.Float, default=0.0)
-    """:type : float"""
+    id = db.Column(db.Integer, primary_key=True)  # type: int
+    name = db.Column(db.String, nullable=False)  # type: str
+    contract_value = db.Column(db.Float, nullable=False)  # type: float
+    completed_value = db.Column(db.Float, default=0.0)  # type: float
 
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)
-    """:type : int"""
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)  # type: int
 
-    def to_json(self):
-        """
-        :rtype: dict[str, any]
-        """
+    def to_json(self) -> Dict[str, Any]:
         return {
             'id': self.id,
             'name': self.name,
@@ -736,13 +682,8 @@ class ProgressItem(db.Model):
         }
 
     @staticmethod
-    def from_json(json):
-        """
-        :param json: dict[str, any]
-        :rtype: ProgressItem
-        """
-        project = Project.query.get_or_404(int(json.get('project_id')))  # type : Project
-        """:type : Project"""
+    def from_json(json: Dict[str, Any]):
+        project = Project.query.get_or_404(int(json.get('project_id')))  # type: Project
         name = json['name']
         contract_value = json['contract_value']
         completed_value = None
@@ -753,21 +694,13 @@ class ProgressItem(db.Model):
 
 class Client(db.Model):
     __tablename__ = 'clients'
-    id = db.Column(db.Integer, primary_key=True)
-    """:type : int"""
-    name = db.Column(db.String, nullable=False)
-    """:type : str"""
-    first_line_address = db.Column(db.String, nullable=True)
-    """:type : str"""
-    second_line_address = db.Column(db.String, nullable=True)
-    """:type : str"""
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)
-    """:type : int"""
+    id = db.Column(db.Integer, primary_key=True)  # type: int
+    name = db.Column(db.String, nullable=False)  # type: str
+    first_line_address = db.Column(db.String, nullable=True)  # type: str
+    second_line_address = db.Column(db.String, nullable=True)  # type: str
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)  # type: int
 
-    def to_json(self):
-        """
-        :rtype: dict[str, any]
-        """
+    def to_json(self) -> Dict[str, Any]:
         return {
             'id': self.id,
             'name': self.name,
@@ -776,14 +709,8 @@ class Client(db.Model):
         }
 
     @staticmethod
-    def from_json(json):
-        """
-        :param json: dict[str, any]
-        :rtype: ProgressItem
-        """
-        # print(json)
-        project = Project.query.get_or_404(int(json.get('project_id')))  # type : Project
-        """:type : Project"""
+    def from_json(json: Dict[str, Any]):
+        project = Project.query.get_or_404(int(json.get('project_id')))  # type: Project
         name = json['name']
         first_line_address = None
         if 'first_line_address' in json:

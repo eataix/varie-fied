@@ -1,1 +1,15 @@
-{"version":3,"file":"index.min.js","sources":["index.js"],"names":["setTimeout","document","body","classList","add"],"mappings":"AAAAA,WAAW,WACT,YACAC,UAASC,KAAKC,UAAUC,IAAI,WAC3B"}
+{
+  "version": 3,
+  "file": "index.min.js",
+  "sources": [
+    "index.js"
+  ],
+  "names": [
+    "setTimeout",
+    "document",
+    "body",
+    "classList",
+    "add"
+  ],
+  "mappings": "AAAAA,WAAW,WACT,YACAC,UAASC,KAAKC,UAAUC,IAAI,WAC3B"
+}
