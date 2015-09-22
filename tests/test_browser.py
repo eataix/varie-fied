@@ -12,6 +12,8 @@ from tests.utils import browser_test, fake
 class ViewsTest(CustomTestCase):
     def test_index(self):
         with browser_test() as browser:
+            if browser is None:
+                self.skipTest('No browser')
             browser.get('http://admin:password@127.0.0.1:8943')
             self.assertIn('Varie-fied', browser.title)
             h1 = browser.find_elements_by_tag_name('h1')
@@ -69,6 +71,8 @@ class ViewsTest(CustomTestCase):
 
     def test_new_project(self):
         with browser_test() as browser:
+            if browser is None:
+                self.skipTest('No browser')
             total_clients = 0
             num_trials = 10
             for idx in range(num_trials):
@@ -92,6 +96,8 @@ class ViewsTest(CustomTestCase):
 
     def test_new_variation(self):
         with browser_test() as browser:
+            if browser is None:
+                self.skipTest('No browser')
             for _ in range(10):
                 browser.get('http://admin:password@127.0.0.1:8943')
                 self.new_project(browser, 2)
