@@ -6,7 +6,7 @@ from selenium.webdriver.firefox.webdriver import WebDriver
 
 from app.models import Project, Client, Variation, Item
 from tests.base import CustomTestCase
-from tests.utils import browser_test
+from tests.utils import browser_test, fake
 
 
 class ViewsTest(CustomTestCase):
@@ -40,11 +40,11 @@ class ViewsTest(CustomTestCase):
         elem.click()
         time.sleep(1)
         elem = browser.find_element_by_id('extra_project_name')
-        elem.send_keys('an awesome project')
+        elem.send_keys("{}".format(fake.company()))
         elem = browser.find_element_by_id('extra_reference_number')
-        elem.send_keys('01/15')
+        elem.send_keys("{}".format(fake.ean8()))
         elem = browser.find_element_by_id('extra_margin')
-        elem.send_keys('0.1')
+        elem.send_keys("{:f}".format(random.random()))
 
         elem = browser.find_element_by_class_name('add-client-row')
         for __ in range(number_clients - 1):
@@ -55,9 +55,10 @@ class ViewsTest(CustomTestCase):
         secondAddressLineElem = browser.find_elements_by_name('secondAddressLine')
 
         for idx in range(number_clients):
-            clientNameElems[idx].send_keys("client {}".format(idx + 1))
-            firstAddressLineElem[idx].send_keys("first line {}".format(idx + 1))
-            secondAddressLineElem[idx].send_keys("second line {}".format(idx + 1))
+            clientNameElems[idx].send_keys("{}".format(fake.company()))
+            first, second = fake.address().split('\n')
+            firstAddressLineElem[idx].send_keys("{}".format(first))
+            secondAddressLineElem[idx].send_keys("{}".format(second))
 
         elem = browser.find_element_by_id('btn-add-project')
         elem.click()
@@ -93,7 +94,7 @@ class ViewsTest(CustomTestCase):
             self.new_project(browser, 5)
             time.sleep(1)
 
-            for i in range(100):
+            for i in range(10):
                 browser.get('http://admin:password@127.0.0.1:8943')
                 elem = browser.find_element_by_css_selector('[data-target="#new-variation-dialog"]')
                 elem.click()
@@ -131,7 +132,7 @@ class ViewsTest(CustomTestCase):
                 elem = browser.find_element_by_id('value-of-work')
                 self.assertEqual(elem.get_attribute('value'), '$0.00')
                 elem = browser.find_element_by_id('margin')
-                self.assertNotEqual(elem.get_attribute('value'), '15%')
+                self.assertNotEqual(elem.get_attribute('value'), '0.00%')
                 elem = browser.find_element_by_id('admin-fee')
                 self.assertFalse(elem.is_displayed())
                 elem = browser.find_element_by_id('subtotal')
@@ -161,8 +162,10 @@ class ViewsTest(CustomTestCase):
                     elem.send_keys("1000")
                     elem = browser.find_element_by_id('value-of-work')
                     self.assertEqual(elem.get_attribute('value'), "${:,.2f}".format(1000 * (idx + 1)))
+                    elem = browser.find_element_by_id('margin')
+                    margin = float(elem.get_attribute('value')[:-1]) / 100.0
                     elem = browser.find_element_by_id('subtotal')
-                    subtotal = 1000 * (idx + 1) * 1.1
+                    subtotal = 1000 * (idx + 1) * (1 + margin)
                     self.assertEqual(elem.get_attribute('value'), "${:,.2f}".format(subtotal))
 
                 elem = browser.find_element_by_id('btn_submit')

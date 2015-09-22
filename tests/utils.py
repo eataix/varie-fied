@@ -1,4 +1,5 @@
 import requests
+from faker import Factory
 from requests.auth import HTTPBasicAuth
 from selenium import webdriver
 
@@ -12,6 +13,8 @@ def get_with_password(url):
 def post_with_password(url, json):
     return requests.post(url=url, json=json, auth=auth)
 
+
+fake = Factory.create()
 
 class browser_test:
     def __enter__(self):

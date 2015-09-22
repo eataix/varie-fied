@@ -14,3 +14,4 @@ gevent==1.1b4
 flask-testing
 requests
 selenium
+fake-factory
