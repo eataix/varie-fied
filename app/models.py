@@ -17,10 +17,12 @@ class Project(db.Model):
     active = db.Column(db.Boolean, default=True)  # type: bool
     admin_fee = db.Column(db.Float, nullable=True)  # type: float
 
-    variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan")  # type: List[Variation]
-    progress_items = db.relation('ProgressItem', backref='project',
-                                 cascade="all, delete-orphan")  # type: List[ProgressItem]
-    clients = db.relation('Client', backref='project', cascade="all, delete-orphan")  # type : List[Client]
+    variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan",
+                                 lazy='select')  # type: List[Variation]
+    progress_items = db.relation('ProgressItem', backref='project', cascade="all, delete-orphan",
+                                 lazy='select')  # type: List[ProgressItem]
+    clients = db.relation('Client', backref='project', cascade="all, delete-orphan",
+                          lazy='select')  # type : List[Client]
 
     def __repr__(self) -> str:
         return u'<Project Name: {}, Active: {}, Margin: {}>'.format(self.name, self.active, self.margin)
@@ -590,7 +592,7 @@ class Variation(db.Model):
     completed = db.Column(db.Boolean, default=False)  # type: bool
     note = db.Column(db.Text, nullable=True)  # type: str
     project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'))  # type: int
-    items = db.relationship('Item', backref='variation', cascade="all, delete-orphan")  # type: List[Item]
+    items = db.relationship('Item', backref='variation', cascade="all, delete-orphan", lazy='select')  # type: List[Item]
 
     def __repr__(self) -> str:
         return u'<Variation Id: {}, Project id: {}, Description: {}, Amount: {}, Subcontractor: {}>' \

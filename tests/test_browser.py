@@ -69,32 +69,36 @@ class ViewsTest(CustomTestCase):
 
     def test_new_project(self):
         with browser_test() as browser:
-            for idx in range(10):
+            total_clients = 0
+            num_trials = 10
+            for idx in range(num_trials):
                 browser.get('http://admin:password@127.0.0.1:8943')
-                time.sleep(1)
-                self.new_project(browser, 10)
+                num_clients = random.randint(1, 10)
+                self.new_project(browser, num_clients)
+
+                total_clients += num_clients
 
                 projects = Project.query.all()
                 self.assertEqual(len(projects), idx + 1)
-                # project = projects[0]
-                # self.assertEqual(project.name, 'an awesome project')
-                # self.assertEqual(project.reference_number, '01/15')
-                # self.assertEqual(project.margin, 0.1)
-                # self.assertIsNone(project.admin_fee)
+
+                project = Project.query.order_by(Project.pid.desc()).first()
+                self.assertEqual(len(project.clients), num_clients)
 
                 clients = Client.query.all()
-                self.assertEqual(len(clients), 10 * (idx + 1))
-                # client = clients[0]
-                # self.assertEqual(client.project_id, project.pid)
+                self.assertEqual(len(clients), total_clients)
+
+                clients = Client.query.filter(Client.project_id == project.pid).all()
+                self.assertEqual(len(clients), num_clients)
 
     def test_new_variation(self):
         with browser_test() as browser:
-            browser.get('http://admin:password@127.0.0.1:8943')
-            time.sleep(1)
-            self.new_project(browser, 5)
-            time.sleep(1)
+            for _ in range(10):
+                browser.get('http://admin:password@127.0.0.1:8943')
+                self.new_project(browser, 2)
 
-            for i in range(10):
+            num_variations = 10
+            total_items = 0
+            for variation_idx in range(num_variations):
                 browser.get('http://admin:password@127.0.0.1:8943')
                 elem = browser.find_element_by_css_selector('[data-target="#new-variation-dialog"]')
                 elem.click()
@@ -148,24 +152,29 @@ class ViewsTest(CustomTestCase):
                 self.assertFalse(elem.is_displayed())
 
                 elem = browser.find_element_by_class_name('add-row')
-                elem.click()
-                elem.click()
+                num_items = random.randint(1, 5)
+                total_items += num_items
+                for _ in range(num_items - 1):
+                    elem.click()
 
                 elems = browser.find_elements_by_name('description')
-                self.assertTrue(len(elems), 10)
+                self.assertTrue(len(elems), num_items)
                 for idx, elem in enumerate(elems):
                     elem.send_keys("item {}".format(idx + 1))
 
                 elems = browser.find_elements_by_name('amount')
-                self.assertTrue(len(elems), 10)
+                self.assertTrue(len(elems), num_items)
+                sum_item_price = 0
                 for idx, elem in enumerate(elems):
-                    elem.send_keys("1000")
+                    item_price = random.randint(800, 1200)
+                    elem.send_keys("{:f}".format(item_price))
+                    sum_item_price += item_price
                     elem = browser.find_element_by_id('value-of-work')
-                    self.assertEqual(elem.get_attribute('value'), "${:,.2f}".format(1000 * (idx + 1)))
+                    self.assertEqual(elem.get_attribute('value'), "${:,.2f}".format(sum_item_price))
                     elem = browser.find_element_by_id('margin')
                     margin = float(elem.get_attribute('value')[:-1]) / 100.0
                     elem = browser.find_element_by_id('subtotal')
-                    subtotal = 1000 * (idx + 1) * (1 + margin)
+                    subtotal = sum_item_price * (1 + margin)
                     self.assertEqual(elem.get_attribute('value'), "${:,.2f}".format(subtotal))
 
                 elem = browser.find_element_by_id('btn_submit')
@@ -178,7 +187,7 @@ class ViewsTest(CustomTestCase):
                 time.sleep(5)
 
                 variations = Variation.query.all()  # type: List[Variation]
-                self.assertEqual(len(variations), i + 1)
+                self.assertEqual(len(variations), variation_idx + 1)
 
                 items = Item.query.all()  # type: List[Variation]
-                self.assertEqual(len(items), (i + 1) * 3)
+                self.assertEqual(len(items), total_items)
