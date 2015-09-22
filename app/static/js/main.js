@@ -23,12 +23,14 @@ function onSelectChanged(e) {
       el.val(accounting.formatMoney(data.admin_fee));
     }
     update();
+  }).fail(function() {
+    // TODO
   });
 }
 
 function isNumeric(n) {
   'use strict';
-  return !isNaN(parseFloat(n)) && isFinite(n);
+  return $.isNumeric(n);
 }
 
 function update() {
@@ -72,7 +74,6 @@ function addRow() {
   $descriptionDiv.attr('required', '');
 }
 
-
 function deleteRow(e) {
   'use strict';
   $(e).closest('tr').remove();
@@ -86,10 +87,9 @@ function deleteRow(e) {
   }
 }
 
-
 function addClientRow() {
   'use strict';
-  var newRow = $('<tr class="client">' +
+  var $newRow = $('<tr class="client">' +
       '<td>' +
       '<textarea name="clientName" class="input-desc form-control" required></textarea>' +
       '</td>' +
@@ -105,12 +105,27 @@ function addClientRow() {
       '<a href="javascript:void(0)" class="delete-row" onclick="deleteClientRow(this);"><i class="fa fa-minus"></i></a>' +
       '</td>' +
       '</tr>');
-  $('#clients').append(newRow);
+  $('#clients').append($newRow);
 }
 
 function deleteClientRow(e) {
   'use strict';
   $(e).closest('tr').remove();
+}
+
+function isNull(status) {
+  'use strict';
+  return status === null;
+}
+
+function isTrue(status) {
+  'use strict';
+  return status === true;
+}
+
+function isFalse(status) {
+  'use strict';
+  return status === false;
 }
 
 (function() {
@@ -138,7 +153,7 @@ $('#btn-add-project').on('click', function() {
     }
 
     swal({
-      title: 'Are you sure to add the project?',
+      title: 'Are you sure to add a project?',
       text: 'You can recover this project later!',
       type: 'info',
       showCancelButton: true,
@@ -150,7 +165,7 @@ $('#btn-add-project').on('click', function() {
       customClass: 'newProjectConfirmation'
     }, function(isConfirm) {
       if (!isConfirm) {
-        swal('Cancelled', 'The project file is safe :)', 'error');
+        swal('Cancelled', 'The project is not added :)', 'error');
         return;
       }
 
@@ -170,12 +185,19 @@ $('#btn-add-project').on('click', function() {
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
+      }).fail(function() {
+        // TODO
       }).done(function(data) {
-        var $clients = $('.client');
 
-        function createClient(offset) {
+        var $clients = $('.client');
+        var statusArray = new Array($clients.length);
+        for (var i = 0; i < statusArray.length; i += 1) {
+          statusArray[i] = null;
+        }
+
+        (function createClient(offset) {
           if (offset >= $clients.length) {
-            return true;
+            return;
           }
           var obj = $clients[offset];
           var name = $(obj.children[0].children[0]).val();
@@ -187,7 +209,6 @@ $('#btn-add-project').on('click', function() {
           if (second_line_address === '') {
             second_line_address = null;
           }
-          var status = true;
           $.ajax({
             url: newClientUrl,
             type: 'POST',
@@ -199,25 +220,30 @@ $('#btn-add-project').on('click', function() {
             }),
             contentType: 'application/json; charset=utf-8',
             dataType: 'json'
-          }).done(function(data) {
-            status = createClient(offset + 1);
+          }).done(function() {
+            statusArray[offset] = true;
+            createClient(offset + 1);
           }).fail(function() {
-            status = false;
+            statusArray[offset] = false;
           });
-          return status;
-        }
+        })(0);
 
-        if (createClient(0)) {
-          swal({
-            title: 'Nice!',
-            text: 'You created a new project: ' + data.name,
-            type: 'success'
-          }, function() {
-            setTimeout(function() {
+        (function waiting() {
+          if (_.some(statusArray, isFalse)) {
+            // TODO
+            console.error('failed to save some changes');
+          } else if (_.some(statusArray, isNull)) {
+            setTimeout(waiting, 100);
+          } else if (_.every(statusArray, isTrue)) {
+            swal({
+              title: 'Nice!',
+              text: 'You created a new project: ' + data.name,
+              type: 'success'
+            }, function() {
               location.reload();
-            }, 100);
-          });
-        }
+            });
+          }
+        })();
       });
     });
   }
@@ -276,52 +302,64 @@ $('#btn_submit').on('click', function() {
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
+      }).fail(function() {
+        // TODO
       }).done(function(data) {
         var vid = data.vid;
         var $variationItems = $('.variationItem');
 
-        function createVariationItem(offset) {
+        var statusArray = new Array($variationItems.length);
+        for (var i = 0; i < statusArray.length; i += 1) {
+          statusArray[i] = null;
+        }
+
+        (function createVariationItem(offset) {
           if (offset >= $variationItems.length) {
-            return true;
+            return;
           }
           var obj = $variationItems[offset];
           var desc = $(obj.children[0].children[0]).val();
           var amount = $(obj.children[1].children[0]).val();
 
-          if (desc !== '' && amount !== '') {
-            var successful = true;
-            $.ajax({
-              url: newItemUrl,
-              type: 'POST',
-              data: JSON.stringify({
-                variation_id: vid,
-                description: desc,
-                amount: amount
-              }),
-              contentType: 'application/json; charset=utf-8',
-              dataType: 'json'
-            }).success(function() {
-              successful = createVariationItem(offset + 1);
-            }).fail(function() {
-              successful = false;
-            });
-            return successful;
-          } else {
-            return createVariationItem(offset + 1);
-          }
-        }
-
-        var status = createVariationItem(0);
-
-        if (status) {
-          swal({
-            title: 'Nice!',
-            text: 'You created a new variation',
-            type: 'success'
-          }, function() {
-            location.reload();
+          $.ajax({
+            url: newItemUrl,
+            type: 'POST',
+            data: JSON.stringify({
+              variation_id: vid,
+              description: desc,
+              amount: amount
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          }).success(function() {
+            statusArray[offset] = true;
+            createVariationItem(offset + 1);
+          }).fail(function() {
+            statusArray[offset] = false;
           });
-        }
+        })(0);
+
+        (function waiting() {
+          if (_.some(statusArray, function(status) {
+                return status === false;
+              })) {
+            // TODO
+          } else if (_.some(statusArray, function(status) {
+                return status === null;
+              })) {
+            setTimeout(waiting, 100);
+          } else if (_.every(statusArray, function(status) {
+                return status === true;
+              })) {
+            swal({
+              title: 'Nice!',
+              text: 'You created a new variation',
+              type: 'success'
+            }, function() {
+              location.reload();
+            });
+          }
+        })();
       });
     });
   }

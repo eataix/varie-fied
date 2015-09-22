@@ -301,34 +301,50 @@ $('#btn-delete').on('click', function() {
     $button.off('click');
 
     var selected = $table.bootstrapTable('getSelections');
+    var statusArray = new Array(selected.length);
+    for (var i = 0; i < statusArray.length; i += 1) {
+      statusArray[i] = null;
+    }
 
-    function deleteVariation(offset) {
+    (function deleteVariation(offset) {
       if (offset >= selected.length) {
         return true;
       }
-      var status = true;
       $.ajax({
         url: '/api/v1.0/variations/' + selected[offset].vid,
         type: 'DELETE',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
       }).done(function() {
-        status = deleteVariation(offset + 1);
+        statusArray[offset] = true;
+        deleteVariation(offset + 1);
       }).fail(function() {
-        status = false;
+        statusArray[offset] = false;
       });
-      return status;
-    }
+    })(0);
 
-    if (deleteVariation(0)) {
-      swal({
-        title: 'Nice!',
-        text: 'Delete variations',
-        type: 'success'
-      }, function() {
-        location.reload();
-      });
-    }
+    (function waiting() {
+      if (_.some(statusArray, function(status) {
+            return status === false;
+          })) {
+        // TODO
+      } else if (_.some(statusArray, function(status) {
+            return status === null;
+          })) {
+        setTimeout(waiting, 100);
+      } else if (_.every(statusArray, function(status) {
+            return status === true;
+          })) {
+
+        swal({
+          title: 'Nice!',
+          text: 'Delete variations',
+          type: 'success'
+        }, function() {
+          location.reload();
+        });
+      }
+    })();
   });
 });
 
@@ -356,10 +372,17 @@ $('#btn-save').on('click', function() {
     $button.off('click');
 
     var data = $table.bootstrapTable('getData');
-    for (var key = 0; key < data.length; key += 1) {
-      var value = data[key];
+    var statusArray = new Array(data.length);
+    for (var j = 0; j < statusArray.length; j += 1) {
+      statusArray[j] = null;
+    }
+    (function updateVariations(offset) {
+      if (offset >= data.length) {
+        return;
+      }
+      var value = data[offset];
       var vid = value.vid;
-      var selector = '[data-index=' + key + ']';
+      var selector = '[data-index=' + offset + ']';
       var element = $(selector);
       value.pending = element.find('.pending').children().children().is(':checked');
       value.approved = element.find('.approved').children().children().is(':checked');
@@ -373,7 +396,17 @@ $('#btn-save').on('click', function() {
         data: JSON.stringify(value),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
+      }).done(function() {
+        statusArray[offset] = true;
+      }).fail(function() {
+        statusArray[offset] = false;
       });
+      updateVariations(offset + 1);
+    })(0);
+
+    var statusArray2 = new Array(data.length);
+    for (var k = 0; k < statusArray2.length; k += 1) {
+      statusArray2[k] = null;
     }
     $('.item-detail').each(function(i, o) {
       var itemData = $(o).find('a');
@@ -392,14 +425,45 @@ $('#btn-save').on('click', function() {
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
+      }).done(function() {
+        statusArray2[i] = true;
+      }).fail(function() {
+        statusArray2[j] = false;
       });
     });
-    swal({
-      title: 'Nice!',
-      text: 'You saved all changes.',
-      type: 'success'
-    }, function() {
-      location.reload();
-    });
+
+    (function waiting() {
+      if (_.some(statusArray, function(status) {
+            return status === false;
+          }) ||
+          _.some(statusArray2, function(status) {
+            return status === false;
+          })) {
+        // TODO
+      } else if (
+          _.some(statusArray, function(status) {
+            return status === null;
+          }) ||
+          _.some(statusArray2, function(status) {
+            return status === null;
+          })
+      ) {
+        setTimeout(waiting, 100);
+      } else if (
+          _.every(statusArray, function(status) {
+            return status === true;
+          }) &&
+          _.every(statusArray2, function(status) {
+            return status === true;
+          })) {
+        swal({
+          title: 'Nice!',
+          text: 'You saved all changes.',
+          type: 'success'
+        }, function() {
+          location.reload();
+        });
+      }
+    })();
   });
 });

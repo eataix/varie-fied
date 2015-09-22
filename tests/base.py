@@ -1,5 +1,6 @@
-from app import create_app, db
 from flask.ext.testing import LiveServerTestCase
+
+from app import create_app, db
 
 
 class CustomTestCase(LiveServerTestCase):
@@ -17,4 +18,3 @@ class CustomTestCase(LiveServerTestCase):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
-

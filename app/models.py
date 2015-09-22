@@ -4,8 +4,8 @@ from typing import Dict, Any
 import arrow
 from flask import url_for
 
+from app import db
 from app.exceptions import ValidationError
-from . import db
 
 
 class Project(db.Model):
@@ -541,7 +541,7 @@ class Project(db.Model):
 
             row += 4
             new_ws['B{}'.format(row)].value = 'Variation Prepared By:'
-            new_ws['G{}'.format(row)].value = 'Variation Prepared By:'
+            new_ws['G{}'.format(row)].value = 'Variation Prepared For:'
             new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11)
             new_ws['G{}'.format(row)].font = Font(name='Lao UI', size=11)
 
