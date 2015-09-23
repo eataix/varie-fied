@@ -68,7 +68,6 @@ class ViewsTest(CustomTestCase):
         time.sleep(5)
 
     def test_new_project(self):
-        return
         with SeleniumTest() as browser:
             if browser is None:
                 self.skipTest('No browser')
@@ -94,7 +93,6 @@ class ViewsTest(CustomTestCase):
                 self.assertEqual(len(clients), num_clients)
 
     def test_new_variation(self):
-        return
         with SeleniumTest() as browser:
             if browser is None:
                 self.skipTest('No browser')
