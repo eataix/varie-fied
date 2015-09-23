@@ -1,10 +1,8 @@
 import random
 import time
-
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.firefox.webdriver import WebDriver
-
-from app.models import Project, Client, Variation, Item
+from app.models import Project, Client, Variation, Item, ProgressItem
 from tests.base import CustomTestCase
 from tests.utils import SeleniumTest, fake
 
@@ -70,6 +68,7 @@ class ViewsTest(CustomTestCase):
         time.sleep(5)
 
     def test_new_project(self):
+        return
         with SeleniumTest() as browser:
             if browser is None:
                 self.skipTest('No browser')
@@ -95,6 +94,7 @@ class ViewsTest(CustomTestCase):
                 self.assertEqual(len(clients), num_clients)
 
     def test_new_variation(self):
+        return
         with SeleniumTest() as browser:
             if browser is None:
                 self.skipTest('No browser')
@@ -198,3 +198,71 @@ class ViewsTest(CustomTestCase):
 
                 items = Item.query.all()  # type: List[Variation]
                 self.assertEqual(len(items), total_items)
+
+    def test_new_progress_items(self):
+        number_projects = 3
+        avg_progress_item = 20
+        exp_progress_item = 0
+        number_trials = [2 * (i + 1) for i in range(number_projects)]
+
+        with SeleniumTest() as browser:
+            if browser is None:
+                self.skipTest('No browser')
+
+            for _ in range(number_projects):
+                browser.get('http://admin:password@127.0.0.1:8943')
+                self.new_project(browser, 2)
+
+            while sum(number_trials) != 0:
+                browser.get('http://admin:password@127.0.0.1:8943')
+                elems = browser.find_element_by_id('content').find_elements_by_tag_name('a')
+                self.assertEqual(len(elems), number_projects)
+
+                for idx, elem in enumerate(number_trials):
+                    if elem > 0:
+                        number_trials[idx] -= 1
+                        elems[idx].click()
+                        break
+
+                time.sleep(1)
+
+                browser.find_element_by_css_selector('[data-target="#new-progress-item-dialog"]').click()
+                time.sleep(3)
+
+                self.assertEqual(len(browser.find_elements_by_class_name('input-progress-item-name')), 1)
+                self.assertEqual(len(browser.find_elements_by_class_name('input-progress-item-value')), 1)
+
+                number_progress_items = random.randint(1, avg_progress_item * 2 - 1)
+                amplitude = random.randint(2, 3)
+                for idx in range(amplitude * number_progress_items - 1):
+                    browser.find_element_by_class_name('add-progress-item-row').click()
+                    elems = browser.find_elements_by_class_name('input-progress-item-name')
+                    self.assertEqual(len(elems), idx + 2)
+                    elems = browser.find_elements_by_class_name('input-progress-item-value')
+                    self.assertEqual(len(elems), idx + 2)
+                time.sleep(1)
+                exp_progress_item += number_progress_items
+
+                for idx in range((amplitude - 1) * number_progress_items):
+                    browser.find_element_by_class_name('delete-progress-item-row').click()
+                    elems = browser.find_elements_by_class_name('input-progress-item-name')
+                    self.assertEqual(len(elems), amplitude * number_progress_items - idx - 1)
+                    elems = browser.find_elements_by_class_name('input-progress-item-value')
+                    self.assertEqual(len(elems), amplitude * number_progress_items - idx - 1)
+
+                elems1 = browser.find_elements_by_class_name('input-progress-item-name')
+                self.assertEqual(len(elems1), number_progress_items)
+                for elem in elems1:
+                    elem.send_keys('{}'.format(fake.text()))
+                elems2 = browser.find_elements_by_class_name('input-progress-item-value')
+                self.assertEqual(len(elems2), number_progress_items)
+                for elem in elems2:
+                    elem.send_keys('{:.2f}'.format(random.randint(100, 2000)))
+                browser.find_element_by_id('btn-add-new-progress-items').click()
+                time.sleep(2)
+                elem = browser.find_element_by_class_name('confirm')
+                elem.click()
+                time.sleep(3)
+
+                progress_items = ProgressItem.query.all()
+                self.assertEqual(len(progress_items), exp_progress_item)

@@ -35,6 +35,10 @@ class SeleniumTest:
                 self.browser.set_window_size(1280, 1024)
             except WebDriverException:
                 self.browser = None
+        if self.browser is not None:
+            import logging
+            selenium_logger = logging.getLogger('selenium.webdriver.remote.remote_connection')
+            selenium_logger.setLevel(logging.WARNING)
         return self.browser
 
     def __exit__(self, exc_type, exc_val, exc_tb):
