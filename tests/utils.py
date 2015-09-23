@@ -1,9 +1,10 @@
+import os
 import requests
 from faker import Factory
 from requests.auth import HTTPBasicAuth
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 auth = HTTPBasicAuth(username='admin', password='password')
 
@@ -19,12 +20,21 @@ def post_with_password(url, json):
 fake = Factory.create()
 
 
-class browser_test:
-    def __enter__(self) -> WebDriver:
+class SeleniumTest:
+    def __enter__(self):
         try:
-            self.browser = webdriver.Firefox()
-        except WebDriverException:
-            self.browser = None
+            binary_path = os.getenv('FIREFOX_BIN')
+            if binary_path != '':
+                binary = FirefoxBinary(binary_path)
+                self.browser = webdriver.Firefox(firefox_binary=binary)
+            else:
+                self.browser = webdriver.Firefox()
+        except (WebDriverException, RuntimeError):
+            try:
+                self.browser = webdriver.PhantomJS()
+                self.browser.set_window_size(1280, 1024)
+            except WebDriverException:
+                self.browser = None
         return self.browser
 
     def __exit__(self, exc_type, exc_val, exc_tb):

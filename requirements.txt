@@ -9,7 +9,7 @@ flask-httpauth
 psycopg2
 ipython
 openpyxl
-gevent==1.1b4
+gevent==1.1b5
 -e git+https://github.com/benoitc/gunicorn.git#egg=gunicorn
 flask-testing
 requests

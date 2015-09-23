@@ -6,12 +6,12 @@ from selenium.webdriver.firefox.webdriver import WebDriver
 
 from app.models import Project, Client, Variation, Item
 from tests.base import CustomTestCase
-from tests.utils import browser_test, fake
+from tests.utils import SeleniumTest, fake
 
 
 class ViewsTest(CustomTestCase):
     def test_index(self):
-        with browser_test() as browser:
+        with SeleniumTest() as browser:
             if browser is None:
                 self.skipTest('No browser')
             browser.get('http://admin:password@127.0.0.1:8943')
@@ -53,14 +53,14 @@ class ViewsTest(CustomTestCase):
             elem.click()
 
         clientNameElems = browser.find_elements_by_name('clientName')
-        firstAddressLineElem = browser.find_elements_by_name('firstAddressLine')
-        secondAddressLineElem = browser.find_elements_by_name('secondAddressLine')
+        firstAddressLineElems = browser.find_elements_by_name('firstAddressLine')
+        secondAddressLineElems = browser.find_elements_by_name('secondAddressLine')
 
         for idx in range(number_clients):
             clientNameElems[idx].send_keys("{}".format(fake.company()))
             first, second = fake.address().split('\n')
-            firstAddressLineElem[idx].send_keys("{}".format(first))
-            secondAddressLineElem[idx].send_keys("{}".format(second))
+            firstAddressLineElems[idx].send_keys("{}".format(first))
+            secondAddressLineElems[idx].send_keys("{}".format(second))
 
         elem = browser.find_element_by_id('btn-add-project')
         elem.click()
@@ -70,7 +70,7 @@ class ViewsTest(CustomTestCase):
         time.sleep(5)
 
     def test_new_project(self):
-        with browser_test() as browser:
+        with SeleniumTest() as browser:
             if browser is None:
                 self.skipTest('No browser')
             total_clients = 0
@@ -95,7 +95,7 @@ class ViewsTest(CustomTestCase):
                 self.assertEqual(len(clients), num_clients)
 
     def test_new_variation(self):
-        with browser_test() as browser:
+        with SeleniumTest() as browser:
             if browser is None:
                 self.skipTest('No browser')
             for _ in range(10):
@@ -151,8 +151,9 @@ class ViewsTest(CustomTestCase):
                 elem = browser.find_element_by_class_name('input-group-addon')
                 elem.click()
                 elem.click()
+                time.sleep(1)
                 elem = browser.find_element_by_id('input_subcontractor')
-                elem.send_keys('subcontractor 1')
+                elem.send_keys(fake.company())
 
                 elem = browser.find_element_by_id('input_description')
                 self.assertFalse(elem.is_displayed())

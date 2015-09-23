@@ -1,7 +1,8 @@
-from flask import current_app
 import requests
-from tests.utils import get_with_password
+from flask import current_app
+
 from tests.base import CustomTestCase
+from tests.utils import get_with_password
 
 
 class BasicTestCase(CustomTestCase):
