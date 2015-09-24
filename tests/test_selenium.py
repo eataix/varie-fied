@@ -1,7 +1,9 @@
 import random
 import time
+
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.firefox.webdriver import WebDriver
+
 from app.models import Project, Client, Variation, Item, ProgressItem
 from tests.base import CustomTestCase
 from tests.utils import SeleniumTest, fake
@@ -202,6 +204,7 @@ class ViewsTest(CustomTestCase):
         avg_progress_item = 20
         exp_progress_item = 0
         number_trials = [2 * (i + 1) for i in range(number_projects)]
+        dict_num_progress_items = {i: 0 for i in range(number_projects)}
 
         with SeleniumTest() as browser:
             if browser is None:
@@ -216,10 +219,12 @@ class ViewsTest(CustomTestCase):
                 elems = browser.find_element_by_id('content').find_elements_by_tag_name('a')
                 self.assertEqual(len(elems), number_projects)
 
+                index = None
                 for idx, elem in enumerate(number_trials):
                     if elem > 0:
                         number_trials[idx] -= 1
                         elems[idx].click()
+                        index = idx
                         break
 
                 time.sleep(1)
@@ -240,6 +245,7 @@ class ViewsTest(CustomTestCase):
                     self.assertEqual(len(elems), idx + 2)
                 time.sleep(1)
                 exp_progress_item += number_progress_items
+                dict_num_progress_items[index] += number_progress_items
 
                 for idx in range((amplitude - 1) * number_progress_items):
                     browser.find_element_by_class_name('delete-progress-item-row').click()
@@ -264,3 +270,6 @@ class ViewsTest(CustomTestCase):
 
                 progress_items = ProgressItem.query.all()
                 self.assertEqual(len(progress_items), exp_progress_item)
+
+                progress_items = ProgressItem.query.filter(ProgressItem.project_id == index + 1).all()
+                self.assertEqual(len(progress_items), dict_num_progress_items[index])
