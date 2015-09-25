@@ -87,7 +87,7 @@ class Project(db.Model):
         ws['A3'].value = '             '
         ws['A3'].value += '    '.join(
             [client.second_line_address for client in self.clients if client.second_line_address is not None])
-        ws['C1'].value = 'Reference #:'
+        ws['C1'].value = 'Reference #: {}-{}'.format(arrow.now('Australia/Canberra').format('M'), self.reference_number)
         ws['C1'].font = Font(name='Lao UI', size=10, bold=True)
         ws['C3'].value = 'Date: {}'.format(arrow.now('Australia/Canberra').format('DD/MM/YY'))
         ws['C3'].font = Font(name='Lao UI', size=10)
@@ -592,7 +592,8 @@ class Variation(db.Model):
     completed = db.Column(db.Boolean, default=False)  # type: bool
     note = db.Column(db.Text, nullable=True)  # type: str
     project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'))  # type: int
-    items = db.relationship('Item', backref='variation', cascade="all, delete-orphan", lazy='select')  # type: List[Item]
+    items = db.relationship('Item', backref='variation', cascade="all, delete-orphan",
+                            lazy='select')  # type: List[Item]
 
     def __repr__(self) -> str:
         return u'<Variation Id: {}, Project id: {}, Description: {}, Amount: {}, Subcontractor: {}>' \
