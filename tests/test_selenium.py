@@ -1,8 +1,9 @@
 import random
 import time
+from typing import Union
 
+from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.firefox.webdriver import WebDriver
 
 from app.models import Project, Client, Variation, Item, ProgressItem
 from tests.base import CustomTestCase
@@ -37,7 +38,8 @@ class ViewsTest(CustomTestCase):
                 self.fail('new-variation-dialog should exist')
 
     @staticmethod
-    def new_project(browser: WebDriver, number_clients: int) -> None:
+    def new_project(browser: Union[webdriver.Firefox, webdriver.PhantomJS],
+                    number_clients: int) -> None:
         elem = browser.find_element_by_css_selector('[data-target="#new-project-dialog"]')
         elem.click()
         time.sleep(1)
@@ -273,3 +275,50 @@ class ViewsTest(CustomTestCase):
 
                 progress_items = ProgressItem.query.filter(ProgressItem.project_id == index + 1).all()
                 self.assertEqual(len(progress_items), dict_num_progress_items[index])
+
+            for idx in range(number_projects):
+                browser.get('http://admin:password@127.0.0.1:8943')
+                elems = browser.find_element_by_id('content').find_elements_by_tag_name('a')
+                self.assertEqual(len(elems), number_projects)
+                elems[idx].click()
+                contract_values_elements = browser.find_elements_by_css_selector('[data-name="contract_value"]')
+                completed_values_elements = browser.find_elements_by_css_selector('[data-name="completed_value"]')
+                self.assertEqual(len(contract_values_elements), len(completed_values_elements))
+
+                for elem in completed_values_elements:
+                    self.assertEqual('0', elem.text)
+
+                expected_completed_value = [0 for _ in range(len(contract_values_elements))]
+
+                for i in range(len(contract_values_elements)):
+                    contract_value_element = contract_values_elements[i]
+                    completed_value_element = completed_values_elements[i]
+                    completed_value_element.click()
+                    # completed_value = 0
+                    # if random.random() < 0.5:
+                    completed_value = random.randint(0, int(contract_value_element.text))
+                    browser \
+                        .find_element_by_class_name('editable-input') \
+                        .find_element_by_tag_name('input') \
+                        .send_keys("\b", '{:.2f}'.format(completed_value))
+                    browser \
+                        .find_element_by_class_name('editable-buttons') \
+                        .find_element_by_class_name('editable-submit') \
+                        .click()
+                    expected_completed_value[i] = completed_value
+
+                browser.find_element_by_id('btn-save').click()
+                time.sleep(2)
+                elem = browser.find_element_by_class_name('confirm')
+                elem.click()
+                time.sleep(3)
+
+                browser.get('http://admin:password@127.0.0.1:8943')
+                elems = browser.find_element_by_id('content').find_elements_by_tag_name('a')
+                self.assertEqual(len(elems), number_projects)
+                elems[idx].click()
+                contract_values_elements = browser.find_elements_by_css_selector('[data-name="contract_value"]')
+                completed_values_elements = browser.find_elements_by_css_selector('[data-name="completed_value"]')
+                self.assertEqual(len(contract_values_elements), len(completed_values_elements))
+                for idx, elem in enumerate(completed_values_elements):
+                    self.assertEqual(elem.text, "{}".format(expected_completed_value[idx]))

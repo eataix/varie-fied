@@ -1,4 +1,6 @@
 import os
+from typing import Union
+
 import requests
 from faker import Factory
 from requests.auth import HTTPBasicAuth
@@ -21,7 +23,7 @@ fake = Factory.create()
 
 
 class SeleniumTest:
-    def __enter__(self):
+    def __enter__(self)-> Union[webdriver.Firefox, webdriver.PhantomJS]:
         try:
             binary_path = os.getenv('FIREFOX_BIN')
             if binary_path != '':
