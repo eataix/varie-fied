@@ -31,7 +31,6 @@
     {{ moment.include_moment() }}
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
-{#    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>#}
     <script src="{{ url_for('static', filename='js/vendor/arrive.min.js') }}"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/js/ripples.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/js/material.min.js"></script>
@@ -40,7 +39,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/parsley.js/2.1.2/parsley.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.4.1/accounting.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/js/standalone/selectize.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-hover-dropdown/2.0.10/bootstrap-hover-dropdown.min.js"></script>
+{#    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-hover-dropdown/2.0.10/bootstrap-hover-dropdown.min.js"></script>#}
 
     <script src="{{ url_for('static', filename='js/main.min.js') }}"></script>
 {% endblock %}
@@ -76,6 +75,16 @@
                         </li>
                     {% endif %}
                 {% endfor %}
+                <li class="dropdown{% if current_project is defined and not current_project.active %} active{% endif %}">
+                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"> Archived Projects <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    {% for project in projects %}
+                        {% if not project.active %}
+                            <li><a href="/project/{{ project.pid }}/progress">{{ project.name }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    </ul>
+                </li>
                 <li>
                     <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i class="fa fa-plus"></i>
                         New Project</a>
