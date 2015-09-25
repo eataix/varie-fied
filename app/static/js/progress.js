@@ -246,17 +246,11 @@ $('#btn-save').on('click', function() {
     })(0);
 
     (function waiting() {
-      if (_.some(statusArray, function(status) {
-            return status === false;
-          })) {
+      if (statusArray.some(isFalse)) {
         // TODO
-      } else if (_.some(statusArray, function(status) {
-            return status === null;
-          })) {
+      } else if (statusArray.some(isNull)) {
         setTimeout(waiting, 100);
-      } else if (_.every(statusArray, function(status) {
-            return status === true;
-          })) {
+      } else if (statusArray.every(isTrue)) {
         swal({
           title: 'Nice!',
           text: 'You saved all changes.',

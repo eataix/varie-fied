@@ -229,12 +229,12 @@ $('#btn-add-project').on('click', function() {
         })(0);
 
         (function waiting() {
-          if (_.some(statusArray, isFalse)) {
+          if (statusArray.some(isFalse)) {
             // TODO
             console.error('failed to save some changes');
-          } else if (_.some(statusArray, isNull)) {
+          } else if (statusArray.some(isNull)) {
             setTimeout(waiting, 100);
-          } else if (_.every(statusArray, isTrue)) {
+          } else if (statusArray.every(isTrue)) {
             swal({
               title: 'Nice!',
               text: 'You created a new project: ' + data.name,
@@ -340,17 +340,11 @@ $('#btn_submit').on('click', function() {
         })(0);
 
         (function waiting() {
-          if (_.some(statusArray, function(status) {
-                return status === false;
-              })) {
+          if (statusArray.some(isFalse)) {
             // TODO
-          } else if (_.some(statusArray, function(status) {
-                return status === null;
-              })) {
+          } else if (statusArray.some(isNull)) {
             setTimeout(waiting, 100);
-          } else if (_.every(statusArray, function(status) {
-                return status === true;
-              })) {
+          } else if (statusArray.every(isTrue)) {
             swal({
               title: 'Nice!',
               text: 'You created a new variation',
