@@ -398,18 +398,22 @@ $('#btn-save').on('click', function() {
         dataType: 'json'
       }).done(function() {
         statusArray[offset] = true;
+        updateVariations(offset + 1);
       }).fail(function() {
         statusArray[offset] = false;
       });
-      updateVariations(offset + 1);
     })(0);
 
-    var statusArray2 = new Array(data.length);
+    var $itemDetails = $('.item-detail');
+    var statusArray2 = new Array($itemDetails.length);
     for (var k = 0; k < statusArray2.length; k += 1) {
       statusArray2[k] = null;
     }
-    $('.item-detail').each(function(i, o) {
-      var itemData = $(o).find('a');
+    (function updateItemDetail(offset) {
+      if (offset >= $itemDetails.length) {
+        return;
+      }
+      var itemData = $($itemDetails[offset]).find('a');
       var descriptionObj = $(itemData[0]);
       var amountObj = $(itemData[1]);
       var id = (descriptionObj.attr('pk'));
@@ -426,36 +430,19 @@ $('#btn-save').on('click', function() {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
       }).done(function() {
-        statusArray2[i] = true;
+        statusArray2[offset] = true;
+        updateItemDetail(offset + 1);
       }).fail(function() {
-        statusArray2[j] = false;
+        statusArray2[offset] = false;
       });
-    });
+    })(0);
 
     (function waiting() {
-      if (_.some(statusArray, function(status) {
-            return status === false;
-          }) ||
-          _.some(statusArray2, function(status) {
-            return status === false;
-          })) {
+      if (statusArray.some(isFalse) || statusArray2.some(isFalse)) {
         // TODO
-      } else if (
-          _.some(statusArray, function(status) {
-            return status === null;
-          }) ||
-          _.some(statusArray2, function(status) {
-            return status === null;
-          })
-      ) {
+      } else if (statusArray.some(isNull) || statusArray2.some(isNull)) {
         setTimeout(waiting, 100);
-      } else if (
-          _.every(statusArray, function(status) {
-            return status === true;
-          }) &&
-          _.every(statusArray2, function(status) {
-            return status === true;
-          })) {
+      } else if (statusArray.every(isTrue) || statusArray2.every(isTrue)) {
         swal({
           title: 'Nice!',
           text: 'You saved all changes.',
@@ -465,5 +452,6 @@ $('#btn-save').on('click', function() {
         });
       }
     })();
-  });
+  })
+  ;
 });

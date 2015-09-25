@@ -29,7 +29,7 @@ def project_progress(project_id):
     current_project = Project.query.get_or_404(project_id)  # type: Project
     return render_template('progress.html', projects=projects, current_project=current_project,
                            progress=current_project.progress_items,
-                           url='/project/{}/variation'.format(project_id), text='Variation')
+                           url='/project/{}/variation'.format(project_id), text='Variations')
 
 
 @main.route('/export/<int:project_id>')
