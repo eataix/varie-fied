@@ -18,7 +18,8 @@ def project_variation(project_id):
     projects = Project.query.all()  # type: List[Project]
     current_project = Project.query.get_or_404(project_id)  # type: Project
     return render_template('variation.html', projects=projects, current_project=current_project,
-                           variations=current_project.variations)
+                           variations=current_project.variations,
+                           url='/project/{}/progress'.format(project_id), text='Progress')
 
 
 @main.route('/project/<project_id>/progress')
@@ -27,7 +28,8 @@ def project_progress(project_id):
     projects = Project.query.all()  # type: List[Project]
     current_project = Project.query.get_or_404(project_id)  # type: Project
     return render_template('progress.html', projects=projects, current_project=current_project,
-                           progress=current_project.progress_items)
+                           progress=current_project.progress_items,
+                           url='/project/{}/variation'.format(project_id), text='Variation')
 
 
 @main.route('/export/<int:project_id>')

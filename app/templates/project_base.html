@@ -39,7 +39,8 @@
 {% block content %}
     <div id="content" class="container-fluid">
         <h2>{{ current_project.name }}
-            <small>(Reference number: {{ current_project.reference_number }};
+            <small>(<a href="{{ url }}">{{ text }}</a>,
+                   Reference number: {{ current_project.reference_number }};
                    OH/Profit: {{ current_project.margin * 100 }}%
                 {% if current_project.admin_fee is not none %}, Admin fee: {{ current_project.admin_fee }}{% endif %},
                 <a href="javascript:void(0)" data-toggle="modal" data-target="#edit-dialog">edit</a>)
