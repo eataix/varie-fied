@@ -129,11 +129,11 @@ $.ajax({
       align: 'right',
       valign: 'center',
       width: '100px'
-    }, {
-      title: 'Action',
-      align: 'center',
-      formatter: 'reorderFormatter',
-      width: '100px'
+    //}, {
+    //  title: 'Action',
+    //  align: 'center',
+    //  formatter: 'reorderFormatter',
+    //  width: '100px'
     }],
     data: data.progress_items,
     rowStyle: 'rowStyle',

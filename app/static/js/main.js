@@ -113,19 +113,19 @@ function deleteClientRow(e) {
   $(e).closest('tr').remove();
 }
 
-function isNull(status) {
+function isNull(element, index, array) {
   'use strict';
-  return status === null;
+  return element === null;
 }
 
-function isTrue(status) {
+function isTrue(element, index, array) {
   'use strict';
-  return status === true;
+  return element === true;
 }
 
-function isFalse(status) {
+function isFalse(element, index, array) {
   'use strict';
-  return status === false;
+  return element === false;
 }
 
 (function() {
