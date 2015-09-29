@@ -43,9 +43,7 @@ def edit_project(project_id: int) -> Dict[str, Any]:
     db.session.add(project)
     db.session.commit()
     for variation in Variation.query.all():
-        subtotal = 0.0
-        for item in variation.items:
-            subtotal += item.amount
+        subtotal = sum([item.amount for item in variation.items])
         subtotal *= 1.0 + project.margin
         if project.admin_fee is not None:
             subtotal += project.admin_fee

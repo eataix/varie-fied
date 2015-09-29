@@ -19,7 +19,8 @@ def project_variation(project_id):
     current_project = Project.query.get_or_404(project_id)  # type: Project
     return render_template('variation.html', projects=projects, current_project=current_project,
                            variations=current_project.variations,
-                           url='/project/{}/progress'.format(project_id), text='Progress')
+                           prefix='Variations of',
+                           alt_url='/project/{}/progress'.format(project_id), alt_text='Progress')
 
 
 @main.route('/project/<project_id>/progress')
@@ -29,7 +30,8 @@ def project_progress(project_id):
     current_project = Project.query.get_or_404(project_id)  # type: Project
     return render_template('progress.html', projects=projects, current_project=current_project,
                            progress=current_project.progress_items,
-                           url='/project/{}/variation'.format(project_id), text='Variations')
+                           prefix='Progress of',
+                           alt_url='/project/{}/variation'.format(project_id), alt_text='Variations')
 
 
 @main.route('/export/<int:project_id>')

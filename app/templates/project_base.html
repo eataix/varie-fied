@@ -38,8 +38,8 @@
 
 {% block content %}
     <div id="content" class="container-fluid">
-        <h2>{{ current_project.name }}
-            <small>(<a href="{{ url }}">{{ text }}</a>,
+        <h2>{{ prefix }} "{{ current_project.name }}"
+            <small>(<a href="{{ alt_url }}">{{ alt_text }}</a>,
                    Reference number: {{ current_project.reference_number }};
                    OH/Profit: {{ current_project.margin * 100 }}%
                 {% if current_project.admin_fee is not none %}, Admin fee: {{ current_project.admin_fee }}{% endif %},
