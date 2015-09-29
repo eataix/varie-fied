@@ -128,7 +128,7 @@ function isFalse(element, index, array) {
   return element === false;
 }
 
-(function() {
+$(document).on('ready', function() {
   'use strict';
   $.material.init();
   $('#picker_datetime').datetimepicker({showTodayButton: true});
@@ -137,7 +137,7 @@ function isFalse(element, index, array) {
   $('#select_project_id').selectize({
     sortField: 'text'
   });
-})();
+});
 
 $('#btn-add-project').on('click', function() {
   'use strict';

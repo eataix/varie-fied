@@ -19,21 +19,12 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/extensions/editable/bootstrap-table-editable.min.js"></script>
-
-    <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
-
     <script src="{{ url_for('static', filename='js/project_base.min.js') }}"></script>
 {% endblock %}
 
 {% block styles %}
     {{ super() }}
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css">
-
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-center-simple.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/PACE/themes/blue/pace-theme-center-simple.css') }}"/>
 {% endblock %}
 
 {% block content %}
