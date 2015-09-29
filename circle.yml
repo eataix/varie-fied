@@ -12,6 +12,7 @@ dependencies:
     - npm install -g bower
     - bower install
     - npm install
+    - npm install -g grunt-cli
     - grunt
   cache_directories:
     - "~/.cache/pip"

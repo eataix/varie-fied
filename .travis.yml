@@ -1,8 +1,6 @@
 language: python
 python:
   - '3.5'
-node_js:
-  - '4.1.1'
 script: python manage.py test
 addons:
   postgresql: '9.4'
@@ -11,6 +9,7 @@ before_script:
   - npm install -g bower
   - bower install
   - npm install
+  - npm install -g grunt-cli
   - grunt
 env: FLASK_CONFIG=testing
 cache:
