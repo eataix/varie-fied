@@ -1,6 +1,8 @@
 machine:
   python:
     version: 3.5.0
+  node:
+    version: 4.1.1
   services:
     - postgresql
   environment:
