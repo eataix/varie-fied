@@ -22,3 +22,6 @@ dependencies:
 database:
   override:
     - psql -c 'create database "test-database";' -U ubuntu
+test:
+  override:
+    - nosetests -v
