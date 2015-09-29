@@ -56,13 +56,19 @@ module.exports = function(grunt) {
     copy: {
       first: {
         expand: true,
-        cwd: 'app/static/vendor/bootstrap-material-design/fonts/',
+        cwd: 'app/static/vendor/bootstrap/fonts/',
         src: ['**'],
         dest: 'app/static/fonts/',
       },
       second: {
         expand: true,
         cwd: 'app/static/vendor/font-awesome/fonts/',
+        src: ['**'],
+        dest: 'app/static/fonts/',
+      },
+      third: {
+        expand: true,
+        cwd: 'app/static/vendor/bootstrap-material-design/fonts/',
         src: ['**'],
         dest: 'app/static/fonts/',
       }

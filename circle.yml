@@ -16,7 +16,6 @@ dependencies:
     - "node_modules"
     - "app/static/vendor"
     - "app/static/fonts"
-
 database:
   override:
     - psql -c 'create database "test-database";' -U ubuntu
