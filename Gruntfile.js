@@ -38,6 +38,7 @@ module.exports = function(grunt) {
       target: {
         files: {
           'app/static/css/packed.css': [
+            'app/static/vendor/bootstrap/dist/css/bootstrap.min.css',
             'app/static/vendor/font-awesome/css/font-awesome.min.css',
             'app/static/vendor/bootstrap-material-design/dist/css/material.min.css',
             'app/static/vendor/bootstrap-material-design/dist/css/ripples.min.css',
@@ -50,11 +51,23 @@ module.exports = function(grunt) {
           ]
         }
       }
+    },
+
+    copy: {
+      first: {
+        src: 'app/static/vendor/bootstrap-material-design/fonts/*',
+        dest: 'app/static/fonts/'
+      },
+      second: {
+        src: 'app/static/vendor/font-awesome/fonts/*',
+        dest: 'app/static/fonts/'
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
-  grunt.registerTask('default', ['uglify', 'cssmin']);
+  grunt.registerTask('default', ['uglify', 'cssmin', 'copy']);
 };
