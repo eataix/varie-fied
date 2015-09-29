@@ -55,12 +55,16 @@ module.exports = function(grunt) {
 
     copy: {
       first: {
-        src: 'app/static/vendor/bootstrap-material-design/fonts/*',
-        dest: 'app/static/fonts/'
+        expand: true,
+        cwd: 'app/static/vendor/bootstrap-material-design/fonts/',
+        src: ['**'],
+        dest: 'app/static/fonts/',
       },
       second: {
-        src: 'app/static/vendor/font-awesome/fonts/*',
-        dest: 'app/static/fonts/'
+        expand: true,
+        cwd: 'app/static/vendor/font-awesome/fonts/',
+        src: ['**'],
+        dest: 'app/static/fonts/',
       }
     }
   });
