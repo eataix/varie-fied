@@ -71,6 +71,12 @@ module.exports = function(grunt) {
         cwd: 'app/static/vendor/bootstrap-material-design/fonts/',
         src: ['**'],
         dest: 'app/static/fonts/',
+      },
+      fourth: {
+        expand: true,
+        cwd: 'app/static/vendor/x-editable/dist/bootstrap3-editable/img/',
+        src: ['**'],
+        dest: 'app/static/img/',
       }
     }
   });
