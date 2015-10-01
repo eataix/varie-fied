@@ -77,13 +77,21 @@ function completeFormatter(value, row, index) {
 function rowStyle(row, index) {
   'use strict';
   if (row.pending) {
-    return {classes: 'info'};
+    return {
+      classes: 'info'
+    };
   } else if (row.approved) {
-    return {classes: 'success'};
+    return {
+      classes: 'success'
+    };
   } else if (row.declined) {
-    return {classes: 'danger'};
+    return {
+      classes: 'danger'
+    };
   } else {
-    return {classes: 'active'};
+    return {
+      classes: 'active'
+    };
   }
 }
 
@@ -126,22 +134,26 @@ function detailFormatter(index, row) {
     var descriptionClass = 'new-editable-description-' + index;
     var amountClass = 'new-editable-amount-' + index;
 
-    for (var i = 0; i < items.length; i += 1) {
-      var item = items[i];
+    items.map(function(item) {
       var id = item.id;
       var description = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
       var amount = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
       html += '<tr class="item-detail"><td>' + description + '</td><td style="text-align: right;width: 200px">' + amount + '</td></tr>';
-    }
+    });
+
     html += '</tbody>' + '</table>';
 
     $($('[data-index=' + index + ']').next()).children().html(html);
-    $('.' + descriptionClass).editable();
-    $('.' + amountClass).editable();
-    $('.' + descriptionClass).on('save', function(e, params) {
+
+    var $description = $('.' + descriptionClass);
+    $description.editable();
+    $description.on('save', function(e, params) {
       $('#btn-save').prop('disabled', false);
     });
-    $('.' + amountClass).on('save', function(e, params) {
+
+    var $amount = $('.' + amountClass);
+    $amount.editable();
+    $amount.on('save', function(e, params) {
       $('#btn-save').prop('disabled', false);
       var total = 0.0;
       $('.' + amountClass).each(function(i, o) {
@@ -155,9 +167,7 @@ function detailFormatter(index, row) {
         }
       });
       total *= 1.0 + projectMargin;
-      if (projectAdminFee !== 'None') {
-        total += projectAdminFee;
-      }
+      total += projectAdminFee;
       $(e.target).closest('.detail-view').prev().children('.subtotal').html('<b>' + accounting.formatMoney(total) + '</b>');
     });
   });
@@ -165,275 +175,272 @@ function detailFormatter(index, row) {
   return '<strong><i class="fa fa-spinner fa-spin"></i> Loading...</strong>';
 }
 
-$.ajax({
-  url: getProjectVariationsUrl,
-  type: 'GET',
-  contentType: 'application/json; charset=utf-8',
-  dataType: 'json'
-}).done(function(data) {
+(function() {
   'use strict';
-  $('#table').bootstrapTable({
-    columns: [{
-      checkbox: true
-    }, {
-      field: 'virtual_id',
-      title: '#',
-      halign: 'center',
-      sortable: true
-    }, {
-      field: 'description',
-      title: 'Description',
-      editable: {
-        type: 'textarea'
-      },
-      halign: 'center',
-      width: '600px'
-    }, {
-      field: 'date',
-      title: 'Date',
-      formatter: 'timeFormatter',
-      halign: 'center',
-      width: '300px'
-    }, {
-      field: 'subcontractor',
-      title: 'Subcontractor',
-      editable: {
-        type: 'text',
-        validate: validate_required
-      },
-      halign: 'center',
-      sortable: true
-    }, {
-      field: 'amount',
-      title: 'Subtotal ($)',
-      halign: 'center',
-      sortable: true,
-      formatter: 'moneyFormatter',
-      'class': 'subtotal'
-    }, {
-      field: 'invoice_no',
-      title: 'Invoice #',
-      editable: true,
-      halign: 'center'
-    }, {
-      field: 'note',
-      title: 'Note',
-      editable: {
-        type: 'textarea'
-      },
-      halign: 'center'
-    }, {
-      field: 'pending',
-      title: 'Pending',
-      formatter: 'pendingFormatter',
-      halign: 'center',
-      valign: 'center',
-      sortable: true,
-      'class': 'pending'
-    }, {
-      field: 'approved',
-      title: 'Approved',
-      formatter: 'approvedFormatter',
-      halign: 'center',
-      valign: 'center',
-      sortable: true,
-      'class': 'approved'
-    }, {
-      field: 'declined',
-      title: 'Declined',
-      formatter: 'declinedFormatter',
-      halign: 'center',
-      valign: 'center',
-      sortable: true,
-      'class': 'declined'
-    }, {
-      field: 'completed',
-      title: 'Completed',
-      formatter: 'completeFormatter',
-      halign: 'center',
-      valign: 'center',
-      sortable: true,
-      'class': 'completed'
-    }],
-    data: data.variations,
-    rowStyle: 'rowStyle',
-    toolbar: '#toolbar',
-    detailView: true,
-    detailFormatter: 'detailFormatter'
+
+  $.ajax({
+    url: getProjectVariationsUrl,
+    type: 'GET',
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json'
+  }).done(function(data) {
+    $('#table').bootstrapTable({
+      columns: [{
+        checkbox: true
+      }, {
+        field: 'virtual_id',
+        title: '#',
+        halign: 'center',
+        sortable: true
+      }, {
+        field: 'description',
+        title: 'Description',
+        editable: {
+          type: 'textarea'
+        },
+        halign: 'center',
+        width: '600px'
+      }, {
+        field: 'date',
+        title: 'Date',
+        formatter: 'timeFormatter',
+        halign: 'center',
+        width: '300px'
+      }, {
+        field: 'subcontractor',
+        title: 'Subcontractor',
+        editable: {
+          type: 'text',
+          validate: validate_required
+        },
+        halign: 'center',
+        sortable: true
+      }, {
+        field: 'amount',
+        title: 'Subtotal ($)',
+        halign: 'center',
+        sortable: true,
+        formatter: 'moneyFormatter',
+        'class': 'subtotal'
+      }, {
+        field: 'invoice_no',
+        title: 'Invoice #',
+        editable: true,
+        halign: 'center'
+      }, {
+        field: 'note',
+        title: 'Note',
+        editable: {
+          type: 'textarea'
+        },
+        halign: 'center'
+      }, {
+        field: 'pending',
+        title: 'Pending',
+        formatter: 'pendingFormatter',
+        halign: 'center',
+        valign: 'center',
+        sortable: true,
+        'class': 'pending'
+      }, {
+        field: 'approved',
+        title: 'Approved',
+        formatter: 'approvedFormatter',
+        halign: 'center',
+        valign: 'center',
+        sortable: true,
+        'class': 'approved'
+      }, {
+        field: 'declined',
+        title: 'Declined',
+        formatter: 'declinedFormatter',
+        halign: 'center',
+        valign: 'center',
+        sortable: true,
+        'class': 'declined'
+      }, {
+        field: 'completed',
+        title: 'Completed',
+        formatter: 'completeFormatter',
+        halign: 'center',
+        valign: 'center',
+        sortable: true,
+        'class': 'completed'
+      }],
+      data: data.variations,
+      rowStyle: 'rowStyle',
+      toolbar: '#toolbar',
+      detailView: true,
+      detailFormatter: 'detailFormatter'
+    });
+  }).always(function() {
+    $('body').addClass('loaded');
   });
-}).always(function() {
-  'use strict';
-  $('body').addClass('loaded');
-});
 
-$('#btn-delete').on('click', function() {
-  'use strict';
-  swal({
-    title: 'Are you sure to delete selected rows?',
-    text: 'You cannot recover them later!',
-    type: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: 'teal',
-    confirmButtonText: 'Yes, save them!',
-    cancelButtonText: 'No, cancel plx!',
-    closeOnConfirm: false,
-    closeOnCancel: false,
-    customClass: 'deleteRowsConfirmation'
-  }, function(isConfirmed) {
-    if (!isConfirmed) {
-      swal('Cancelled', 'Your project is safe :)', 'error');
-      return;
-    }
-    var $button = $('.deleteRowsConfirmation').find('.confirm');
-    var html = $button.html();
-    $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
-    $button.off('click');
+  var $table = $('#table');
 
-    var selected = $table.bootstrapTable('getSelections');
-    var statusArray = new Array(selected.length);
-    for (var i = 0; i < statusArray.length; i += 1) {
-      statusArray[i] = null;
-    }
-
-    (function deleteVariation(offset) {
-      if (offset >= selected.length) {
-        return true;
-      }
-      $.ajax({
-        url: '/api/v1.0/variations/' + selected[offset].vid,
-        type: 'DELETE',
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json'
-      }).done(function() {
-        statusArray[offset] = true;
-        deleteVariation(offset + 1);
-      }).fail(function() {
-        statusArray[offset] = false;
-      });
-    })(0);
-
-    (function waiting() {
-      if (statusArray.some(isFalse)) {
-        // TODO
-      } else if (statusArray.some(isNull)) {
-        setTimeout(waiting, 100);
-      } else if (statusArray.every(isTrue)) {
-        swal({
-          title: 'Nice!',
-          text: 'Delete variations',
-          type: 'success'
-        }, function() {
-          location.reload();
-        });
-      }
-    })();
-  });
-});
-
-$('#btn-save').on('click', function() {
-  'use strict';
-  swal({
-    title: 'Are you sure to save all the changes?',
-    type: 'info',
-    showCancelButton: true,
-    confirmButtonColor: 'teal',
-    confirmButtonText: 'Yes, save them!',
-    cancelButtonText: 'No, cancel plx!',
-    closeOnConfirm: false,
-    closeOnCancel: false,
-    customClass: 'saveVariationsConfirmation'
-  }, function(isConfirm) {
-    if (!isConfirm) {
-      swal('Cancelled', 'Your saves are unsaved', 'error');
-      return;
-    }
-
-    var $button = $('.saveVariationsConfirmation').find('.confirm');
-    var html = $button.html();
-    $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
-    $button.off('click');
-
-    var data = $table.bootstrapTable('getData');
-    var statusArray = new Array(data.length);
-    for (var j = 0; j < statusArray.length; j += 1) {
-      statusArray[j] = null;
-    }
-    (function updateVariations(offset) {
-      if (offset >= data.length) {
+  $('#btn-delete').on('click', function() {
+    swal({
+      title: 'Are you sure to delete selected rows?',
+      text: 'You cannot recover them later!',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: 'teal',
+      confirmButtonText: 'Yes, save them!',
+      cancelButtonText: 'No, cancel plx!',
+      closeOnConfirm: false,
+      closeOnCancel: false,
+      customClass: 'deleteRowsConfirmation'
+    }, function(isConfirmed) {
+      if (!isConfirmed) {
+        swal('Cancelled', 'Your project is safe :)', 'error');
         return;
       }
-      var value = data[offset];
-      var vid = value.vid;
-      var selector = '[data-index=' + offset + ']';
-      var element = $(selector);
-      value.pending = element.find('.pending').children().children().is(':checked');
-      value.approved = element.find('.approved').children().children().is(':checked');
-      value.declined = element.find('.declined').children().children().is(':checked');
-      value.completed = element.find('.completed').children().children().is(':checked');
-      value.amount = accounting.parse(element.find('.subtotal').html());
+      var $button = $('.deleteRowsConfirmation').find('.confirm');
+      var html = $button.html();
+      $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+      $button.off('click');
 
-      $.ajax({
-        url: '/api/v1.0/variations/' + vid,
-        type: 'PUT',
-        data: JSON.stringify(value),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json'
-      }).done(function() {
-        statusArray[offset] = true;
+      var selected = $table.bootstrapTable('getSelections');
+      var statusArray = new Array(selected.length);
+      _.fill(statusArray, null);
+
+      (function deleteVariation(offset) {
+        if (offset >= selected.length) {
+          return true;
+        }
+        $.ajax({
+          url: '/api/v1.0/variations/' + selected[offset].vid,
+          type: 'DELETE',
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        }).done(function() {
+          statusArray[offset] = true;
+          deleteVariation(offset + 1);
+        }).fail(function() {
+          statusArray[offset] = false;
+        });
+      })(0);
+
+      (function waiting() {
+        if (statusArray.some(isFalse)) {
+          // TODO
+        } else if (statusArray.some(isNull)) {
+          setTimeout(waiting, 100);
+        } else if (statusArray.every(isTrue)) {
+          swal({
+            title: 'Nice!',
+            text: 'Delete variations',
+            type: 'success'
+          }, function() {
+            location.reload();
+          });
+        }
+      })();
+    });
+  });
+
+  $('#btn-save').on('click', function() {
+    swal({
+      title: 'Are you sure to save all the changes?',
+      type: 'info',
+      showCancelButton: true,
+      confirmButtonColor: 'teal',
+      confirmButtonText: 'Yes, save them!',
+      cancelButtonText: 'No, cancel plx!',
+      closeOnConfirm: false,
+      closeOnCancel: false,
+      customClass: 'saveVariationsConfirmation'
+    }, function(isConfirm) {
+      if (!isConfirm) {
+        swal('Cancelled', 'Your saves are unsaved', 'error');
+        return;
+      }
+
+      var $button = $('.saveVariationsConfirmation').find('.confirm');
+      var html = $button.html();
+      $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+
+      var data = $table.bootstrapTable('getData');
+      var statusArray = new Array(data.length);
+      _.fill(statusArray, null);
+
+      (function updateVariations(offset) {
+        if (offset >= data.length) {
+          return;
+        }
+        var value = data[offset];
+        var vid = value.vid;
+        var selector = '[data-index=' + offset + ']';
+        var element = $(selector);
+        value.pending = element.find('.pending').children().children().is(':checked');
+        value.approved = element.find('.approved').children().children().is(':checked');
+        value.declined = element.find('.declined').children().children().is(':checked');
+        value.completed = element.find('.completed').children().children().is(':checked');
+        value.amount = accounting.parse(element.find('.subtotal').html());
+
+        $.ajax({
+          url: '/api/v1.0/variations/' + vid,
+          type: 'PUT',
+          data: JSON.stringify(value),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        }).done(function() {
+          statusArray[offset] = true;
+        }).fail(function() {
+          statusArray[offset] = false;
+        });
+
         updateVariations(offset + 1);
-      }).fail(function() {
-        statusArray[offset] = false;
-      });
-    })(0);
+      })(0);
 
-    var $itemDetails = $('.item-detail');
-    var statusArray2 = new Array($itemDetails.length);
-    for (var k = 0; k < statusArray2.length; k += 1) {
-      statusArray2[k] = null;
-    }
-    (function updateItemDetail(offset) {
-      if (offset >= $itemDetails.length) {
-        return;
-      }
-      var itemData = $($itemDetails[offset]).find('a');
-      var descriptionObj = $(itemData[0]);
-      var amountObj = $(itemData[1]);
-      var id = (descriptionObj.attr('pk'));
-      var description = descriptionObj.html();
-      var amount = parseFloat(amountObj.html());
+      var $itemDetails = $('.item-detail');
+      var statusArray2 = new Array($itemDetails.length);
+      _.fill(statusArray2, null);
+      (function updateItemDetail(offset) {
+        if (offset >= $itemDetails.length) {
+          return;
+        }
+        var itemData = $($itemDetails[offset]).find('a');
+        var descriptionObj = $(itemData[0]);
+        var amountObj = $(itemData[1]);
+        var id = (descriptionObj.attr('pk'));
+        var description = descriptionObj.html();
+        var amount = parseFloat(amountObj.html());
 
-      $.ajax({
-        url: '/api/v1.0/items/' + id,
-        type: 'PUT',
-        data: JSON.stringify({
-          amount: amount,
-          description: description
-        }),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json'
-      }).done(function() {
-        statusArray2[offset] = true;
-        updateItemDetail(offset + 1);
-      }).fail(function() {
-        statusArray2[offset] = false;
-      });
-    })(0);
-
-    (function waiting() {
-      if (statusArray.some(isFalse) || statusArray2.some(isFalse)) {
-        // TODO
-      } else if (statusArray.some(isNull) || statusArray2.some(isNull)) {
-        setTimeout(waiting, 100);
-      } else if (statusArray.every(isTrue) || statusArray2.every(isTrue)) {
-        swal({
-          title: 'Nice!',
-          text: 'You saved all changes.',
-          type: 'success'
-        }, function() {
-          location.reload();
+        $.ajax({
+          url: '/api/v1.0/items/' + id,
+          type: 'PUT',
+          data: JSON.stringify({
+            amount: amount,
+            description: description
+          }),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        }).done(function() {
+          statusArray2[offset] = true;
+        }).fail(function() {
+          statusArray2[offset] = false;
         });
-      }
-    })();
-  })
-  ;
-});
+
+        updateItemDetail(offset + 1);
+      })(0);
+
+      (function waiting() {
+        if (statusArray.some(isFalse) || statusArray2.some(isFalse)) {
+          // TODO
+        } else if (statusArray.some(isNull) || statusArray2.some(isNull)) {
+          setTimeout(waiting, 100);
+        } else if (statusArray.every(isTrue) && statusArray2.every(isTrue)) {
+          swal({
+            title: 'Nice!',
+            text: 'You saved all changes.',
+            type: 'success'
+          }, function() {
+            location.reload();
+          });
+        }
+      })();
+    });
+  });
+})(0);

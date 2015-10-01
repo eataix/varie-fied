@@ -122,238 +122,238 @@ function isFalse(element) {
   return element === false;
 }
 
-$(document).on('ready', function() {
+(function() {
   'use strict';
-  $.material.init();
-  $('#picker_datetime').datetimepicker({showTodayButton: true});
-  $('#select_project_id').selectize({
-    sortField: 'text'
+
+  $(document).on('ready', function() {
+    $.material.init();
+    $('#picker_datetime').datetimepicker({showTodayButton: true});
+    $('#select_project_id').selectize({
+      sortField: 'text'
+    });
   });
-});
 
-$('#btn-add-project').on('click', function() {
-  'use strict';
-  var instance = $('#form-new-project').parsley();
-  instance.validate();
-  if (!instance.isValid()) {
-    return;
-  }
-
-  var project_name = $('#extra_project_name').val();
-  var margin = $('#extra_margin').val();
-  var reference_number = $('#extra_reference_number').val();
-  var admin_fee = $('#extra_admin_fee').val();
-  if (admin_fee === '') {
-    admin_fee = null;
-  }
-
-  swal({
-    title: 'Are you sure to add a project?',
-    text: 'You can delete this project later if necessary!',
-    type: 'info',
-    showCancelButton: true,
-    confirmButtonColor: '#DD6B55',
-    confirmButtonText: 'Yes, add it!',
-    cancelButtonText: 'No, cancel plx!',
-    closeOnConfirm: false,
-    closeOnCancel: false,
-    customClass: 'newProjectConfirmation'
-  }, function(isConfirm) {
-    if (!isConfirm) {
-      swal('Cancelled', 'The project is not yet added :)', 'error');
+  $('#btn-add-project').on('click', function() {
+    'use strict';
+    var instance = $('#form-new-project').parsley();
+    instance.validate();
+    if (!instance.isValid()) {
       return;
     }
 
-    var $button = $('.newProjectConfirmation').find('.confirm');
-    var html = $button.html();
-    $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+    var project_name = $('#extra_project_name').val();
+    var margin = $('#extra_margin').val();
+    var reference_number = $('#extra_reference_number').val();
+    var admin_fee = $('#extra_admin_fee').val();
+    if (admin_fee === '') {
+      admin_fee = null;
+    }
 
-    $.ajax({
-      url: newProjectUrl,
-      type: 'POST',
-      data: JSON.stringify({
-        name: project_name,
-        margin: margin,
-        reference_number: reference_number,
-        admin_fee: admin_fee
-      }),
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json'
-    }).fail(function() {
-      // TODO
-    }).done(function(data) {
+    swal({
+      title: 'Are you sure to add a project?',
+      text: 'You can delete this project later if necessary!',
+      type: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Yes, add it!',
+      cancelButtonText: 'No, cancel plx!',
+      closeOnConfirm: false,
+      closeOnCancel: false,
+      customClass: 'newProjectConfirmation'
+    }, function(isConfirm) {
+      if (!isConfirm) {
+        swal('Cancelled', 'The project is not yet added :)', 'error');
+        return;
+      }
 
-      var $clientElements = $('.client');
-      var statusArray = new Array($clientElements.length);
-      _.fill(statusArray, null);
+      var $button = $('.newProjectConfirmation').find('.confirm');
+      var html = $button.html();
+      $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
-      (function createClient(offset) {
-        if (offset >= $clientElements.length) {
-          return;
-        }
-        var $elem = $($clientElements[offset]);
-        var name = $elem.find('.input-client-name').val();
-        var first_line_address = $elem.find('.input-first-address').val();
-        if (first_line_address === '') {
-          first_line_address = null;
-        }
-        var second_line_address = $elem.find('.input-second-address').val();
-        if (second_line_address === '') {
-          second_line_address = null;
-        }
-        console.log($clientElements);
-        console.log($elem);
-        console.log(name);
-        console.log(first_line_address);
-        console.log(second_line_address);
-        console.log(data.id);
-        $.ajax({
-          url: newClientUrl,
-          type: 'POST',
-          data: JSON.stringify({
-            name: name,
-            first_line_address: first_line_address,
-            second_line_address: second_line_address,
-            project_id: data.id
-          }),
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        }).done(function() {
-          statusArray[offset] = true;
-          createClient(offset + 1);
-        }).fail(function() {
-          statusArray[offset] = false;
-        });
-      })(0);
+      $.ajax({
+        url: newProjectUrl,
+        type: 'POST',
+        data: JSON.stringify({
+          name: project_name,
+          margin: margin,
+          reference_number: reference_number,
+          admin_fee: admin_fee
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json'
+      }).fail(function() {
+        // TODO
+      }).done(function(data) {
 
-      (function waiting() {
-        console.log(statusArray);
-        if (statusArray.some(isFalse)) {
-          console.error('failed to save some changes');
-        } else if (statusArray.some(isNull)) {
-          setTimeout(waiting, 100);
-        } else if (statusArray.every(isTrue)) {
-          swal({
-            title: 'Nice!',
-            text: 'You created a new project: ' + data.name,
-            type: 'success'
-          }, function() {
-            location.reload();
+        var $clientElements = $('.client');
+        var statusArray = new Array($clientElements.length);
+        _.fill(statusArray, null);
+
+        (function createClient(offset) {
+          if (offset >= $clientElements.length) {
+            return;
+          }
+          var $elem = $($clientElements[offset]);
+          var name = $elem.find('.input-client-name').val();
+          var first_line_address = $elem.find('.input-first-address').val();
+          if (first_line_address === '') {
+            first_line_address = null;
+          }
+          var second_line_address = $elem.find('.input-second-address').val();
+          if (second_line_address === '') {
+            second_line_address = null;
+          }
+          console.log($clientElements);
+          console.log($elem);
+          console.log(name);
+          console.log(first_line_address);
+          console.log(second_line_address);
+          console.log(data.id);
+          $.ajax({
+            url: newClientUrl,
+            type: 'POST',
+            data: JSON.stringify({
+              name: name,
+              first_line_address: first_line_address,
+              second_line_address: second_line_address,
+              project_id: data.id
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          }).done(function() {
+            statusArray[offset] = true;
+            createClient(offset + 1);
+          }).fail(function() {
+            statusArray[offset] = false;
           });
-        }
-      })();
+        })(0);
+
+        (function waiting() {
+          console.log(statusArray);
+          if (statusArray.some(isFalse)) {
+            console.error('failed to save some changes');
+          } else if (statusArray.some(isNull)) {
+            setTimeout(waiting, 100);
+          } else if (statusArray.every(isTrue)) {
+            swal({
+              title: 'Nice!',
+              text: 'You created a new project: ' + data.name,
+              type: 'success'
+            }, function() {
+              location.reload();
+            });
+          }
+        })();
+      });
     });
   });
-});
 
-$('#btn_submit').on('click', function() {
-  'use strict';
-  var instance = $('#form-new-variation').parsley();
-  instance.validate();
-  if (!instance.isValid()) {
-    return;
-  }
-
-  var project_id = $('#select_project_id')[0].selectize.items[0];
-  var time = $('#picker_datetime').data('DateTimePicker').date();
-  var timeUTC = time.utc().format();
-  var subcontractor = $('#input_subcontractor').val();
-  var invoice_no = $('#input_invoice_no').val();
-  var input_amount = accounting.unformat($('#subtotal').val());
-  var input_description = '';
-  var $variationItems = $('.variationItem');
-  if ($variationItems.length === 1) {
-    input_description = $variationItems.find('textarea').val();
-  } else {
-    input_description = $('#input_description').val();
-  }
-
-  swal({
-    title: 'Are you sure to add a variation?',
-    text: 'Time: ' + time.format('Do MMMM YYYY h:mm:ss a') + '\nSubcontractor: ' + subcontractor + '\nSubtotal: ' + accounting.formatMoney(input_amount),
-    type: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#DD6B55',
-    confirmButtonText: 'Yes, add it!',
-    cancelButtonText: 'No, cancel plx!',
-    closeOnConfirm: false,
-    closeOnCancel: false,
-    customClass: 'newVariationConfirmation'
-  }, function(isConfirm) {
-    if (!isConfirm) {
-      swal('Cancelled', 'The variation is not yet added :)', 'error');
+  $('#btn_submit').on('click', function() {
+    var instance = $('#form-new-variation').parsley();
+    instance.validate();
+    if (!instance.isValid()) {
       return;
     }
-    var $button = $('.newVariationConfirmation').find('.confirm');
-    var html = $button.html();
-    $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
-    $.ajax({
-      url: newVariationUrl,
-      type: 'POST',
-      data: JSON.stringify({
-        project_id: project_id,
-        date: timeUTC,
-        subcontractor: subcontractor,
-        invoice_no: invoice_no,
-        amount: input_amount,
-        description: input_description
-      }),
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json'
-    }).fail(function() {
-      // TODO
-    }).done(function(data) {
-      var vid = data.vid;
-      var $variationItems = $('.variationItem');
+    var project_id = $('#select_project_id')[0].selectize.items[0];
+    var time = $('#picker_datetime').data('DateTimePicker').date();
+    var timeUTC = time.utc().format();
+    var subcontractor = $('#input_subcontractor').val();
+    var invoice_no = $('#input_invoice_no').val();
+    var input_amount = accounting.unformat($('#subtotal').val());
+    var input_description = '';
+    var $variationItems = $('.variationItem');
+    if ($variationItems.length === 1) {
+      input_description = $variationItems.find('textarea').val();
+    } else {
+      input_description = $('#input_description').val();
+    }
 
-      var statusArray = new Array($variationItems.length);
-      _.fill(statusArray, null);
+    swal({
+      title: 'Are you sure to add a variation?',
+      text: 'Time: ' + time.format('Do MMMM YYYY h:mm:ss a') + '\nSubcontractor: ' + subcontractor + '\nSubtotal: ' + accounting.formatMoney(input_amount),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Yes, add it!',
+      cancelButtonText: 'No, cancel plx!',
+      closeOnConfirm: false,
+      closeOnCancel: false,
+      customClass: 'newVariationConfirmation'
+    }, function(isConfirm) {
+      if (!isConfirm) {
+        swal('Cancelled', 'The variation is not yet added :)', 'error');
+        return;
+      }
+      var $button = $('.newVariationConfirmation').find('.confirm');
+      var html = $button.html();
+      $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
-      (function createVariationItem(offset) {
-        if (offset >= $variationItems.length) {
-          return;
-        }
-        var $elem = $($variationItems[offset]);
-        var desc = $elem.find('.input-desc').val();
-        var amount = $elem.find('.input-amount').val();
+      $.ajax({
+        url: newVariationUrl,
+        type: 'POST',
+        data: JSON.stringify({
+          project_id: project_id,
+          date: timeUTC,
+          subcontractor: subcontractor,
+          invoice_no: invoice_no,
+          amount: input_amount,
+          description: input_description
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json'
+      }).fail(function() {
+        // TODO
+      }).done(function(data) {
+        var vid = data.vid;
+        var $variationItems = $('.variationItem');
 
-        $.ajax({
-          url: newItemUrl,
-          type: 'POST',
-          data: JSON.stringify({
-            variation_id: vid,
-            description: desc,
-            amount: amount
-          }),
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        }).success(function() {
-          statusArray[offset] = true;
-          createVariationItem(offset + 1);
-        }).fail(function() {
-          statusArray[offset] = false;
-        });
-      })(0);
+        var statusArray = new Array($variationItems.length);
+        _.fill(statusArray, null);
 
-      (function waiting() {
-        if (statusArray.some(isFalse)) {
-          // TODO
-          console.log('error');
-        } else if (statusArray.some(isNull)) {
-          setTimeout(waiting, 100);
-        } else if (statusArray.every(isTrue)) {
-          swal({
-            title: 'Nice!',
-            text: 'You created a new variation',
-            type: 'success'
-          }, function() {
-            location.reload();
+        (function createVariationItem(offset) {
+          if (offset >= $variationItems.length) {
+            return;
+          }
+          var $elem = $($variationItems[offset]);
+          var desc = $elem.find('.input-desc').val();
+          var amount = $elem.find('.input-amount').val();
+
+          $.ajax({
+            url: newItemUrl,
+            type: 'POST',
+            data: JSON.stringify({
+              variation_id: vid,
+              description: desc,
+              amount: amount
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          }).success(function() {
+            statusArray[offset] = true;
+            createVariationItem(offset + 1);
+          }).fail(function() {
+            statusArray[offset] = false;
           });
-        }
-      })();
+        })(0);
+
+        (function waiting() {
+          if (statusArray.some(isFalse)) {
+            // TODO
+            console.log('error');
+          } else if (statusArray.some(isNull)) {
+            setTimeout(waiting, 100);
+          } else if (statusArray.every(isTrue)) {
+            swal({
+              title: 'Nice!',
+              text: 'You created a new variation',
+              type: 'success'
+            }, function() {
+              location.reload();
+            });
+          }
+        })();
+      });
     });
   });
-});
-
-$('.input-amount').on('change', update);
+})();
