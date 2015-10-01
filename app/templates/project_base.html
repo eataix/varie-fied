@@ -14,7 +14,7 @@
           data-delete-project-url="{{ url_for('api.delete_project', project_id=current_project.pid) }}"
           data-edit-project-url="{{ url_for('api.edit_project', project_id=current_project.pid) }}"
           data-get-project-progress-items-url="{{ url_for('api.get_project_progress_items', project_id=current_project.pid) }}"
-          data-new-progress-item-url="{{ url_for('api.new_progress_item') }}">
+    >
 {% endblock %}
 
 {% block scripts %}

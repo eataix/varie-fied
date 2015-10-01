@@ -1,14 +1,3 @@
-var metaData = $('#project-data').data();
-var deleteProjectUrl = metaData.deleteProjectUrl;
-var editProjectUrl = metaData.editProjectUrl;
-var getProjectProgressItemsUrl = metaData.getProjectProgressItemsUrl;
-var newProgressItemUrl = metaData.newProgressItemUrl;
-var projectActive = metaData.projectActive;
-var projectAdminFee = metaData.projectAdminFee;
-var projectId = metaData.projectId;
-var projectMargin = metaData.projectMargin;
-var projectName = metaData.projectName;
-
 function addProgressItemRow() {
   'use strict';
   var newRow = $('<tr class="progressItem">' +

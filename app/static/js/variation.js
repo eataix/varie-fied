@@ -1,13 +1,3 @@
-var metaData = $('#project-data').data();
-var deleteProjectUrl = metaData.deleteProjectUrl;
-var editProjectUrl = metaData.editProjectUrl;
-var getProjectVariationsUrl = metaData.getProjectVariationsUrl;
-var projectActive = metaData.projectActive;
-var projectAdminFee = metaData.projectAdminFee;
-var projectId = metaData.projectId;
-var projectMargin = metaData.projectMargin;
-var projectName = metaData.projectName;
-
 function pendingClick(cb) {
   'use strict';
   var $tr = $(cb).parents('tr');
@@ -116,62 +106,61 @@ function validate_required(v) {
 
 function detailFormatter(index, row) {
   'use strict';
+
   var url = '/api/v1.0/variations/' + row.vid + '/items/';
-  setTimeout(function() {
-    $.ajax({
-      url: url,
-      type: 'GET',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json'
-    }).done(function(data) {
-      var items = data.items;
-      var html = '<table class="table table-hover">' +
-          '<thead>' +
-          '<tr>' +
-          '<th style="text-align: center">Name</th>' +
-          '<th style="text-align: center">Amount</th>' +
-          '</tr>' +
-          '</thead>' +
-          '<tbody>';
-      var descriptionClass = 'new-editable-description-' + index;
-      var amountClass = 'new-editable-amount-' + index;
+  $.ajax({
+    url: url,
+    type: 'GET',
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json'
+  }).done(function(data) {
+    var items = data.items;
+    var html = '<table class="table table-hover">' +
+        '<thead>' +
+        '<tr>' +
+        '<th style="text-align: center">Name</th>' +
+        '<th style="text-align: center">Amount</th>' +
+        '</tr>' +
+        '</thead>' +
+        '<tbody>';
+    var descriptionClass = 'new-editable-description-' + index;
+    var amountClass = 'new-editable-amount-' + index;
 
-      for (var i = 0; i < items.length; i += 1) {
-        var item = items[i];
-        var id = item.id;
-        var description = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
-        var amount = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
-        html += '<tr class="item-detail"><td>' + description + '</td><td style="text-align: right;width: 200px">' + amount + '</td></tr>';
-      }
-      html += '</tbody>' + '</table>';
+    for (var i = 0; i < items.length; i += 1) {
+      var item = items[i];
+      var id = item.id;
+      var description = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + descriptionClass + '">' + item.description + '</a>';
+      var amount = '<a href="javascript:void(0)" data-type="textarea" pk=' + id + ' class="' + amountClass + '">' + item.amount + '</a>';
+      html += '<tr class="item-detail"><td>' + description + '</td><td style="text-align: right;width: 200px">' + amount + '</td></tr>';
+    }
+    html += '</tbody>' + '</table>';
 
-      $($('[data-index=' + index + ']').next()).children().html(html);
-      $('.' + descriptionClass).editable();
-      $('.' + amountClass).editable();
-      $('.' + descriptionClass).on('save', function(e, params) {
-        $('#btn-save').prop('disabled', false);
-      });
-      $('.' + amountClass).on('save', function(e, params) {
-        $('#btn-save').prop('disabled', false);
-        var total = 0.0;
-        $('.' + amountClass).each(function(i, o) {
-          if (o !== e.target) {
-            var val = $(o).html();
-            if (val !== '' && isNumeric(val)) {
-              total += parseFloat(val);
-            }
-          } else {
-            total += parseFloat(params.newValue);
-          }
-        });
-        total *= 1.0 + projectMargin;
-        if (projectAdminFee !== 'None') {
-          total += projectAdminFee;
-        }
-        $(e.target).closest('.detail-view').prev().children('.subtotal').html('<b>' + accounting.formatMoney(total) + '</b>');
-      });
+    $($('[data-index=' + index + ']').next()).children().html(html);
+    $('.' + descriptionClass).editable();
+    $('.' + amountClass).editable();
+    $('.' + descriptionClass).on('save', function(e, params) {
+      $('#btn-save').prop('disabled', false);
     });
-  }, 0);
+    $('.' + amountClass).on('save', function(e, params) {
+      $('#btn-save').prop('disabled', false);
+      var total = 0.0;
+      $('.' + amountClass).each(function(i, o) {
+        if (o !== e.target) {
+          var val = $(o).html();
+          if (val !== '' && $.isNumeric(val)) {
+            total += parseFloat(val);
+          }
+        } else {
+          total += parseFloat(params.newValue);
+        }
+      });
+      total *= 1.0 + projectMargin;
+      if (projectAdminFee !== 'None') {
+        total += projectAdminFee;
+      }
+      $(e.target).closest('.detail-view').prev().children('.subtotal').html('<b>' + accounting.formatMoney(total) + '</b>');
+    });
+  });
 
   return '<strong><i class="fa fa-spinner fa-spin"></i> Loading...</strong>';
 }

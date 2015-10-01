@@ -10,17 +10,15 @@
           data-new-project-url="{{ url_for('api.new_project') }}"
           data-new-variation-url="{{ url_for('api.new_variation') }}"
           data-new-item-url="{{ url_for('api.new_item') }}"
-          data-new-client-url="{{ url_for('api.new_client') }}">
+          data-new-client-url="{{ url_for('api.new_client') }}"
+          data-new-progress-item-url="{{ url_for('api.new_progress_item') }}">
 {% endblock %}
 
 {% block styles %}
-{#    {{ super() }}#}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/packed.css') }}">
 {% endblock styles %}
 
 {% block scripts %}
-{#    {{ super() }}#}
-{#    {{ moment.include_moment() }}#}
     <script src="{{ url_for('static', filename='js/packed.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.min.js') }}"></script>
 {% endblock %}
@@ -90,12 +88,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
-                        <form class="form-horizontal" id="form-new-variation">
+                        <form class="form-horizontal" id="form-new-variation" data-parsley-validate>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Project*</label>
 
                                 <div class="col-sm-10">
-                                    <select id="select_project_id" class="form-control" onchange="onSelectChanged(this);">
+                                    <select id="select_project_id" class="form-control" onchange="onSelectChanged();">
                                         <option value="">Select a project</option>
                                         {%- for project in projects %}
                                             <option value="{{ project.pid }}">{{ project.name }}</option>
@@ -222,7 +220,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
-                        <form class="form-horizontal" id="form-new-project">
+                        <form class="form-horizontal" id="form-new-project" data-parsley-validate>
                             <div class="form-group">
                                 <label for="extra_project_name" class="col-sm-3 control-label">Project Name*</label>
 
@@ -269,13 +267,13 @@
                                         <tbody id="clients">
                                         <tr class="client">
                                             <td>
-                                                <textarea name="clientName" class="input-desc form-control" required></textarea>
+                                                <textarea name="clientName" class="input-client-name form-control" required></textarea>
                                             </td>
                                             <td style="vertical-align: middle;">
-                                                <input type="text" name="firstAddressLine" class="input-amount form-control" required/>
+                                                <input type="text" name="firstAddressLine" class="input-first-address form-control" required/>
                                             </td>
                                             <td style="vertical-align: middle;">
-                                                <input type="text" name="secondAddressLine" class="input-amount form-control" required/>
+                                                <input type="text" name="secondAddressLine" class="input-second-address form-control" required/>
                                             </td>
                                             <td style="width:80px;text-align:center;vertical-align:middle">
                                                 <a href="javascript:void(0)" class="add-client-row" onclick="addClientRow();"><i class="fa fa-plus"></i>

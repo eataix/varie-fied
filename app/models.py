@@ -660,8 +660,8 @@ class Item(db.Model):
     @staticmethod
     def from_json(json: Dict[str, Any]):
         variation = Variation.query.get_or_404(int(json.get('variation_id')))
-        amount = json.get('amount')
         description = json.get('description')
+        amount = json.get('amount')
         return Item(variation=variation, amount=amount, description=description)
 
 

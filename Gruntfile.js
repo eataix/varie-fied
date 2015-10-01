@@ -5,7 +5,8 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        mangle: false
+        sourceMap: true,
+        screwIE8: true
       },
       vendor: {
         files: {
@@ -24,10 +25,25 @@ module.exports = function(grunt) {
             'app/static/vendor/bootstrap-table/dist/bootstrap-table.min.js',
             'app/static/vendor/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js',
             'app/static/vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
-            'app/static/vendor/PACE/pace.min.js'
+            'app/static/vendor/PACE/pace.min.js',
+            'app/static/vendor/lodash/lodash.min.js'
           ]
         }
-      }
+      },
+      project: {
+        options: {
+          compress: {
+            unused: false
+          }
+        },
+        files: {
+          'app/static/js/index.min.js': ['app/static/js/index.js'],
+          'app/static/js/main.min.js': ['app/static/js/main.js'],
+          'app/static/js/progress.min.js': ['app/static/js/progress.js'],
+          'app/static/js/project_base.min.js': ['app/static/js/project_base.js'],
+          'app/static/js/variation.min.js': ['app/static/js/variation.js']
+        }
+      },
     },
 
     cssmin: {
