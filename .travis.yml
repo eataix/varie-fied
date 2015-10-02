@@ -20,4 +20,3 @@ cache:
     - $HOME/.cache/pip
     - node_modules
     - app/static/vendor
-    - app/static/fonts
