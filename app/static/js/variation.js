@@ -279,67 +279,6 @@ function detailFormatter(index, row) {
 
   var $table = $('#table');
 
-  $('#btn-delete').on('click', function() {
-    swal({
-      title: 'Are you sure to delete selected rows?',
-      text: 'You cannot recover them later!',
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: 'teal',
-      confirmButtonText: 'Yes, save them!',
-      cancelButtonText: 'No, cancel plx!',
-      closeOnConfirm: false,
-      closeOnCancel: false,
-      customClass: 'deleteRowsConfirmation'
-    }, function(isConfirmed) {
-      if (!isConfirmed) {
-        swal('Cancelled', 'Your project is safe :)', 'error');
-        return;
-      }
-      var $button = $('.deleteRowsConfirmation').find('.confirm');
-      var html = $button.html();
-      $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
-      $button.off('click');
-
-      var selected = $table.bootstrapTable('getSelections');
-      var statusArray = new Array(selected.length);
-      _.fill(statusArray, null);
-
-      (function deleteVariation(offset) {
-        if (offset >= selected.length) {
-          return true;
-        }
-        $.ajax({
-          url: '/api/v1.0/variations/' + selected[offset].vid,
-          type: 'DELETE',
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        }).done(function() {
-          statusArray[offset] = true;
-          deleteVariation(offset + 1);
-        }).fail(function() {
-          statusArray[offset] = false;
-        });
-      })(0);
-
-      (function waiting() {
-        if (statusArray.some(isFalse)) {
-          // TODO
-        } else if (statusArray.some(isNull)) {
-          setTimeout(waiting, 100);
-        } else if (statusArray.every(isTrue)) {
-          swal({
-            title: 'Nice!',
-            text: 'Delete variations',
-            type: 'success'
-          }, function() {
-            location.reload();
-          });
-        }
-      })();
-    });
-  });
-
   $('#btn-save').on('click', function() {
     swal({
       title: 'Are you sure to save all the changes?',
@@ -435,6 +374,67 @@ function detailFormatter(index, row) {
           swal({
             title: 'Nice!',
             text: 'You saved all changes.',
+            type: 'success'
+          }, function() {
+            location.reload();
+          });
+        }
+      })();
+    });
+  });
+
+  $('#btn-delete').on('click', function() {
+    swal({
+      title: 'Are you sure to delete selected rows?',
+      text: 'You cannot recover them later!',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: 'teal',
+      confirmButtonText: 'Yes, save them!',
+      cancelButtonText: 'No, cancel plx!',
+      closeOnConfirm: false,
+      closeOnCancel: false,
+      customClass: 'deleteRowsConfirmation'
+    }, function(isConfirmed) {
+      if (!isConfirmed) {
+        swal('Cancelled', 'Your project is safe :)', 'error');
+        return;
+      }
+      var $button = $('.deleteRowsConfirmation').find('.confirm');
+      var html = $button.html();
+      $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+      $button.off('click');
+
+      var selected = $table.bootstrapTable('getSelections');
+      var statusArray = new Array(selected.length);
+      _.fill(statusArray, null);
+
+      (function deleteVariation(offset) {
+        if (offset >= selected.length) {
+          return true;
+        }
+        $.ajax({
+          url: '/api/v1.0/variations/' + selected[offset].vid,
+          type: 'DELETE',
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        }).done(function() {
+          statusArray[offset] = true;
+          deleteVariation(offset + 1);
+        }).fail(function() {
+          statusArray[offset] = false;
+        });
+      })(0);
+
+      (function waiting() {
+        if (statusArray.some(isFalse)) {
+          // TODO
+        } else if (statusArray.some(isNull)) {
+          setTimeout(waiting, 100);
+        } else if (statusArray.every(isTrue)) {
+          swal({
+            title: 'Done!',
+            text: 'Deleted variations',
             type: 'success'
           }, function() {
             location.reload();

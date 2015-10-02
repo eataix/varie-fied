@@ -134,7 +134,6 @@ function isFalse(element) {
   });
 
   $('#btn-add-project').on('click', function() {
-    'use strict';
     var instance = $('#form-new-project').parsley();
     instance.validate();
     if (!instance.isValid()) {

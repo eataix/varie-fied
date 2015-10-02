@@ -71,63 +71,6 @@ function percentageFormatter(value, row, index) {
 
   var $table = $('#table');
 
-  $('#btn-delete').on('click', function() {
-    swal({
-      title: 'Are you sure to delete selected rows?',
-      text: 'You cannot recover them later!',
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: 'teal',
-      confirmButtonText: 'Yes, save them!',
-      cancelButtonText: 'No, cancel plx!',
-      closeOnConfirm: false,
-      closeOnCancel: false,
-      customClass: 'deleteRowsConfirmation'
-    }, function(isConfirmed) {
-      if (!isConfirmed) {
-        swal('Cancelled', 'Your project is safe :)', 'error');
-        return;
-      }
-
-      var selected = $table.bootstrapTable('getSelections');
-      var statusArray = new Array(selected.length);
-      _.fill(statusArray, null);
-
-      (function saveSelections(offset) {
-        if (offset >= selected.length) {
-          return true;
-        }
-        $.ajax({
-          url: '/api/v1.0/progress_items/' + selected[offset].id,
-          type: 'DELETE',
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        }).done(function() {
-          statusArray[offset] = true;
-        }).fail(function() {
-          statusArray[offset] = false;
-        });
-        saveSelections(offset + 1);
-      })(0);
-
-      (function waiting() {
-        if (statusArray.some(isFalse)) {
-          // TODO
-        } else if (statusArray.some(isNull)) {
-          setTimeout(waiting, 100);
-        } else if (statusArray.every(isTrue)) {
-          swal({
-            title: 'Nice!',
-            text: 'Deleted selected items',
-            type: 'success'
-          }, function() {
-            location.reload();
-          });
-        }
-      })();
-    });
-  });
-
   $('#btn-save').on('click', function() {
     swal({
       title: 'Are you sure to save all the changes?',
@@ -188,6 +131,63 @@ function percentageFormatter(value, row, index) {
           swal({
             title: 'Nice!',
             text: 'You saved all changes.',
+            type: 'success'
+          }, function() {
+            location.reload();
+          });
+        }
+      })();
+    });
+  });
+
+  $('#btn-delete').on('click', function() {
+    swal({
+      title: 'Are you sure to delete selected rows?',
+      text: 'You cannot recover them later!',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: 'teal',
+      confirmButtonText: 'Yes, save them!',
+      cancelButtonText: 'No, cancel plx!',
+      closeOnConfirm: false,
+      closeOnCancel: false,
+      customClass: 'deleteRowsConfirmation'
+    }, function(isConfirmed) {
+      if (!isConfirmed) {
+        swal('Cancelled', 'Your project is safe :)', 'error');
+        return;
+      }
+
+      var selected = $table.bootstrapTable('getSelections');
+      var statusArray = new Array(selected.length);
+      _.fill(statusArray, null);
+
+      (function saveSelections(offset) {
+        if (offset >= selected.length) {
+          return true;
+        }
+        $.ajax({
+          url: '/api/v1.0/progress_items/' + selected[offset].id,
+          type: 'DELETE',
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        }).done(function() {
+          statusArray[offset] = true;
+        }).fail(function() {
+          statusArray[offset] = false;
+        });
+        saveSelections(offset + 1);
+      })(0);
+
+      (function waiting() {
+        if (statusArray.some(isFalse)) {
+          // TODO
+        } else if (statusArray.some(isNull)) {
+          setTimeout(waiting, 100);
+        } else if (statusArray.every(isTrue)) {
+          swal({
+            title: 'Nice!',
+            text: 'Deleted selected items',
             type: 'success'
           }, function() {
             location.reload();

@@ -1,10 +1,10 @@
 import random
 import time
-from typing import Union
-
+# noinspection PyUnresolvedReferences
+from typing import Union, List
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-
+from app import db
 from app.models import Project, Client, Variation, Item, ProgressItem
 from tests.base import CustomTestCase
 from tests.utils import SeleniumTest, fake
@@ -37,9 +37,7 @@ class ViewsTest(CustomTestCase):
             except NoSuchElementException:
                 self.fail('new-variation-dialog should exist')
 
-    @staticmethod
-    def new_project(browser: Union[webdriver.Firefox, webdriver.PhantomJS],
-                    number_clients: int) -> None:
+    def new_project(self, browser: Union[webdriver.Firefox, webdriver.PhantomJS], number_clients: int) -> None:
         elem = browser.find_element_by_css_selector('[data-target="#new-project-dialog"]')
         elem.click()
         time.sleep(1)
@@ -57,6 +55,7 @@ class ViewsTest(CustomTestCase):
         clientNameElems = browser.find_elements_by_name('clientName')
         firstAddressLineElems = browser.find_elements_by_name('firstAddressLine')
         secondAddressLineElems = browser.find_elements_by_name('secondAddressLine')
+        self.assertEqual(len(clientNameElems), number_clients)
 
         for idx in range(number_clients):
             clientNameElems[idx].send_keys("{}".format(fake.company()))
@@ -322,3 +321,60 @@ class ViewsTest(CustomTestCase):
                 self.assertEqual(len(contract_values_elements), len(completed_values_elements))
                 for idx, elem in enumerate(completed_values_elements):
                     self.assertEqual(elem.text, "{}".format(expected_completed_value[idx]))
+
+    def test_edit_project(self):
+        num_projects = 5
+        with SeleniumTest() as browser:
+            if browser is None:
+                self.skipTest('No browser')
+
+            for _ in range(num_projects):
+                browser.get('http://admin:password@127.0.0.1:8943')
+                self.new_project(browser, 1)
+
+            projects = Project.query.all()
+            self.assertTrue(len(projects), num_projects)
+
+            archived_projects = set()
+            remaining_projects = set([i for i in range(1, num_projects + 1)])
+
+            while len(remaining_projects) > 0:
+                browser.get('http://admin:password@127.0.0.1:8943')
+                browser.find_element_by_id('content').find_elements_by_tag_name('a')[0].click()
+                project_id = browser.current_url[7:].split('/')[2]
+
+                trials = random.randint(1, 5)
+                for idx in range(trials):
+                    browser.refresh()
+                    time.sleep(1)
+                    p = Project.query.filter(Project.pid == project_id).first()  # type: Project
+                    self.assertEqual(p.active, idx % 2 == 0)
+                    browser.find_element_by_id('archive_project').click()
+                    time.sleep(1)
+                    browser.find_element_by_class_name('confirm').click()
+                    time.sleep(1)
+                    db.session.refresh(p)
+                    self.assertNotEqual(p.active, idx % 2 == 0)
+
+                if trials % 2 == 1:
+                    archived_projects.add(int(project_id))
+                    remaining_projects.remove(int(project_id))
+
+                for a in archived_projects:
+                    self.assertFalse(Project.query.filter(Project.pid == a).first().active)
+
+                for a in remaining_projects:
+                    self.assertTrue(Project.query.filter(Project.pid == a).first().active)
+
+            for trial in range(num_projects):
+                browser.get('http://admin:password@127.0.0.1:8943')
+                elems = browser.find_element_by_id('content').find_elements_by_tag_name('a')
+                self.assertTrue(len(elems), num_projects - trial)
+                elems[0].click()
+                project_id = browser.current_url[7:].split('/')[2]
+
+                browser.find_element_by_id('delete_project').click()
+                time.sleep(1)
+                browser.find_element_by_class_name('confirm').click()
+                time.sleep(5)
+                self.assertIsNone(Project.query.filter(Project.pid == project_id).first())

@@ -43,7 +43,7 @@ module.exports = function(grunt) {
           'app/static/js/project_base.min.js': ['app/static/js/project_base.js'],
           'app/static/js/variation.min.js': ['app/static/js/variation.js']
         }
-      },
+      }
     },
 
     cssmin: {
@@ -74,25 +74,25 @@ module.exports = function(grunt) {
         expand: true,
         cwd: 'app/static/vendor/bootstrap/fonts/',
         src: ['**'],
-        dest: 'app/static/fonts/',
+        dest: 'app/static/fonts/'
       },
       second: {
         expand: true,
         cwd: 'app/static/vendor/font-awesome/fonts/',
         src: ['**'],
-        dest: 'app/static/fonts/',
+        dest: 'app/static/fonts/'
       },
       third: {
         expand: true,
         cwd: 'app/static/vendor/bootstrap-material-design/fonts/',
         src: ['**'],
-        dest: 'app/static/fonts/',
+        dest: 'app/static/fonts/'
       },
       fourth: {
         expand: true,
         cwd: 'app/static/vendor/x-editable/dist/bootstrap3-editable/img/',
         src: ['**'],
-        dest: 'app/static/img/',
+        dest: 'app/static/img/'
       }
     }
   });
