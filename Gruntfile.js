@@ -3,6 +3,21 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
+    babel: {
+      options: {
+        sourceMap: true
+      },
+      dist: {
+        files: {
+          'app/static/js/index.compiled.js': ['app/static/js/index.js'],
+          'app/static/js/main.compiled.js': ['app/static/js/main.js'],
+          'app/static/js/progress.compiled.js': ['app/static/js/progress.js'],
+          'app/static/js/project_base.compiled.js': ['app/static/js/project_base.js'],
+          'app/static/js/variation.compiled.js': ['app/static/js/variation.js']
+        }
+      }
+    },
+
     uglify: {
       options: {
         sourceMap: true,
@@ -34,14 +49,18 @@ module.exports = function(grunt) {
         options: {
           compress: {
             unused: false
+          },
+          sourceMapIn: function(filename) {
+            'use strict';
+            return filename + '.map';
           }
         },
         files: {
-          'app/static/js/index.min.js': ['app/static/js/index.js'],
-          'app/static/js/main.min.js': ['app/static/js/main.js'],
-          'app/static/js/progress.min.js': ['app/static/js/progress.js'],
-          'app/static/js/project_base.min.js': ['app/static/js/project_base.js'],
-          'app/static/js/variation.min.js': ['app/static/js/variation.js']
+          'app/static/js/index.min.js': ['app/static/js/index.compiled.js'],
+          'app/static/js/main.min.js': ['app/static/js/main.compiled.js'],
+          'app/static/js/progress.min.js': ['app/static/js/progress.compiled.js'],
+          'app/static/js/project_base.min.js': ['app/static/js/project_base.compiled.js'],
+          'app/static/js/variation.min.js': ['app/static/js/variation.compiled.js']
         }
       }
     },
@@ -100,6 +119,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-babel');
 
-  grunt.registerTask('default', ['uglify', 'cssmin', 'copy']);
+  grunt.registerTask('default', ['babel', 'uglify', 'cssmin', 'copy']);
 };

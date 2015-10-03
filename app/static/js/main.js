@@ -9,30 +9,32 @@ function onSelectChanged() {
   'use strict';
   var project_id = $('#select_project_id')[0].selectize.items[0];
   $.ajax({
-    url: '/api/v1.0/projects/' + project_id,
-    type: 'GET',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json'
-  }).done(function(data) {
-    $('#margin').val(data.margin * 100 + '%');
-    var el = $('#admin-fee');
-    if (data.admin_fee === null) {
-      el.parents('.form-group').hide();
-      el.val('');
-    } else {
-      el.parents('.form-group').show();
-      el.val(accounting.formatMoney(data.admin_fee));
-    }
-    update();
-  }).fail(function() {
-    // TODO
-  });
+      url: `/api/v1.0/projects/${project_id}`,
+      type: 'GET',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json'
+    })
+    .done(data => {
+      $('#margin').val(`${data.margin * 100}%`);
+      var el = $('#admin-fee');
+      if (data.admin_fee === null) {
+        el.parents('.form-group').hide();
+        el.val('');
+      } else {
+        el.parents('.form-group').show();
+        el.val(accounting.formatMoney(data.admin_fee));
+      }
+      update();
+    })
+    .fail(() => {
+      // TODO
+    });
 }
 
 function update() {
   'use strict';
   var total = 0.0;
-  $('.input-amount').each(function(index, element) {
+  $('.input-amount').each((index, element) => {
     var val = $(element).val();
     if (val !== '' && $.isNumeric(val)) {
       total += parseFloat(val);
@@ -49,20 +51,20 @@ function update() {
 
 function addRow() {
   'use strict';
-  var newRow = $('<tr class="variationItem">' +
-      '<td>' +
-      '<textarea name="description" class="input-desc form-control" required></textarea>' +
-      '</td>' +
-      '<td style="vertical-align:middle;">' +
-      '<input type="text" name="amount" class="input-amount form-control" required data-parsley-type="number" oninput="update()"/>' +
-      '</td>' +
-      '<td style="width:150px;text-align:center;vertical-align:middle;">' +
-      '<a href="javascript:void(0)" class="add-row" onclick="addRow();"><i class="fa fa-plus"></i> Add</a>' +
-      ' / ' +
-      '<a href="javascript:void(0)" class="delete-row" onclick="deleteRow(this);"><i class="fa fa-minus"></i> Delete</a>' +
-      '</td>' +
-      '</tr>');
-  $('#items').append(newRow);
+  $('#items').append($([
+    '<tr class="variationItem">',
+    '  <td>',
+    '    <textarea name="description" class="input-desc form-control" required></textarea>',
+    '  </td>',
+    '  <td style="vertical-align:middle;">',
+    '    <input type="text" name="amount" class="input-amount form-control" required data-parsley-type="number" oninput="update()"/>',
+    '  </td>',
+    '  <td style="width:150px;text-align:center;vertical-align:middle;">',
+    '    <a href="javascript:void(0)" class="add-row" onclick="addRow();"><i class="fa fa-plus"></i> Add</a>',
+    '    / ',
+    '    <a href="javascript:void(0)" class="delete-row" onclick="deleteRow(this);"><i class="fa fa-minus"></i> Delete</a>',
+    '  </td>',
+    '</tr>'].join('\n')));
   var $descriptionDiv = $('#descriptionDiv');
   $descriptionDiv.show();
   $descriptionDiv.val('');
@@ -73,8 +75,7 @@ function deleteRow(e) {
   'use strict';
   $(e).closest('tr').remove();
   update();
-  var $variationItems = $('.variationItem');
-  if ($variationItems.length === 1) {
+  if ($('.variationItem').length === 1) {
     var $descriptionDiv = $('#descriptionDiv');
     $descriptionDiv.hide();
     $descriptionDiv.find('textarea').removeAttr('required');
@@ -83,23 +84,23 @@ function deleteRow(e) {
 
 function addClientRow() {
   'use strict';
-  var $newRow = $('<tr class="client">' +
-      '<td>' +
-      '<textarea name="clientName" class="input-client-name form-control" required></textarea>' +
-      '</td>' +
-      '<td style="vertical-align: middle;">' +
-      '<input type="text" name="firstAddressLine" class="input-first-address form-control" required/>' +
-      '</td>' +
-      '<td style="vertical-align: middle;">' +
-      '<input type="text" name="secondAddressLine" class="input-second-address form-control" required/>' +
-      '</td>' +
-      '<td style="width:80px;text-align:center;vertical-align:middle;">' +
-      '<a href="javascript:void(0)" class="add-row" onclick="addClientRow();"><i class="fa fa-plus"></i></a>' +
-      ' / ' +
-      '<a href="javascript:void(0)" class="delete-row" onclick="deleteClientRow(this);"><i class="fa fa-minus"></i></a>' +
-      '</td>' +
-      '</tr>');
-  $('#clients').append($newRow);
+  $('#clients').append($([
+    '<tr class="client">',
+    '  <td>',
+    '    <textarea name="clientName" class="input-client-name form-control" required></textarea>',
+    '  </td>',
+    '  <td style="vertical-align: middle;">',
+    '    <input type="text" name="firstAddressLine" class="input-first-address form-control" required/>',
+    '  </td>',
+    '  <td style="vertical-align: middle;">',
+    '    <input type="text" name="secondAddressLine" class="input-second-address form-control" required/>',
+    '  </td>',
+    '  <td style="width:80px;text-align:center;vertical-align:middle;">',
+    '    <a href="javascript:void(0)" class="add-row" onclick="addClientRow();"><i class="fa fa-plus"></i></a>',
+    '     / ',
+    '    <a href="javascript:void(0)" class="delete-row" onclick="deleteClientRow(this);"><i class="fa fa-minus"></i></a>',
+    '  </td>',
+    '</tr>'].join('\n')));
 }
 
 function deleteClientRow(e) {
@@ -122,10 +123,10 @@ function isFalse(element) {
   return element === false;
 }
 
-(function() {
+(() => {
   'use strict';
 
-  $(document).on('ready', function() {
+  $(document).on('ready', () => {
     $.material.init();
     $('#picker_datetime').datetimepicker({showTodayButton: true});
     $('#select_project_id').selectize({
@@ -133,7 +134,7 @@ function isFalse(element) {
     });
   });
 
-  $('#btn-add-project').on('click', function() {
+  $('#btn-add-project').on('click', () => {
     var instance = $('#form-new-project').parsley();
     instance.validate();
     if (!instance.isValid()) {
@@ -159,7 +160,7 @@ function isFalse(element) {
       closeOnConfirm: false,
       closeOnCancel: false,
       customClass: 'newProjectConfirmation'
-    }, function(isConfirm) {
+    }, isConfirm => {
       if (!isConfirm) {
         swal('Cancelled', 'The project is not yet added :)', 'error');
         return;
@@ -170,84 +171,77 @@ function isFalse(element) {
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
       $.ajax({
-        url: newProjectUrl,
-        type: 'POST',
-        data: JSON.stringify({
-          name: project_name,
-          margin: margin,
-          reference_number: reference_number,
-          admin_fee: admin_fee
-        }),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json'
-      }).fail(function() {
-        // TODO
-      }).done(function(data) {
+          url: newProjectUrl,
+          type: 'POST',
+          data: JSON.stringify({
+            name: project_name,
+            margin: margin,
+            reference_number: reference_number,
+            admin_fee: admin_fee
+          }),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        })
+        .fail(() => {
+          // TODO
+        })
+        .done(data => {
+          var $clientElements = $('.client');
+          var statusArray = new Array($clientElements.length);
+          _.fill(statusArray, null);
 
-        var $clientElements = $('.client');
-        var statusArray = new Array($clientElements.length);
-        _.fill(statusArray, null);
+          (function createClient(offset) {
+            if (offset >= $clientElements.length) {
+              return;
+            }
+            var $elem = $($clientElements[offset]);
+            var name = $elem.find('.input-client-name').val();
+            var first_line_address = $elem.find('.input-first-address').val();
+            if (first_line_address === '') {
+              first_line_address = null;
+            }
+            var second_line_address = $elem.find('.input-second-address').val();
+            if (second_line_address === '') {
+              second_line_address = null;
+            }
+            $.ajax({
+                url: newClientUrl,
+                type: 'POST',
+                data: JSON.stringify({
+                  name: name,
+                  first_line_address: first_line_address,
+                  second_line_address: second_line_address,
+                  project_id: data.id
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json'
+              })
+              .done(() => {
+                statusArray[offset] = true;
+                createClient(offset + 1);
+              })
+              .fail(() => statusArray[offset] = false);
+          })(0);
 
-        (function createClient(offset) {
-          if (offset >= $clientElements.length) {
-            return;
-          }
-          var $elem = $($clientElements[offset]);
-          var name = $elem.find('.input-client-name').val();
-          var first_line_address = $elem.find('.input-first-address').val();
-          if (first_line_address === '') {
-            first_line_address = null;
-          }
-          var second_line_address = $elem.find('.input-second-address').val();
-          if (second_line_address === '') {
-            second_line_address = null;
-          }
-          console.log($clientElements);
-          console.log($elem);
-          console.log(name);
-          console.log(first_line_address);
-          console.log(second_line_address);
-          console.log(data.id);
-          $.ajax({
-            url: newClientUrl,
-            type: 'POST',
-            data: JSON.stringify({
-              name: name,
-              first_line_address: first_line_address,
-              second_line_address: second_line_address,
-              project_id: data.id
-            }),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          }).done(function() {
-            statusArray[offset] = true;
-            createClient(offset + 1);
-          }).fail(function() {
-            statusArray[offset] = false;
-          });
-        })(0);
-
-        (function waiting() {
-          console.log(statusArray);
-          if (statusArray.some(isFalse)) {
-            console.error('failed to save some changes');
-          } else if (statusArray.some(isNull)) {
-            setTimeout(waiting, 100);
-          } else if (statusArray.every(isTrue)) {
-            swal({
-              title: 'Nice!',
-              text: 'You created a new project: ' + data.name,
-              type: 'success'
-            }, function() {
-              location.reload();
-            });
-          }
-        })();
-      });
+          (function waiting() {
+            if (statusArray.some(isFalse)) {
+              console.error('failed to save some changes');
+            } else if (statusArray.some(isNull)) {
+              setTimeout(waiting, 100);
+            } else if (statusArray.every(isTrue)) {
+              swal({
+                  title: 'Nice!',
+                  text: `You created a new project: ${data.name}`,
+                  type: 'success'
+                }, () => location.reload()
+              );
+            }
+          })();
+        });
     });
   });
 
-  $('#btn_submit').on('click', function() {
+  $('#btn_submit').on('click', () => {
     var instance = $('#form-new-variation').parsley();
     instance.validate();
     if (!instance.isValid()) {
@@ -270,7 +264,11 @@ function isFalse(element) {
 
     swal({
       title: 'Are you sure to add a variation?',
-      text: 'Time: ' + time.format('Do MMMM YYYY h:mm:ss a') + '\nSubcontractor: ' + subcontractor + '\nSubtotal: ' + accounting.formatMoney(input_amount),
+      text: [
+        `Time: ${time.format('Do MMMM YYYY h:mm:ss a')}`,
+        `Subcontractor: ${subcontractor}`,
+        `Subtotal: ${accounting.formatMoney(input_amount)}`
+      ].join('\n'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#DD6B55',
@@ -279,7 +277,7 @@ function isFalse(element) {
       closeOnConfirm: false,
       closeOnCancel: false,
       customClass: 'newVariationConfirmation'
-    }, function(isConfirm) {
+    }, isConfirm => {
       if (!isConfirm) {
         swal('Cancelled', 'The variation is not yet added :)', 'error');
         return;
@@ -289,70 +287,70 @@ function isFalse(element) {
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
       $.ajax({
-        url: newVariationUrl,
-        type: 'POST',
-        data: JSON.stringify({
-          project_id: project_id,
-          date: timeUTC,
-          subcontractor: subcontractor,
-          invoice_no: invoice_no,
-          amount: input_amount,
-          description: input_description
-        }),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json'
-      }).fail(function() {
-        // TODO
-      }).done(function(data) {
-        var vid = data.vid;
-        var $variationItems = $('.variationItem');
+          url: newVariationUrl,
+          type: 'POST',
+          data: JSON.stringify({
+            project_id: project_id,
+            date: timeUTC,
+            subcontractor: subcontractor,
+            invoice_no: invoice_no,
+            amount: input_amount,
+            description: input_description
+          }),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        })
+        .fail(() => {
+          // TODO
+        })
+        .done(data => {
+          var vid = data.vid;
+          var $variationItems = $('.variationItem');
 
-        var statusArray = new Array($variationItems.length);
-        _.fill(statusArray, null);
+          var statusArray = new Array($variationItems.length);
+          _.fill(statusArray, null);
 
-        (function createVariationItem(offset) {
-          if (offset >= $variationItems.length) {
-            return;
-          }
-          var $elem = $($variationItems[offset]);
-          var desc = $elem.find('.input-desc').val();
-          var amount = $elem.find('.input-amount').val();
+          (function createVariationItem(offset) {
+            if (offset >= $variationItems.length) {
+              return;
+            }
+            var $elem = $($variationItems[offset]);
+            var desc = $elem.find('.input-desc').val();
+            var amount = $elem.find('.input-amount').val();
 
-          $.ajax({
-            url: newItemUrl,
-            type: 'POST',
-            data: JSON.stringify({
-              variation_id: vid,
-              description: desc,
-              amount: amount
-            }),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          }).success(function() {
-            statusArray[offset] = true;
-            createVariationItem(offset + 1);
-          }).fail(function() {
-            statusArray[offset] = false;
-          });
-        })(0);
+            $.ajax({
+                url: newItemUrl,
+                type: 'POST',
+                data: JSON.stringify({
+                  variation_id: vid,
+                  description: desc,
+                  amount: amount
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json'
+              })
+              .done(() => {
+                statusArray[offset] = true;
+                createVariationItem(offset + 1);
+              })
+              .fail(() => statusArray[offset] = false);
+          })(0);
 
-        (function waiting() {
-          if (statusArray.some(isFalse)) {
-            // TODO
-            console.log('error');
-          } else if (statusArray.some(isNull)) {
-            setTimeout(waiting, 100);
-          } else if (statusArray.every(isTrue)) {
-            swal({
-              title: 'Nice!',
-              text: 'You created a new variation',
-              type: 'success'
-            }, function() {
-              location.reload();
-            });
-          }
-        })();
-      });
+          (function waiting() {
+            if (statusArray.some(isFalse)) {
+              // TODO
+              console.log('error');
+            } else if (statusArray.some(isNull)) {
+              setTimeout(waiting, 100);
+            } else if (statusArray.every(isTrue)) {
+              swal({
+                title: 'Nice!',
+                text: 'You created a new variation',
+                type: 'success'
+              }, () => location.reload());
+            }
+          })();
+        });
     });
   });
 })();
