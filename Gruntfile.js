@@ -20,13 +20,14 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        sourceMap: true,
-        screwIE8: true,
-        compress: {
-          unused: false
-        }
+        preserveComments: false,
+        screwIE8: true
       },
       vendor: {
+        options: {
+          mangle: false,
+          compress: false
+        },
         files: {
           'app/static/js/packed.js': [
             'app/static/vendor/jquery/dist/jquery.min.js',
@@ -49,9 +50,13 @@ module.exports = function(grunt) {
       },
       project: {
         options: {
+          sourceMap: true,
           sourceMapIn: function(filename) {
             'use strict';
             return filename + '.map';
+          },
+          compress: {
+            unused: false
           }
         },
         files: {
