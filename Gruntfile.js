@@ -21,8 +21,7 @@ module.exports = function(grunt) {
     uglify: {
       options: {
         sourceMap: true,
-        screwIE8: true,
-        report: 'gzip'
+        screwIE8: true
       },
       vendor: {
         files: {
@@ -51,7 +50,10 @@ module.exports = function(grunt) {
           compress: {
             unused: false
           },
-          sourceMapIn: fn => fn + '.map'
+          sourceMapIn: function(filename) {
+            'use strict';
+            return filename + '.map';
+          }
         },
         files: {
           'app/static/js/index.min.js': ['app/static/js/index.compiled.js'],

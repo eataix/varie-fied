@@ -19,7 +19,7 @@
 
 {% block scripts %}
     {{ super() }}
-    <script data-cfasync="false" src="{{ url_for('static', filename='js/project_base.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/project_base.min.js') }}"></script>
 {% endblock %}
 
 {% block styles %}
