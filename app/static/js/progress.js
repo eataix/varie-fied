@@ -90,8 +90,7 @@ function percentageFormatter(value) {
       }
 
       var data = $table.bootstrapTable('getData');
-      var statusArray = new Array(data.length);
-      _.fill(statusArray, null);
+      var statusArray = new Array(data.length).fill(null);
 
       (function updateProgressItems(offset) {
         if (offset >= data.length) {
@@ -155,8 +154,7 @@ function percentageFormatter(value) {
       }
 
       var selected = $table.bootstrapTable('getSelections');
-      var statusArray = new Array(selected.length);
-      _.fill(statusArray, null);
+      var statusArray = new Array(selected.length).fill(null);
 
       (function saveSelections(offset) {
         if (offset >= selected.length) {

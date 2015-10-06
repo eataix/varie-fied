@@ -120,8 +120,7 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
 
       var $progressItems = $('.progressItem');
 
-      var statusArray = new Array($progressItems.length);
-      _.fill(statusArray, null);
+      var statusArray = new Array($progressItems.length).fill(null);
 
       (function createItem(offset) {
         if (offset >= $progressItems.length) {

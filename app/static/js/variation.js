@@ -317,8 +317,7 @@ function detailFormatter(index, row) {
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
       var data = $table.bootstrapTable('getData');
-      var statusArray = new Array(data.length);
-      _.fill(statusArray, null);
+      var statusArray = new Array(data.length).fill(null);
 
       (function updateVariations(offset) {
         if (offset >= data.length) {
@@ -348,8 +347,8 @@ function detailFormatter(index, row) {
       })(0);
 
       var $itemDetails = $('.item-detail');
-      var statusArray2 = new Array($itemDetails.length);
-      _.fill(statusArray2, null);
+      var statusArray2 = new Array($itemDetails.length).fill(null);
+
       (function updateItemDetail(offset) {
         if (offset >= $itemDetails.length) {
           return;
@@ -420,8 +419,7 @@ function detailFormatter(index, row) {
       $button.off('click');
 
       var selected = $table.bootstrapTable('getSelections');
-      var statusArray = new Array(selected.length);
-      _.fill(statusArray, null);
+      var statusArray = new Array(selected.length).fill(null);
 
       (function deleteVariation(offset) {
         if (offset >= selected.length) {

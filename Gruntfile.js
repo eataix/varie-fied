@@ -21,7 +21,10 @@ module.exports = function(grunt) {
     uglify: {
       options: {
         sourceMap: true,
-        screwIE8: true
+        screwIE8: true,
+        compress: {
+          unused: false
+        }
       },
       vendor: {
         files: {
@@ -40,16 +43,12 @@ module.exports = function(grunt) {
             'app/static/vendor/bootstrap-table/dist/bootstrap-table.min.js',
             'app/static/vendor/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js',
             'app/static/vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
-            'app/static/vendor/PACE/pace.min.js',
-            'app/static/vendor/lodash/lodash.min.js'
+            'app/static/vendor/PACE/pace.min.js'
           ]
         }
       },
       project: {
         options: {
-          compress: {
-            unused: false
-          },
           sourceMapIn: function(filename) {
             'use strict';
             return filename + '.map';

@@ -192,8 +192,7 @@ function isFalse(element) {
           })
           .done(data => {
             var $clientElements = $('.client');
-            var statusArray = new Array($clientElements.length);
-            _.fill(statusArray, null);
+            var statusArray = new Array($clientElements.length).fill(null);
 
             (function createClient(offset) {
               if (offset >= $clientElements.length) {
@@ -314,8 +313,7 @@ function isFalse(element) {
             var vid = data.vid;
             var $variationItems = $('.variationItem');
 
-            var statusArray = new Array($variationItems.length);
-            _.fill(statusArray, null);
+            var statusArray = new Array($variationItems.length).fill(null);
 
             (function createVariationItem(offset) {
               if (offset >= $variationItems.length) {
