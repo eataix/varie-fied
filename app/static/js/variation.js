@@ -7,15 +7,17 @@ function pendingClick(cb) {
   $('#btn-save').prop('disabled', false);
 }
 
-function pendingFormatter(value, row, index) {
+function pendingFormatter(value) {
   'use strict';
-  var mid;
+  var mid = '';
   if (value) {
-    mid = '<input class="checkbox checkbox-pending" type="checkbox" checked="" onclick="pendingClick(this);">';
-  } else {
-    mid = '<input class="checkbox checkbox-pending" type="checkbox" onclick="pendingClick(this);">';
+    mid = 'checked=""';
   }
-  return `<label>${mid}</label>`;
+  return [
+    '<label>',
+    `  <input class="checkbox checkbox-pending" type="checkbox" ${mid} onclick="pendingClick(this);">`,
+    '</label>'
+  ].join('\n');
 }
 
 function approvedClick(cb) {
@@ -27,15 +29,17 @@ function approvedClick(cb) {
   $('#btn-save').prop('disabled', false);
 }
 
-function approvedFormatter(value, row, index) {
+function approvedFormatter(value) {
   'use strict';
-  var mid;
+  var mid = '';
   if (value) {
-    mid = '<input class="checkbox checkbox-approved" type="checkbox" checked="" onclick="approvedClick(this);">';
-  } else {
-    mid = '<input class="checkbox checkbox-approved" type="checkbox" onclick="approvedClick(this);">';
+    mid = 'checked=""';
   }
-  return `<label>${mid}</label>`;
+  return [
+    '<label>',
+    `<input class="checkbox checkbox-approved" type="checkbox" ${mid} onclick="approvedClick(this);">`,
+    '</label>'
+  ].join('\n');
 }
 
 function declinedClick(cb) {
@@ -47,15 +51,17 @@ function declinedClick(cb) {
   $('#btn-save').prop('disabled', false);
 }
 
-function declinedFormatter(value, row, index) {
+function declinedFormatter(value) {
   'use strict';
-  var mid;
+  var mid = '';
   if (value) {
-    mid = '<input class="checkbox checkbox-declined" type="checkbox" checked="" onclick="declinedClick(this);">';
-  } else {
-    mid = '<input class="checkbox checkbox-declined" type="checkbox" onclick="declinedClick(this);">';
+    mid = 'checked=""';
   }
-  return `<label>${mid}</label>`;
+  return [
+    '<label>',
+    `  <input class="checkbox checkbox-declined" type="checkbox" ${mid} onclick="declinedClick(this);">`,
+    '</label>'
+  ].join('\n');
 }
 
 function completeClick() {
@@ -63,18 +69,20 @@ function completeClick() {
   $('#btn-save').prop('disabled', false);
 }
 
-function completeFormatter(value, row, index) {
+function completeFormatter(value) {
   'use strict';
-  var mid;
+  var mid = '';
   if (value) {
-    mid = '<input class="checkbox checkbox-complete" type="checkbox" checked="" onclick="completeClick();">';
-  } else {
-    mid = '<input class="checkbox checkbox-complete" type="checkbox" onclick="completeClick();">';
+    mid = 'checked=""';
   }
-  return `<label>${mid}</label>`;
+  return [
+    '<label>',
+    `<input class="checkbox checkbox-complete" type="checkbox" ${mid} onclick="completeClick();">`,
+    '</label>'
+  ].join('\n');
 }
 
-function rowStyle(row, index) {
+function rowStyle(row) {
   'use strict';
   if (row.pending) {
     return {
@@ -95,12 +103,12 @@ function rowStyle(row, index) {
   }
 }
 
-function timeFormatter(value, row, index) {
+function timeFormatter(value) {
   'use strict';
   return `<p>${moment(value).toDate()}</p>`;
 }
 
-function moneyFormatter(value, row, index) {
+function moneyFormatter(value) {
   'use strict';
   return accounting.formatMoney(value);
 }
@@ -115,72 +123,70 @@ function validate_required(v) {
 function detailFormatter(index, row) {
   'use strict';
 
-  var url = `/api/v1.0/variations/${row.vid}\/items/`;
   $.ajax({
-    url: url,
-    type: 'GET',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json'
-  }).done(data => {
-    var items = data.items;
-    var html = [
-      '<table class="table table-hover">',
-      '  <thead>',
-      '    <tr>',
-      '      <th style="text-align: center">Name</th>',
-      '      <th style="text-align: center">Amount</th>',
-      '    </tr>',
-      '  </thead>',
-      '  <tbody>'
-    ].join('\n');
-    var descriptionClass = `new-editable-description-${index}`;
-    var amountClass = 'new-editable-amount-${index}';
+        url: `/api/v1.0/variations/${row.vid}\/items/`,
+        type: 'GET',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json'
+      })
+      .done(data => {
+        var items = data.items;
+        var html = [
+          '<table class="table table-hover">',
+          '  <thead>',
+          '    <tr>',
+          '      <th style="text-align: center">Name</th>',
+          '      <th style="text-align: center">Amount</th>',
+          '    </tr>',
+          '  </thead>',
+          '  <tbody>'
+        ].join('\n');
+        var descriptionClass = `new-editable-description-${index}`;
+        var amountClass = `new-editable-amount-${index}`;
 
-    items.forEach(item =>
-      html += [
-        '    <tr class="item-detail">',
-        '      <td>',
-        `        <a href="javascript:void(0)" data-type="textarea" pk=${item.id} class="${descriptionClass}">${item.description}</a>`,
-        '      </td>',
-        '      <td style="text-align: right;width: 200px">',
-        `        <a href="javascript:void(0)" data-type="textarea" pk=${item.id} class="${amountClass}">${item.amount}</a>`,
-        '      </td>',
-        '    </tr>'
-      ].join('\n'));
+        items.forEach(item =>
+            html += [
+              '    <tr class="item-detail">',
+              '      <td>',
+              `        <a href="javascript:void(0)" data-type="textarea" pk=${item.id} class="${descriptionClass}">${item.description}</a>`,
+              '      </td>',
+              '      <td style="text-align: right;width: 200px">',
+              `        <a href="javascript:void(0)" data-type="textarea" pk=${item.id} class="${amountClass}">${item.amount}</a>`,
+              '      </td>',
+              '    </tr>'
+            ].join('\n'));
 
-    html += [
-      '  </tbody>',
-      '</table>'
-    ].join('\n');
+        html += [
+          '  </tbody>',
+          '</table>'
+        ].join('\n');
 
-    $($(`[data-index=${index}]`).next()).children().html(html);
+        $($(`[data-index=${index}]`).next()).children().html(html);
 
-    var $description = $(`.${descriptionClass}`);
-    $description.editable();
-    $description.on('save', (e, params) => {
-      $('#btn-save').prop('disabled', false);
-    });
+        var $description = $(`.${descriptionClass}`);
+        $description.editable();
+        $description.on('save', () => $('#btn-save').prop('disabled', false));
 
-    var $amount = $(`.${amountClass}`);
-    $amount.editable();
-    $amount.on('save', (e, params) => {
-      $('#btn-save').prop('disabled', false);
-      var total = 0.0;
-      $(`.${amountClass}`).each((i, o) => {
-        if (o !== e.target) {
-          var val = $(o).html();
-          if (val !== '' && $.isNumeric(val)) {
-            total += parseFloat(val);
-          }
-        } else {
-          total += parseFloat(params.newValue);
-        }
+        var $amount = $(`.${amountClass}`);
+        $amount.editable();
+        $amount.on('save', (e, params) => {
+          $('#btn-save').prop('disabled', false);
+          var total = 0.0;
+          $(`.${amountClass}`).each((i, o) => {
+            if (o !== e.target) {
+              var val = $(o).html();
+              if (val !== '' && $.isNumeric(val)) {
+                total += parseFloat(val);
+              }
+            } else {
+              total += parseFloat(params.newValue);
+            }
+          });
+          total *= 1.0 + projectMargin;
+          total += projectAdminFee;
+          $(e.target).closest('.detail-view').prev().children('.subtotal').html(`<b>${accounting.formatMoney(total)}</b>`);
+        });
       });
-      total *= 1.0 + projectMargin;
-      total += projectAdminFee;
-      $(e.target).closest('.detail-view').prev().children('.subtotal').html(`<b>${accounting.formatMoney(total)}</b>`);
-    });
-  });
 
   return '<strong><i class="fa fa-spinner fa-spin"></i> Loading...</strong>';
 }
@@ -189,103 +195,103 @@ function detailFormatter(index, row) {
   'use strict';
 
   $.ajax({
-      url: getProjectVariationsUrl,
-      type: 'GET',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json'
-    })
-    .done(data => {
-      $('#table').bootstrapTable({
-        columns: [{
-          checkbox: true
-        }, {
-          field: 'virtual_id',
-          title: '#',
-          halign: 'center',
-          sortable: true
-        }, {
-          field: 'description',
-          title: 'Description',
-          editable: {
-            type: 'textarea'
-          },
-          halign: 'center',
-          width: '600px'
-        }, {
-          field: 'date',
-          title: 'Date',
-          formatter: 'timeFormatter',
-          halign: 'center',
-          width: '300px'
-        }, {
-          field: 'subcontractor',
-          title: 'Subcontractor',
-          editable: {
-            type: 'text',
-            validate: validate_required
-          },
-          halign: 'center',
-          sortable: true
-        }, {
-          field: 'amount',
-          title: 'Subtotal ($)',
-          halign: 'center',
-          sortable: true,
-          formatter: 'moneyFormatter',
-          'class': 'subtotal'
-        }, {
-          field: 'invoice_no',
-          title: 'Invoice #',
-          editable: true,
-          halign: 'center'
-        }, {
-          field: 'note',
-          title: 'Note',
-          editable: {
-            type: 'textarea'
-          },
-          halign: 'center'
-        }, {
-          field: 'pending',
-          title: 'Pending',
-          formatter: 'pendingFormatter',
-          halign: 'center',
-          valign: 'center',
-          sortable: true,
-          'class': 'pending'
-        }, {
-          field: 'approved',
-          title: 'Approved',
-          formatter: 'approvedFormatter',
-          halign: 'center',
-          valign: 'center',
-          sortable: true,
-          'class': 'approved'
-        }, {
-          field: 'declined',
-          title: 'Declined',
-          formatter: 'declinedFormatter',
-          halign: 'center',
-          valign: 'center',
-          sortable: true,
-          'class': 'declined'
-        }, {
-          field: 'completed',
-          title: 'Completed',
-          formatter: 'completeFormatter',
-          halign: 'center',
-          valign: 'center',
-          sortable: true,
-          'class': 'completed'
-        }],
-        data: data.variations,
-        rowStyle: 'rowStyle',
-        toolbar: '#toolbar',
-        detailView: true,
-        detailFormatter: 'detailFormatter'
-      });
-    })
-    .always(() => $('body').addClass('loaded'));
+        url: getProjectVariationsUrl,
+        type: 'GET',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json'
+      })
+      .done(data => {
+        $('#table').bootstrapTable({
+          columns: [{
+            checkbox: true
+          }, {
+            field: 'virtual_id',
+            title: '#',
+            halign: 'center',
+            sortable: true
+          }, {
+            field: 'description',
+            title: 'Description',
+            editable: {
+              type: 'textarea'
+            },
+            halign: 'center',
+            width: '600px'
+          }, {
+            field: 'date',
+            title: 'Date',
+            formatter: 'timeFormatter',
+            halign: 'center',
+            width: '300px'
+          }, {
+            field: 'subcontractor',
+            title: 'Subcontractor',
+            editable: {
+              type: 'text',
+              validate: validate_required
+            },
+            halign: 'center',
+            sortable: true
+          }, {
+            field: 'amount',
+            title: 'Subtotal ($)',
+            halign: 'center',
+            sortable: true,
+            formatter: 'moneyFormatter',
+            'class': 'subtotal'
+          }, {
+            field: 'invoice_no',
+            title: 'Invoice #',
+            editable: true,
+            halign: 'center'
+          }, {
+            field: 'note',
+            title: 'Note',
+            editable: {
+              type: 'textarea'
+            },
+            halign: 'center'
+          }, {
+            field: 'pending',
+            title: 'Pending',
+            formatter: 'pendingFormatter',
+            halign: 'center',
+            valign: 'center',
+            sortable: true,
+            'class': 'pending'
+          }, {
+            field: 'approved',
+            title: 'Approved',
+            formatter: 'approvedFormatter',
+            halign: 'center',
+            valign: 'center',
+            sortable: true,
+            'class': 'approved'
+          }, {
+            field: 'declined',
+            title: 'Declined',
+            formatter: 'declinedFormatter',
+            halign: 'center',
+            valign: 'center',
+            sortable: true,
+            'class': 'declined'
+          }, {
+            field: 'completed',
+            title: 'Completed',
+            formatter: 'completeFormatter',
+            halign: 'center',
+            valign: 'center',
+            sortable: true,
+            'class': 'completed'
+          }],
+          data: data.variations,
+          rowStyle: 'rowStyle',
+          toolbar: '#toolbar',
+          detailView: true,
+          detailFormatter: 'detailFormatter'
+        });
+      })
+      .always(() => $('body').addClass('loaded'));
 
   var $table = $('#table');
 
@@ -329,14 +335,14 @@ function detailFormatter(index, row) {
         value.amount = accounting.parse(element.find('.subtotal').html());
 
         $.ajax({
-            url: `/api/v1.0/variations/${vid}`,
-            type: 'PUT',
-            data: JSON.stringify(value),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => statusArray[offset] = true)
-          .fail(() => statusArray[offset] = false);
+              url: `/api/v1.0/variations/${vid}`,
+              type: 'PUT',
+              data: JSON.stringify(value),
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json'
+            })
+            .done(() => statusArray[offset] = true)
+            .fail(() => statusArray[offset] = false);
 
         updateVariations(offset + 1);
       })(0);
@@ -356,24 +362,28 @@ function detailFormatter(index, row) {
         var amount = parseFloat(amountObj.html());
 
         $.ajax({
-            url: `/api/v1.0/items/${id}`,
-            type: 'PUT',
-            data: JSON.stringify({
-              amount: amount,
-              description: description
-            }),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => statusArray2[offset] = true)
-          .fail(() => statusArray2[offset] = false);
+              url: `/api/v1.0/items/${id}`,
+              type: 'PUT',
+              data: JSON.stringify({
+                amount: amount,
+                description: description
+              }),
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json'
+            })
+            .done(() => statusArray2[offset] = true)
+            .fail(() => statusArray2[offset] = false);
 
         updateItemDetail(offset + 1);
       })(0);
 
       (function waiting() {
         if (statusArray.some(isFalse) || statusArray2.some(isFalse)) {
-          // TODO
+          swal({
+            title: 'Error',
+            text: 'Failed to save some changes.',
+            type: 'error'
+          });
         } else if (statusArray.some(isNull) || statusArray2.some(isNull)) {
           setTimeout(waiting, 100);
         } else if (statusArray.every(isTrue) && statusArray2.every(isTrue)) {
@@ -387,7 +397,7 @@ function detailFormatter(index, row) {
     });
   });
 
-  $('#btn-delete').on('click', function () {
+  $('#btn-delete').on('click', function() {
     swal({
       title: 'Are you sure to delete selected rows?',
       text: 'You cannot recover them later!',
@@ -399,7 +409,7 @@ function detailFormatter(index, row) {
       closeOnConfirm: false,
       closeOnCancel: false,
       customClass: 'deleteRowsConfirmation'
-    }, function (isConfirmed) {
+    }, isConfirmed => {
       if (!isConfirmed) {
         swal('Cancelled', 'Your project is safe :)', 'error');
         return;
@@ -415,16 +425,16 @@ function detailFormatter(index, row) {
 
       (function deleteVariation(offset) {
         if (offset >= selected.length) {
-          return true;
+          return;
         }
         $.ajax({
-            url: `/api/v1.0/variations/${selected[offset].vid}`,
-            type: 'DELETE',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => statusArray[offset] = true)
-          .fail(() => statusArray[offset] = false);
+              url: `/api/v1.0/variations/${selected[offset].vid}`,
+              type: 'DELETE',
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json'
+            })
+            .done(() => statusArray[offset] = true)
+            .fail(() => statusArray[offset] = false);
         deleteVariation(offset + 1);
       })(0);
 
@@ -443,4 +453,4 @@ function detailFormatter(index, row) {
       })();
     });
   });
-})(0);
+})();

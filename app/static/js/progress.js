@@ -42,27 +42,29 @@ function onClickDown(e) {
   $('#btn-save').prop('disabled', false);
 }
 
-function reorderFormatter(value, row, index) {
+function reorderFormatter() {
   'use strict';
-  return '<div style="text-align: middle">' +
-    '<a href="javascript:void(0)" onclick="onClickUp(this);"><i class="fa fa-caret-up"></i> </a>' +
-    '<a href="javascript:void(0)" onclick="onClickDown(this);"><i class="fa fa-caret-down"></i> </a>' +
-    '</div>';
+  return [
+    '<div style="text-align: middle">',
+    '  <a href="javascript:void(0)" onclick="onClickUp(this);"><i class="fa fa-caret-up"></i> </a>',
+    '  <a href="javascript:void(0)" onclick="onClickDown(this);"><i class="fa fa-caret-down"></i> </a>',
+    '</div>'
+  ].join('\n');
 }
 
-function paddingFormatterA(value, row, index) {
+function paddingFormatterA(value) {
   'use strict';
   return value.toFixed(2);
 }
 
-function paddingFormatterB(value, row, index) {
+function paddingFormatterB(value) {
   'use strict';
   return value.toFixed(2);
 }
 
-function percentageFormatter(value, row, index) {
+function percentageFormatter(value) {
   'use strict';
-  return (value * 100).toFixed(2) + '%';
+  return `${(value * 100).toFixed(2)}%`;
 }
 
 (() => {
@@ -90,6 +92,7 @@ function percentageFormatter(value, row, index) {
       var data = $table.bootstrapTable('getData');
       var statusArray = new Array(data.length);
       _.fill(statusArray, null);
+
       (function updateProgressItems(offset) {
         if (offset >= data.length) {
           return;
@@ -101,25 +104,25 @@ function percentageFormatter(value, row, index) {
         var completed_value = value.completed_value;
 
         $.ajax({
-            url: `/api/v1.0/progress_items/${id}`,
-            type: 'PUT',
-            data: JSON.stringify({
-              name: name,
-              contract_value: contract_value,
-              completed_value: completed_value
-            }),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => statusArray[offset] = true)
-          .fail(() => statusArray[offset] = false);
+              url: `/api/v1.0/progress_items/${id}`,
+              type: 'PUT',
+              data: JSON.stringify({
+                name: name,
+                contract_value: contract_value,
+                completed_value: completed_value
+              }),
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json'
+            })
+            .done(() => statusArray[offset] = true)
+            .fail(() => statusArray[offset] = false);
 
         updateProgressItems(offset + 1);
       })(0);
 
       (function waiting() {
         if (statusArray.some(isFalse)) {
-          // TODO
+          swal('Error', 'Cannot save the changes... Please try again.', 'error');
         } else if (statusArray.some(isNull)) {
           setTimeout(waiting, 100);
         } else if (statusArray.every(isTrue)) {
@@ -133,7 +136,7 @@ function percentageFormatter(value, row, index) {
     });
   });
 
-  $('#btn-delete').on('click', function () {
+  $('#btn-delete').on('click', () => {
     swal({
       title: 'Are you sure to delete selected rows?',
       text: 'You cannot recover them later!',
@@ -157,22 +160,25 @@ function percentageFormatter(value, row, index) {
 
       (function saveSelections(offset) {
         if (offset >= selected.length) {
-          return true;
+          return;
         }
         $.ajax({
-            url: `/api/v1.0/progress_items/${selected[offset].id}`,
-            type: 'DELETE',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => statusArray[offset] = true)
-          .fail(() => statusArray[offset] = false);
+              url: `/api/v1.0/progress_items/${selected[offset].id}`,
+              type: 'DELETE',
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json'
+            })
+            .done(() => statusArray[offset] = true)
+            .fail(() => {
+              console.log(`Failed to delete progress item #${selected[offset].id}`);
+              statusArray[offset] = false;
+            });
         saveSelections(offset + 1);
       })(0);
 
       (function waiting() {
         if (statusArray.some(isFalse)) {
-          // TODO
+          swal('Error', 'Failed to delete some items.', 'error');
         } else if (statusArray.some(isNull)) {
           setTimeout(waiting, 100);
         } else if (statusArray.every(isTrue)) {
@@ -187,66 +193,60 @@ function percentageFormatter(value, row, index) {
   });
 
   $.ajax({
-      url: getProjectProgressItemsUrl,
-      type: 'GET',
-      contentType: 'application/json; charset=utf-8'
-    })
-    .done(data => {
-      $('#table').bootstrapTable({
-        columns: [{
-          checkbox: true
-          //}, {
-          //    field: 'virtual_id',
-          //    title: '#',
-          //    halign: 'center',
-          //    valign: 'center',
-          //    sortable: true
-        }, {
-          field: 'name',
-          title: 'Name',
-          halign: 'center',
-          editable: {
-            type: 'text'
-          },
-          sortable: true
-        }, {
-          field: 'contract_value',
-          title: 'Contract Value',
-          halign: 'center',
-          editable: {
-            type: 'text'
-          },
-          align: 'right',
-          sortable: true
-          //formatter: 'paddingFormatterA'
-        }, {
-          field: 'completed_value',
-          title: 'Completed To Date',
-          halign: 'center',
-          editable: {
-            type: 'text'
-          },
-          align: 'right',
-          sortable: true
-          //formatter: 'paddingFormatterB'
-        }, {
-          field: 'percentage',
-          title: '%',
-          halign: 'center',
-          sortable: true,
-          formatter: 'percentageFormatter',
-          align: 'right',
-          valign: 'center',
-          width: '100px'
-          //}, {
-          //  title: 'Action',
-          //  align: 'center',
-          //  formatter: 'reorderFormatter',
-          //  width: '100px'
-        }],
-        data: data.progress_items,
-        rowStyle: 'rowStyle',
-        toolbar: '#toolbar'
+        url: getProjectProgressItemsUrl,
+        type: 'GET',
+        contentType: 'application/json; charset=utf-8'
+      })
+      .done(data => {
+        $('#table').bootstrapTable({
+          columns: [{
+            checkbox: true
+          }, {
+            field: 'name',
+            title: 'Name',
+            halign: 'center',
+            editable: {
+              type: 'text'
+            },
+            sortable: true
+          }, {
+            field: 'contract_value',
+            title: 'Contract Value',
+            halign: 'center',
+            editable: {
+              type: 'text'
+            },
+            align: 'right',
+            sortable: true
+            //formatter: 'paddingFormatterA'
+          }, {
+            field: 'completed_value',
+            title: 'Completed To Date',
+            halign: 'center',
+            editable: {
+              type: 'text'
+            },
+            align: 'right',
+            sortable: true
+            //formatter: 'paddingFormatterB'
+          }, {
+            field: 'percentage',
+            title: '%',
+            halign: 'center',
+            sortable: true,
+            formatter: 'percentageFormatter',
+            align: 'right',
+            valign: 'center',
+            width: '100px'
+            //}, {
+            //  title: 'Action',
+            //  align: 'center',
+            //  formatter: 'reorderFormatter',
+            //  width: '100px'
+          }],
+          data: data.progress_items,
+          rowStyle: 'rowStyle',
+          toolbar: '#toolbar'
+        });
       });
-    });
 })();

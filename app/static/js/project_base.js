@@ -14,6 +14,7 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
 
 (() => {
   'use strict';
+
   $('#delete_project').on('click', () => {
     swal({
       title: 'Are you sure to delete this project?',
@@ -36,18 +37,18 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
       $.ajax({
-          url: deleteProjectUrl,
-          type: 'DELETE',
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .done(() => {
-          swal({
-            title: 'Nice!',
-            text: `You delete: ${projectName}`,
-            type: 'success'
-          }, () => window.location.href = '/');
-        });
+            url: deleteProjectUrl,
+            type: 'DELETE',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          })
+          .done(() => {
+            swal({
+              title: 'Nice!',
+              text: `You delete: ${projectName}`,
+              type: 'success'
+            }, () => window.location.href = '/');
+          });
     });
   });
 
@@ -75,21 +76,21 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
       $button.off('click');
 
       $.ajax({
-          url: editProjectUrl,
-          type: 'PUT',
-          data: JSON.stringify({
-            active: !projectActive
-          }),
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .done(() => {
-          swal({
-            title: 'Nice!',
-            text: `You ${action}d projectName`,
-            type: 'success'
-          }, () => location.reload());
-        });
+            url: editProjectUrl,
+            type: 'PUT',
+            data: JSON.stringify({
+              active: !projectActive
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          })
+          .done(() => {
+            swal({
+              title: 'Nice!',
+              text: `You ${action}d projectName`,
+              type: 'success'
+            }, () => location.reload());
+          });
     });
   });
 
@@ -124,28 +125,28 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
 
       (function createItem(offset) {
         if (offset >= $progressItems.length) {
-          return true;
+          return;
         }
         var $o = $($progressItems[offset]);
         var name = $o.find('textarea').val();
         var contract_value = accounting.parse($o.find('input').val());
 
         $.ajax({
-            url: newProgressItemUrl,
-            type: 'POST',
-            data: JSON.stringify({
-              name: name,
-              contract_value: contract_value,
-              project_id: projectId
-            }),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => {
-            statusArray[offset] = true;
-            createItem(offset + 1);
-          })
-          .fail(() => statusArray[offset] = false);
+              url: newProgressItemUrl,
+              type: 'POST',
+              data: JSON.stringify({
+                name: name,
+                contract_value: contract_value,
+                project_id: projectId
+              }),
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json'
+            })
+            .done(() => {
+              statusArray[offset] = true;
+              createItem(offset + 1);
+            })
+            .fail(() => statusArray[offset] = false);
       })(0);
 
       (function waiting() {
@@ -200,24 +201,24 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
         new_admin_fee = null;
       }
       $.ajax({
-          url: editProjectUrl,
-          type: 'PUT',
-          data: JSON.stringify({
-            name: new_name,
-            margin: new_margin,
-            admin_fee: new_admin_fee,
-            reference_number: new_reference_number
-          }),
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .done(() =>
-          swal({
-            title: 'Nice!',
-            text: 'Save changes',
-            type: 'success'
-          }, () => location.reload())
-        );
+            url: editProjectUrl,
+            type: 'PUT',
+            data: JSON.stringify({
+              name: new_name,
+              margin: new_margin,
+              admin_fee: new_admin_fee,
+              reference_number: new_reference_number
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          })
+          .done(() =>
+              swal({
+                title: 'Nice!',
+                text: 'Save changes',
+                type: 'success'
+              }, () => location.reload())
+          );
     });
   });
 
