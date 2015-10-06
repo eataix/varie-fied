@@ -2,5 +2,5 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="{{ url_for('static', filename='js/progress.min.js') }}"></script>
+    <script data-cfasync="false" src="{{ url_for('static', filename='js/progress.min.js') }}"></script>
 {% endblock %}

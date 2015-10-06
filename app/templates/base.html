@@ -19,8 +19,8 @@
 {% endblock styles %}
 
 {% block scripts %}
-    <script src="{{ url_for('static', filename='js/packed.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main.min.js') }}"></script>
+    <script data-cfasync="false" src="{{ url_for('static', filename='js/packed.js') }}"></script>
+    <script data-cfasync="false" src="{{ url_for('static', filename='js/main.min.js') }}"></script>
 {% endblock %}
 
 {% block navbar %}
