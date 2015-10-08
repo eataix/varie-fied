@@ -85,7 +85,11 @@ function percentageFormatter(value) {
       customClass: 'saveVariationsConfirmation'
     }, isConfirm => {
       if (!isConfirm) {
-        swal('Cancelled', 'Your saves are unsaved', 'error');
+        swal({
+          title: 'Cancelled',
+          text: 'Your saves are unsaved',
+          type: 'error'
+        });
         return;
       }
 
@@ -121,7 +125,11 @@ function percentageFormatter(value) {
 
       (function waiting() {
         if (statusArray.some(isFalse)) {
-          swal('Error', 'Cannot save the changes... Please try again.', 'error');
+          swal({
+            title: 'Error',
+            text: 'Cannot save the changes... Please try again.',
+            type: 'error'
+          });
         } else if (statusArray.some(isNull)) {
           setTimeout(waiting, 100);
         } else if (statusArray.every(isTrue)) {
@@ -149,7 +157,11 @@ function percentageFormatter(value) {
       customClass: 'deleteRowsConfirmation'
     }, isConfirmed => {
       if (!isConfirmed) {
-        swal('Cancelled', 'Your project is safe :)', 'error');
+        swal({
+          title: 'Cancelled',
+          text: 'Your project is safe :)',
+          type: 'error'
+        });
         return;
       }
 
@@ -176,7 +188,11 @@ function percentageFormatter(value) {
 
       (function waiting() {
         if (statusArray.some(isFalse)) {
-          swal('Error', 'Failed to delete some items.', 'error');
+          swal({
+            title: 'Error',
+            text: 'Failed to delete some items.',
+            type: 'error'
+          });
         } else if (statusArray.some(isNull)) {
           setTimeout(waiting, 100);
         } else if (statusArray.every(isTrue)) {

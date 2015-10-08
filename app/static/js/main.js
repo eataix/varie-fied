@@ -1,8 +1,13 @@
 var metaData = $('#meta-data').data();
+//noinspection JSUnresolvedVariable
 var newProjectUrl = metaData.newProjectUrl;
+//noinspection JSUnresolvedVariable
 var newVariationUrl = metaData.newVariationUrl;
+//noinspection JSUnresolvedVariable
 var newItemUrl = metaData.newItemUrl;
+//noinspection JSUnresolvedVariable
 var newClientUrl = metaData.newClientUrl;
+//noinspection JSUnresolvedVariable
 var newProgressItemUrl = metaData.newProgressItemUrl;
 
 function update() {
@@ -45,7 +50,7 @@ function onSelectChanged() {
         update();
       })
       .fail(() => {
-        // TODO
+        console.error(`Failed to load project with id: ${project_id}`);
       });
 }
 
@@ -167,7 +172,11 @@ function isFalse(element) {
       customClass: 'newProjectConfirmation'
     }, isConfirm => {
       if (!isConfirm) {
-        swal('Cancelled', 'The project is not yet added :)', 'error');
+        swal({
+          title: 'Cancelled',
+          text: 'The project is not yet added :)',
+          type: 'error'
+        });
         return;
       }
 
@@ -188,7 +197,11 @@ function isFalse(element) {
             dataType: 'json'
           })
           .fail(() => {
-            swal('Error', 'Cannot save the project... Please try again.', 'error');
+            swal({
+              title: 'Error',
+              text: 'Cannot save the project... Please try again.',
+              type: 'error'
+            });
           })
           .done(data => {
             var $clientElements = $('.client');
@@ -307,7 +320,11 @@ function isFalse(element) {
             dataType: 'json'
           })
           .fail(() => {
-            swal('Error', 'Cannot save the variation... Please try again.', 'error');
+            swal({
+              title: 'Error',
+              text: 'Cannot save the variation... Please try again.',
+              type: 'error'
+            });
           })
           .done(data => {
             var vid = data.vid;
@@ -343,7 +360,11 @@ function isFalse(element) {
 
             (function waiting() {
               if (statusArray.some(isFalse)) {
-                swal('Error', 'Cannot save the variation... Please try again.', 'error');
+                swal({
+                  title: 'Error',
+                  text: 'Cannot save the variation... Please try again.',
+                  type: 'error'
+                });
               } else if (statusArray.some(isNull)) {
                 setTimeout(waiting, 100);
               } else if (statusArray.every(isTrue)) {

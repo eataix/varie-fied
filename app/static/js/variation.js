@@ -308,7 +308,11 @@ function detailFormatter(index, row) {
       customClass: 'saveVariationsConfirmation'
     }, isConfirm => {
       if (!isConfirm) {
-        swal('Cancelled', 'Your saves are unsaved', 'error');
+        swal({
+          title: 'Cancelled',
+          text: 'Your changes are unsaved',
+          type: 'error'
+        });
         return;
       }
 
@@ -410,7 +414,11 @@ function detailFormatter(index, row) {
       customClass: 'deleteRowsConfirmation'
     }, isConfirmed => {
       if (!isConfirmed) {
-        swal('Cancelled', 'Your project is safe :)', 'error');
+        swal({
+          title: 'Cancelled',
+          text: 'Your project is safe :)',
+          type: 'error'
+        });
         return;
       }
       var $button = $('.deleteRowsConfirmation').find('.confirm');
@@ -440,7 +448,7 @@ function detailFormatter(index, row) {
         if (statusArray.some(isFalse)) {
           swal({
             title: 'Error',
-            text: 'Failed to delete variations',
+            text: 'Failed to delete some variations',
             type: 'error'
           });
         } else if (statusArray.some(isNull)) {

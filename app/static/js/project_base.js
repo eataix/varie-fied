@@ -1,15 +1,24 @@
 var metaData = $('#project-data').data();
 
+//noinspection JSUnresolvedVariable
 var projectId = metaData.projectId;
+//noinspection JSUnresolvedVariable
 var projectName = metaData.projectName;
+//noinspection JSUnresolvedVariable
 var projectActive = metaData.projectActive === 'True';
+//noinspection JSUnresolvedVariable
 var projectMargin = parseFloat(metaData.projectMargin);
+//noinspection JSUnresolvedVariable
 var projectAdminFee = $.isNumeric(metaData.projectAdminFee) ? parseFloat(metaData.projectAdminFee) : 0;
 
+//noinspection JSUnresolvedVariable
 var getProjectProgressItemsUrl = metaData.getProjectProgressItemsUrl;
+//noinspection JSUnresolvedVariable
 var getProjectVariationsUrl = metaData.getProjectVariationsUrl;
 
+//noinspection JSUnresolvedVariable
 var editProjectUrl = metaData.editProjectUrl;
+//noinspection JSUnresolvedVariable
 var deleteProjectUrl = metaData.deleteProjectUrl;
 
 (() => {
@@ -29,7 +38,11 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
       customClass: 'deleteConfirmation'
     }, isConfirm => {
       if (!isConfirm) {
-        swal('Cancelled', 'Your project is safe :)', 'error');
+        swal({
+          title: 'Cancelled',
+          text: 'Your project is safe :)',
+          type: 'error'
+        });
         return;
       }
       var $button = $('.deleteConfirmation').find('.confirm');
@@ -67,7 +80,11 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
       customClass: 'archiveConfirmation'
     }, isConfirm => {
       if (!isConfirm) {
-        swal('Cancelled', 'The project file is safe :)', 'error');
+        swal({
+          title: 'Cancelled',
+          text: 'The project file is safe :)',
+          type: 'error'
+        });
         return;
       }
       var $button = $('.archiveConfirmation').find('.confirm');
@@ -114,7 +131,11 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
       customClass: 'deleteRowsConfirmation'
     }, isConfirmed => {
       if (!isConfirmed) {
-        swal('Cancelled', 'They are not yet added :)', 'error');
+        swal({
+          title: 'Cancelled',
+          text: 'They are not yet added :)',
+          type: 'error'
+        });
         return;
       }
 
@@ -150,7 +171,11 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
 
       (function waiting() {
         if (statusArray.some(isFalse)) {
-          // TODO
+          swal({
+            title: 'Error',
+            text: 'Failed to save some changes.',
+            type: 'error'
+          });
           console.log('error');
         } else if (statusArray.some(isNull)) {
           setTimeout(waiting, 100);
@@ -185,7 +210,11 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
       customClass: 'saveMetaConfirmation'
     }, isConfirmed => {
       if (!isConfirmed) {
-        swal('Cancelled', 'Your project is safe :)', 'error');
+        swal({
+          title: 'Cancelled',
+          text: 'Your project is safe :)',
+          type: 'error'
+        });
         return;
       }
       var $button = $('.saveMetaConfirmation').find('.confirm');
