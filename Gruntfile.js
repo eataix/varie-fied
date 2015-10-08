@@ -26,7 +26,8 @@ module.exports = function(grunt) {
       vendor: {
         options: {
           mangle: false,
-          compress: false
+          compress: false,
+          drop_console: true
         },
         files: {
           'app/static/js/packed.js': [
@@ -86,7 +87,7 @@ module.exports = function(grunt) {
             'app/static/vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
             'app/static/vendor/selectize/dist/css/selectize.bootstrap3.css',
             'app/static/vendor/bootstrap-table/dist/bootstrap-table.min.css',
-            'app/static/vendor/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css',
+            'app/static/vendor/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css'
           ]
         }
       }

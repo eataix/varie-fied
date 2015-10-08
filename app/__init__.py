@@ -2,6 +2,7 @@ from flask import Flask
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.moment import Moment
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.wtf import CsrfProtect
 
 from config import config
 
@@ -29,5 +30,7 @@ def create_app(config_name: str) -> Flask:
     app.extensions['bootstrap']['cdns']['jquery'] = WebCDN(
         '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/'
     )
+
+    CsrfProtect(app)
 
     return app

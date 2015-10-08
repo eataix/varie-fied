@@ -438,7 +438,11 @@ function detailFormatter(index, row) {
 
       (function waiting() {
         if (statusArray.some(isFalse)) {
-          // TODO
+          swal({
+            title: 'Error',
+            text: 'Failed to delete variations',
+            type: 'error'
+          });
         } else if (statusArray.some(isNull)) {
           setTimeout(waiting, 100);
         } else if (statusArray.every(isTrue)) {
