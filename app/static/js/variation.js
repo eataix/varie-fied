@@ -1,6 +1,6 @@
 function pendingClick(cb) {
   'use strict';
-  var $tr = $(cb).parents('tr');
+  const $tr = $(cb).parents('tr');
   $tr.attr('class', 'info');
   $tr.find('.checkbox-approved').prop('checked', false);
   $tr.find('.checkbox-declined').prop('checked', false);
@@ -9,10 +9,7 @@ function pendingClick(cb) {
 
 function pendingFormatter(value) {
   'use strict';
-  var mid = '';
-  if (value) {
-    mid = 'checked=""';
-  }
+  const mid = value ? 'checked=""' : '';
   return [
     '<label>',
     `  <input class="checkbox checkbox-pending" type="checkbox" ${mid} onclick="pendingClick(this);">`,
@@ -22,7 +19,7 @@ function pendingFormatter(value) {
 
 function approvedClick(cb) {
   'use strict';
-  var $tr = $(cb).parents('tr');
+  const $tr = $(cb).parents('tr');
   $tr.attr('class', 'success');
   $tr.find('.checkbox-pending').prop('checked', false);
   $tr.find('.checkbox-declined').prop('checked', false);
@@ -31,10 +28,7 @@ function approvedClick(cb) {
 
 function approvedFormatter(value) {
   'use strict';
-  var mid = '';
-  if (value) {
-    mid = 'checked=""';
-  }
+  const mid = value ? 'checked=""' : '';
   return [
     '<label>',
     `<input class="checkbox checkbox-approved" type="checkbox" ${mid} onclick="approvedClick(this);">`,
@@ -44,7 +38,7 @@ function approvedFormatter(value) {
 
 function declinedClick(cb) {
   'use strict';
-  var $tr = $(cb).parents('tr');
+  const $tr = $(cb).parents('tr');
   $tr.attr('class', 'danger');
   $tr.find('.checkbox-pending').prop('checked', false);
   $tr.find('.checkbox-approved').prop('checked', false);
@@ -53,10 +47,7 @@ function declinedClick(cb) {
 
 function declinedFormatter(value) {
   'use strict';
-  var mid = '';
-  if (value) {
-    mid = 'checked=""';
-  }
+  const mid = value ? 'checked=""' : '';
   return [
     '<label>',
     `  <input class="checkbox checkbox-declined" type="checkbox" ${mid} onclick="declinedClick(this);">`,
@@ -71,10 +62,7 @@ function completeClick() {
 
 function completeFormatter(value) {
   'use strict';
-  var mid = '';
-  if (value) {
-    mid = 'checked=""';
-  }
+  const mid = value ? 'checked=""' : '';
   return [
     '<label>',
     `<input class="checkbox checkbox-complete" type="checkbox" ${mid} onclick="completeClick();">`,
@@ -130,8 +118,8 @@ function detailFormatter(index, row) {
         dataType: 'json'
       })
       .done(data => {
-        var items = data.items;
-        var html = [
+        const items = data.items;
+        let html = [
           '<table class="table table-hover">',
           '  <thead>',
           '    <tr>',
@@ -141,8 +129,8 @@ function detailFormatter(index, row) {
           '  </thead>',
           '  <tbody>'
         ].join('\n');
-        var descriptionClass = `new-editable-description-${index}`;
-        var amountClass = `new-editable-amount-${index}`;
+        const descriptionClass = `new-editable-description-${index}`;
+        const amountClass = `new-editable-amount-${index}`;
 
         items.forEach(item =>
             html += [
@@ -163,18 +151,18 @@ function detailFormatter(index, row) {
 
         $($(`[data-index=${index}]`).next()).children().html(html);
 
-        var $description = $(`.${descriptionClass}`);
+        const $description = $(`.${descriptionClass}`);
         $description.editable();
         $description.on('save', () => $('#btn-save').prop('disabled', false));
 
-        var $amount = $(`.${amountClass}`);
+        const $amount = $(`.${amountClass}`);
         $amount.editable();
         $amount.on('save', (e, params) => {
           $('#btn-save').prop('disabled', false);
-          var total = 0.0;
+          let total = 0.0;
           $(`.${amountClass}`).each((i, o) => {
             if (o !== e.target) {
-              var val = $(o).html();
+              const val = $(o).html();
               if (val !== '' && $.isNumeric(val)) {
                 total += parseFloat(val);
               }
@@ -293,7 +281,7 @@ function detailFormatter(index, row) {
       })
       .always(() => $('body').addClass('loaded'));
 
-  var $table = $('#table');
+  const $table = $('#table');
 
   $('#btn-save').on('click', () => {
     swal({
@@ -316,21 +304,21 @@ function detailFormatter(index, row) {
         return;
       }
 
-      var $button = $('.saveVariationsConfirmation').find('.confirm');
-      var html = $button.html();
+      const $button = $('.saveVariationsConfirmation').find('.confirm');
+      const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
-      var data = $table.bootstrapTable('getData');
-      var statusArray = new Array(data.length).fill(null);
+      const data = $table.bootstrapTable('getData');
+      const statusArray = new Array(data.length).fill(null);
 
       (function updateVariations(offset) {
         if (offset >= data.length) {
           return;
         }
-        var value = data[offset];
-        var vid = value.vid;
-        var selector = `[data-index=${offset}]`;
-        var element = $(selector);
+        const value = data[offset];
+        const vid = value.vid;
+        const selector = `[data-index=${offset}]`;
+        const element = $(selector);
         value.pending = element.find('.pending').children().children().is(':checked');
         value.approved = element.find('.approved').children().children().is(':checked');
         value.declined = element.find('.declined').children().children().is(':checked');
@@ -350,19 +338,19 @@ function detailFormatter(index, row) {
         updateVariations(offset + 1);
       })(0);
 
-      var $itemDetails = $('.item-detail');
-      var statusArray2 = new Array($itemDetails.length).fill(null);
+      const $itemDetails = $('.item-detail');
+      const statusArray2 = new Array($itemDetails.length).fill(null);
 
       (function updateItemDetail(offset) {
         if (offset >= $itemDetails.length) {
           return;
         }
-        var itemData = $($itemDetails[offset]).find('a');
-        var descriptionObj = $(itemData[0]);
-        var amountObj = $(itemData[1]);
-        var id = (descriptionObj.attr('pk'));
-        var description = descriptionObj.html();
-        var amount = parseFloat(amountObj.html());
+        const itemData = $($itemDetails[offset]).find('a');
+        const descriptionObj = $(itemData[0]);
+        const amountObj = $(itemData[1]);
+        const id = (descriptionObj.attr('pk'));
+        const description = descriptionObj.html();
+        const amount = parseFloat(amountObj.html());
 
         $.ajax({
               url: `/api/v1.0/items/${id}`,
@@ -421,13 +409,13 @@ function detailFormatter(index, row) {
         });
         return;
       }
-      var $button = $('.deleteRowsConfirmation').find('.confirm');
-      var html = $button.html();
+      const $button = $('.deleteRowsConfirmation').find('.confirm');
+      const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
       $button.off('click');
 
-      var selected = $table.bootstrapTable('getSelections');
-      var statusArray = new Array(selected.length).fill(null);
+      const selected = $table.bootstrapTable('getSelections');
+      const statusArray = new Array(selected.length).fill(null);
 
       (function deleteVariation(offset) {
         if (offset >= selected.length) {

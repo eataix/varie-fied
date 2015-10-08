@@ -24,8 +24,8 @@ function deleteProgressItemRow(e) {
 
 function onClickUp(e) {
   'use strict';
-  var $thisRow = $(e).closest('tr');
-  var $prevRow = $thisRow.prev();
+  const $thisRow = $(e).closest('tr');
+  const $prevRow = $thisRow.prev();
   if ($prevRow.length !== 0) {
     $thisRow.after($prevRow);
   }
@@ -34,8 +34,8 @@ function onClickUp(e) {
 
 function onClickDown(e) {
   'use strict';
-  var $thisRow = $(e).closest('tr');
-  var $nextRow = $thisRow.next();
+  const $thisRow = $(e).closest('tr');
+  const $nextRow = $thisRow.next();
   if ($nextRow.length !== 0) {
     $thisRow.before($nextRow);
   }
@@ -70,7 +70,7 @@ function percentageFormatter(value) {
 (() => {
   'use strict';
 
-  var $table = $('#table');
+  const $table = $('#table');
 
   $('#btn-save').on('click', () => {
     swal({
@@ -93,18 +93,18 @@ function percentageFormatter(value) {
         return;
       }
 
-      var data = $table.bootstrapTable('getData');
-      var statusArray = new Array(data.length).fill(null);
+      const data = $table.bootstrapTable('getData');
+      const statusArray = new Array(data.length).fill(null);
 
       (function updateProgressItems(offset) {
         if (offset >= data.length) {
           return;
         }
-        var value = data[offset];
-        var id = value.id;
-        var name = value.name;
-        var contract_value = value.contract_value;
-        var completed_value = value.completed_value;
+        const value = data[offset];
+        const id = value.id;
+        const name = value.name;
+        const contract_value = value.contract_value;
+        const completed_value = value.completed_value;
 
         $.ajax({
               url: `/api/v1.0/progress_items/${id}`,
@@ -165,8 +165,8 @@ function percentageFormatter(value) {
         return;
       }
 
-      var selected = $table.bootstrapTable('getSelections');
-      var statusArray = new Array(selected.length).fill(null);
+      const selected = $table.bootstrapTable('getSelections');
+      const statusArray = new Array(selected.length).fill(null);
 
       (function saveSelections(offset) {
         if (offset >= selected.length) {

@@ -1,27 +1,27 @@
-var metaData = $('#meta-data').data();
+const metaData = $('#meta-data').data();
 //noinspection JSUnresolvedVariable
-var newProjectUrl = metaData.newProjectUrl;
+const newProjectUrl = metaData.newProjectUrl;
 //noinspection JSUnresolvedVariable
-var newVariationUrl = metaData.newVariationUrl;
+const newVariationUrl = metaData.newVariationUrl;
 //noinspection JSUnresolvedVariable
-var newItemUrl = metaData.newItemUrl;
+const newItemUrl = metaData.newItemUrl;
 //noinspection JSUnresolvedVariable
-var newClientUrl = metaData.newClientUrl;
+const newClientUrl = metaData.newClientUrl;
 //noinspection JSUnresolvedVariable
-var newProgressItemUrl = metaData.newProgressItemUrl;
+const newProgressItemUrl = metaData.newProgressItemUrl;
 
 function update() {
   'use strict';
-  var total = 0.0;
+  let total = 0.0;
   $('.input-amount').each((index, element) => {
-    var val = $(element).val();
+    const val = $(element).val();
     if (val !== '' && $.isNumeric(val)) {
       total += parseFloat(val);
     }
   });
   $('#value-of-work').val(accounting.formatMoney(total));
-  var subtotal = total * (1.0 + parseFloat($('#margin').val()) / 100.0);
-  var adminFeeVal = $('#admin-fee').val();
+  let subtotal = total * (1.0 + parseFloat($('#margin').val()) / 100.0);
+  const adminFeeVal = $('#admin-fee').val();
   if (adminFeeVal !== '') {
     subtotal += accounting.parse(adminFeeVal);
   }
@@ -30,7 +30,7 @@ function update() {
 
 function onSelectChanged() {
   'use strict';
-  var project_id = $('#select_project_id')[0].selectize.items[0];
+  const project_id = $('#select_project_id')[0].selectize.items[0];
   $.ajax({
         url: `/api/v1.0/projects/${project_id}`,
         type: 'GET',
@@ -39,7 +39,7 @@ function onSelectChanged() {
       })
       .done(data => {
         $('#margin').val(`${data.margin * 100}%`);
-        var el = $('#admin-fee');
+        const el = $('#admin-fee');
         if (data.admin_fee === null) {
           el.parents('.form-group').hide();
           el.val('');
@@ -71,7 +71,7 @@ function addRow() {
     '  </td>',
     '</tr>'
   ].join('\n')));
-  var $descriptionDiv = $('#descriptionDiv');
+  const $descriptionDiv = $('#descriptionDiv');
   $descriptionDiv.show();
   $descriptionDiv.val('');
   $descriptionDiv.attr('required', '');
@@ -82,7 +82,7 @@ function deleteRow(e) {
   $(e).closest('tr').remove();
   update();
   if ($('.variationItem').length === 1) {
-    var $descriptionDiv = $('#descriptionDiv');
+    const $descriptionDiv = $('#descriptionDiv');
     $descriptionDiv.hide();
     $descriptionDiv.find('textarea').removeAttr('required');
   }
@@ -144,16 +144,16 @@ function isFalse(element) {
   });
 
   $('#btn-add-project').on('click', () => {
-    var instance = $('#form-new-project').parsley();
+    const instance = $('#form-new-project').parsley();
     instance.validate();
     if (!instance.isValid()) {
       return;
     }
 
-    var project_name = $('#extra_project_name').val();
-    var margin = $('#extra_margin').val();
-    var reference_number = $('#extra_reference_number').val();
-    var admin_fee = $('#extra_admin_fee').val();
+    const project_name = $('#extra_project_name').val();
+    const margin = $('#extra_margin').val();
+    const reference_number = $('#extra_reference_number').val();
+    let admin_fee = $('#extra_admin_fee').val();
     // in case admin_fee is unspecified
     if (admin_fee === '') {
       admin_fee = null;
@@ -180,8 +180,8 @@ function isFalse(element) {
         return;
       }
 
-      var $button = $('.newProjectConfirmation').find('.confirm');
-      var html = $button.html();
+      const $button = $('.newProjectConfirmation').find('.confirm');
+      const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
       $.ajax({
@@ -204,20 +204,20 @@ function isFalse(element) {
             });
           })
           .done(data => {
-            var $clientElements = $('.client');
-            var statusArray = new Array($clientElements.length).fill(null);
+            const $clientElements = $('.client');
+            const statusArray = new Array($clientElements.length).fill(null);
 
             (function createClient(offset) {
               if (offset >= $clientElements.length) {
                 return;
               }
-              var $elem = $($clientElements[offset]);
-              var name = $elem.find('.input-client-name').val();
-              var first_line_address = $elem.find('.input-first-address').val();
+              const $elem = $($clientElements[offset]);
+              const name = $elem.find('.input-client-name').val();
+              let first_line_address = $elem.find('.input-first-address').val();
               if (first_line_address === '') {
                 first_line_address = null;
               }
-              var second_line_address = $elem.find('.input-second-address').val();
+              let second_line_address = $elem.find('.input-second-address').val();
               if (second_line_address === '') {
                 second_line_address = null;
               }
@@ -260,20 +260,20 @@ function isFalse(element) {
   });
 
   $('#btn_submit').on('click', () => {
-    var instance = $('#form-new-variation').parsley();
+    const instance = $('#form-new-variation').parsley();
     instance.validate();
     if (!instance.isValid()) {
       return;
     }
 
-    var project_id = $('#select_project_id')[0].selectize.items[0];
-    var time = $('#picker_datetime').data('DateTimePicker').date();
-    var timeUTC = time.utc().format();
-    var subcontractor = $('#input_subcontractor').val();
-    var invoice_no = $('#input_invoice_no').val();
-    var input_amount = accounting.unformat($('#subtotal').val());
-    var input_description = '';
-    var $variationItems = $('.variationItem');
+    const project_id = $('#select_project_id')[0].selectize.items[0];
+    const time = $('#picker_datetime').data('DateTimePicker').date();
+    const timeUTC = time.utc().format();
+    const subcontractor = $('#input_subcontractor').val();
+    const invoice_no = $('#input_invoice_no').val();
+    const input_amount = accounting.unformat($('#subtotal').val());
+    let input_description = '';
+    const $variationItems = $('.variationItem');
     if ($variationItems.length === 1) {
       input_description = $variationItems.find('textarea').val();
     } else {
@@ -301,8 +301,8 @@ function isFalse(element) {
         return;
       }
 
-      var $button = $('.newVariationConfirmation').find('.confirm');
-      var html = $button.html();
+      const $button = $('.newVariationConfirmation').find('.confirm');
+      const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
       $.ajax({
@@ -327,18 +327,18 @@ function isFalse(element) {
             });
           })
           .done(data => {
-            var vid = data.vid;
-            var $variationItems = $('.variationItem');
+            const vid = data.vid;
+            const $variationItems = $('.variationItem');
 
-            var statusArray = new Array($variationItems.length).fill(null);
+            const statusArray = new Array($variationItems.length).fill(null);
 
             (function createVariationItem(offset) {
               if (offset >= $variationItems.length) {
                 return;
               }
-              var $elem = $($variationItems[offset]);
-              var desc = $elem.find('.input-desc').val();
-              var amount = $elem.find('.input-amount').val();
+              const $elem = $($variationItems[offset]);
+              const desc = $elem.find('.input-desc').val();
+              const amount = $elem.find('.input-amount').val();
 
               $.ajax({
                     url: newItemUrl,

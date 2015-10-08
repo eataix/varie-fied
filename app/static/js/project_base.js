@@ -1,25 +1,25 @@
-var metaData = $('#project-data').data();
+const metaData = $('#project-data').data();
 
 //noinspection JSUnresolvedVariable
-var projectId = metaData.projectId;
+const projectId = metaData.projectId;
 //noinspection JSUnresolvedVariable
-var projectName = metaData.projectName;
+const projectName = metaData.projectName;
 //noinspection JSUnresolvedVariable
-var projectActive = metaData.projectActive === 'True';
+const projectActive = metaData.projectActive === 'True';
 //noinspection JSUnresolvedVariable
-var projectMargin = parseFloat(metaData.projectMargin);
+const projectMargin = parseFloat(metaData.projectMargin);
 //noinspection JSUnresolvedVariable
-var projectAdminFee = $.isNumeric(metaData.projectAdminFee) ? parseFloat(metaData.projectAdminFee) : 0;
+const projectAdminFee = $.isNumeric(metaData.projectAdminFee) ? parseFloat(metaData.projectAdminFee) : 0;
 
 //noinspection JSUnresolvedVariable
-var getProjectProgressItemsUrl = metaData.getProjectProgressItemsUrl;
+const getProjectProgressItemsUrl = metaData.getProjectProgressItemsUrl;
 //noinspection JSUnresolvedVariable
-var getProjectVariationsUrl = metaData.getProjectVariationsUrl;
+const getProjectVariationsUrl = metaData.getProjectVariationsUrl;
 
 //noinspection JSUnresolvedVariable
-var editProjectUrl = metaData.editProjectUrl;
+const editProjectUrl = metaData.editProjectUrl;
 //noinspection JSUnresolvedVariable
-var deleteProjectUrl = metaData.deleteProjectUrl;
+const deleteProjectUrl = metaData.deleteProjectUrl;
 
 (() => {
   'use strict';
@@ -45,8 +45,8 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
         });
         return;
       }
-      var $button = $('.deleteConfirmation').find('.confirm');
-      var html = $button.html();
+      const $button = $('.deleteConfirmation').find('.confirm');
+      const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
       $.ajax({
@@ -66,7 +66,7 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
   });
 
   $('#archive_project').on('click', () => {
-    var action = projectActive ? 'archive' : 'unarchive';
+    const action = projectActive ? 'archive' : 'unarchive';
     swal({
       title: `Are you sure to ${action} the project?`,
       //text: 'You can recover this project later!',
@@ -87,8 +87,8 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
         });
         return;
       }
-      var $button = $('.archiveConfirmation').find('.confirm');
-      var html = $button.html();
+      const $button = $('.archiveConfirmation').find('.confirm');
+      const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
       $button.off('click');
 
@@ -112,7 +112,7 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
   });
 
   $('#btn-add-new-progress-items').on('click', () => {
-    var instance = $('#new-progress-items-form').parsley();
+    const instance = $('#new-progress-items-form').parsley();
     instance.validate();
     if (!instance.isValid()) {
       return;
@@ -139,17 +139,17 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
         return;
       }
 
-      var $progressItems = $('.progressItem');
+      const $progressItems = $('.progressItem');
 
-      var statusArray = new Array($progressItems.length).fill(null);
+      const statusArray = new Array($progressItems.length).fill(null);
 
       (function createItem(offset) {
         if (offset >= $progressItems.length) {
           return;
         }
-        var $o = $($progressItems[offset]);
-        var name = $o.find('textarea').val();
-        var contract_value = accounting.parse($o.find('input').val());
+        const $o = $($progressItems[offset]);
+        const name = $o.find('textarea').val();
+        const contract_value = accounting.parse($o.find('input').val());
 
         $.ajax({
               url: newProgressItemUrl,
@@ -191,7 +191,7 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
   });
 
   $('#btn-save-meta').on('click', () => {
-    var instance = $('#edit-project-meta-form').parsley();
+    const instance = $('#edit-project-meta-form').parsley();
     instance.validate();
     if (!instance.isValid()) {
       return;
@@ -217,14 +217,14 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
         });
         return;
       }
-      var $button = $('.saveMetaConfirmation').find('.confirm');
-      var html = $button.html();
+      const $button = $('.saveMetaConfirmation').find('.confirm');
+      const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
-      var new_name = $('#new_name').val();
-      var new_margin = $('#new_margin').val();
-      var new_reference_number = $('#new_ref_number').val();
-      var new_admin_fee = $('#new_admin_fee').val();
+      const new_name = $('#new_name').val();
+      const new_margin = $('#new_margin').val();
+      const new_reference_number = $('#new_ref_number').val();
+      let new_admin_fee = $('#new_admin_fee').val();
       if (new_admin_fee === '') {
         new_admin_fee = null;
       }
@@ -252,7 +252,7 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
 
   $.fn.editable.defaults.mode = 'inline';
 
-  var $table = $('#table');
+  const $table = $('#table');
 
   $table.on('editable-save.bs.table', () => {
     $('#btn-save').prop('disabled', false);
@@ -267,7 +267,7 @@ var deleteProjectUrl = metaData.deleteProjectUrl;
   });
 
   $table.on('uncheck.bs.table	uncheck-some.bs.table', () => {
-    var selected = $table.bootstrapTable('getSelections');
+    const selected = $table.bootstrapTable('getSelections');
     if (selected.length === 0) {
       $('#btn-delete').prop('disabled', true);
     }
