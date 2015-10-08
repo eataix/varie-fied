@@ -13,8 +13,7 @@
           data-get-project-variations-url="{{ url_for('api.get_project_variations', project_id=current_project.pid) }}"
           data-delete-project-url="{{ url_for('api.delete_project', project_id=current_project.pid) }}"
           data-edit-project-url="{{ url_for('api.edit_project', project_id=current_project.pid) }}"
-          data-get-project-progress-items-url="{{ url_for('api.get_project_progress_items', project_id=current_project.pid) }}"
-    >
+          data-get-project-progress-items-url="{{ url_for('api.get_project_progress_items', project_id=current_project.pid) }}">
 {% endblock %}
 
 {% block scripts %}
@@ -42,12 +41,15 @@
             <a class="btn btn-info btn-raised" href="/export/{{ current_project.pid }}">
                 <i class="fa fa-download"></i> Export Project
             </a>
-            <button class="btn btn-material-deep-purple btn-raised" data-toggle="modal" data-target="#new-progress-item-dialog">
-                <i class="fa fa-plus"></i> New Items
-            </button>
-            <button class="btn btn-primary btn-raised" data-toggle="modal" data-target="#new-variation-dialog">
-                <i class="fa fa-plus"></i> Add Variation
-            </button>
+            {% if alt_text != 'Progress' %}
+                <button class="btn btn-material-deep-purple btn-raised" data-toggle="modal" data-target="#new-progress-item-dialog">
+                    <i class="fa fa-plus"></i> New Items
+                </button>
+            {% else %}
+                <button class="btn btn-primary btn-raised" data-toggle="modal" data-target="#new-variation-dialog">
+                    <i class="fa fa-plus"></i> Add Variation
+                </button>
+            {% endif %}
             <button id="archive_project" type="button" class="btn btn-info btn-raised">
                 <i class="fa fa-check-square-o"></i>
                 {% if current_project.active %}

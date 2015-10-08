@@ -22,10 +22,4 @@ def create_app(config_name: str) -> Flask:
     from app.api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
 
-    from flask_bootstrap import WebCDN
-
-    app.extensions['bootstrap']['cdns']['jquery'] = WebCDN(
-        '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/'
-    )
-
     return app

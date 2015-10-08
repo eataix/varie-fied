@@ -12,7 +12,6 @@
           data-new-item-url="{{ url_for('api.new_item') }}"
           data-new-client-url="{{ url_for('api.new_client') }}"
           data-new-progress-item-url="{{ url_for('api.new_progress_item') }}">
-    <meta name="csrf_token" content="{{ csrf_token() }}"/>
 {% endblock %}
 
 {% block styles %}
