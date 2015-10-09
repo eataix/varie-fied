@@ -12,6 +12,12 @@ module.exports = (grunt) ->
           'app/static/js/progress.compiled.js': ['app/static/js/progress.js']
           'app/static/js/project_base.compiled.js': ['app/static/js/project_base.js']
           'app/static/js/variation.compiled.js': ['app/static/js/variation.js']
+          'app/static/js/new-project-form.compiled.js': ['app/static/js/new-project-form.jsx']
+          'app/static/js/new-variation-form.compiled.js': ['app/static/js/new-variation-form.jsx']
+          'app/static/js/new-progress-items-form.compiled.js': ['app/static/js/new-progress-items-form.jsx']
+          'app/static/js/index-projects.compiled.js': ['app/static/js/index-projects.jsx']
+          'app/static/js/index-menu.compiled.js': ['app/static/js/index-menu.jsx']
+          'app/static/js/edit-project-meta-form.compiled.js': ['app/static/js/edit-project-meta-form.jsx']
 
     uglify:
       options:
@@ -51,7 +57,12 @@ module.exports = (grunt) ->
           'app/static/js/progress.min.js': ['app/static/js/progress.compiled.js']
           'app/static/js/project_base.min.js': ['app/static/js/project_base.compiled.js']
           'app/static/js/variation.min.js': ['app/static/js/variation.compiled.js']
-
+          'app/static/js/new-project-form.min.js': ['app/static/js/new-project-form.compiled.js']
+          'app/static/js/new-variation-form.min.js': ['app/static/js/new-variation-form.compiled.js']
+          'app/static/js/new-progress-items-form.min.js': ['app/static/js/new-progress-items-form.compiled.js']
+          'app/static/js/index-projects.min.js': ['app/static/js/index-projects.compiled.js']
+          'app/static/js/index-menu.min.js': ['app/static/js/index-menu.compiled.js']
+          'app/static/js/edit-project-meta-form.min.js': ['app/static/js/edit-project-meta-form.compiled.js']
     cssmin:
       options:
         shorthandCompacting: false,

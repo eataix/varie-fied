@@ -5,6 +5,7 @@
 {% block scripts %}
     {{ super() }}
     <script data-cfasync="false" src="{{ url_for('static', filename='js/index.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/index-projects.min.js') }}"></script>
 {% endblock %}
 
 {% block styles %}
@@ -18,32 +19,6 @@
         <div class="loader-section section-left"></div>
         <div class="loader-section section-right"></div>
     </div>
-
-    <div id="content" class="container">
-        <h1>Active projects</h1>
-
-        <div>
-            <ul>
-                {% for project in projects %}
-                    {%- if project.active -%}
-                        <li><a href="project/{{ project.pid }}/progress" style="font-size:1.3em">{{ project.name }}</a>
-                        </li>
-                    {%- endif -%}
-                {% endfor %}
-            </ul>
-        </div>
-        <h1>Previous projects</h1>
-
-        <div>
-            <ul>
-                {% for project in projects -%}
-                    {%- if not project.active %}
-                        <li><a href="project/{{ project.pid }}/progress" style="font-size:1.2em">{{ project.name }}</a>
-                        </li>
-                    {% endif -%}
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
+    <div id="content" class="container"></div>
 {% endblock %}
 
