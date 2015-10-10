@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  var Home = React.createClass({
+  const Home = React.createClass({
     render: function() {
       if (window.location.pathname === '/') {
         return (
@@ -18,12 +18,12 @@
       }
     }
   });
-  var ProjectItem = React.createClass({
+  const ProjectItem = React.createClass({
     render: function() {
       if (!this.props.project.active) {
         return false;
       }
-      var id = window.location.pathname.split('/')[2];
+      const id = window.location.pathname.split('/')[2];
       if (id === this.props.project.id.toString()) {
         return (
             <li className="dropdown active">
@@ -52,7 +52,7 @@
     }
   });
 
-  var OldProject = React.createClass({
+  const OldProject = React.createClass({
     render: function() {
       let p = undefined;
       if (window.location.pathname !== '/') {
@@ -107,7 +107,7 @@
     }
   });
 
-  var Project = React.createClass({
+  const Project = React.createClass({
     getInitialState: function() {
       return {
         projects: []
@@ -119,17 +119,15 @@
     },
     loadProjects: function() {
       $.ajax({
-        url: this.props.project_url,
-        dataType: 'json',
-        success: function(data) {
-          this.setState({
-            projects: data.projects
-          });
-        }.bind(this),
-        fail: function(xhr, status, err) {
-          console.error(this.props.project_url, status, err.toString())
-        }.bind(this)
-      });
+            url: this.props.project_url,
+            contentType: 'application/json; charset=utf-8'
+          })
+          .success((data =>
+                  this.setState({projects: data.projects})
+          ).bind(this))
+          .fail(((xhr, status, err) =>
+                  console.error(this.props.project_url, status, err.toString())
+          ).bind(this));
     },
     render: function() {
       return (
@@ -166,7 +164,7 @@
     }
   });
 
-  var project_url = $('#meta-data').data().projectsUrl;
+  const project_url = $('#meta-data').data().projectsUrl;
 
   ReactDOM.render(
       <Project project_url={project_url} pollInterval={2000}/>,

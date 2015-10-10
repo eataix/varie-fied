@@ -7,7 +7,7 @@
   const projectMargin = parseFloat(metaData.projectMargin);
   const projectAdminFee = $.isNumeric(metaData.projectAdminFee) ? parseFloat(metaData.projectAdminFee) : '';
 
-  var Form = React.createClass({
+  const Form = React.createClass({
     render: function() {
       return (
           <div id="edit-dialog" className="modal fade" tabIndex="-1">
@@ -116,7 +116,7 @@
                   title: 'Nice!',
                   text: 'Save changes',
                   type: 'success'
-                }, () => location.reload())
+                }, () => $('#edit-dialog').modal('hide'))
             );
       });
     }

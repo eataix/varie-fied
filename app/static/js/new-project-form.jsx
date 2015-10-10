@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  var ProjectName = React.createClass({
+  const ProjectName = React.createClass({
     render: function() {
       return (
           <div className="form-group">
@@ -13,7 +13,7 @@
       );
     }
   });
-  var ReferenceNo = React.createClass({
+  const ReferenceNo = React.createClass({
     render: function() {
       return (
           <div className="form-group">
@@ -25,7 +25,7 @@
       );
     }
   });
-  var OH = React.createClass({
+  const OH = React.createClass({
     render: function() {
       return (
           <div className="form-group">
@@ -38,7 +38,7 @@
     }
   });
 
-  var AdminFee = React.createClass({
+  const AdminFee = React.createClass({
     render: function() {
       return (
           <div className="form-group">
@@ -50,7 +50,7 @@
       )
     }
   });
-  var ClientList = React.createClass({
+  const ClientList = React.createClass({
     getInitialState: function() {
       return {
         numRows: 1
@@ -65,8 +65,8 @@
       }
     },
     render: function() {
-      var rows = [];
-      for (var i = 0; i < this.state.numRows; ++i) {
+      const rows = [];
+      for (let i = 0; i < this.state.numRows; ++i) {
         rows.push(i);
       }
       return (
@@ -93,11 +93,11 @@
     }
   });
 
-  var Client = React.createClass({
+  const Client = React.createClass({
     render: function() {
       return (<tr className="client">
         <td>
-          <textarea name="clientName" className="input-client-name form-control" required />
+          <textarea name="clientName" className="input-client-name form-control" required/>
         </td>
         <td style={{verticalAlign: 'middle'}}>
           <input type="text" name="firstAddressLine" className="input-first-address form-control" required/>
@@ -114,7 +114,7 @@
     }
   });
 
-  var NewProjectForm = React.createClass({
+  const NewProjectForm = React.createClass({
     render: function() {
       return (
           <div id="new-project-dialog" className="modal fade" tabIndex={-1}>
@@ -249,12 +249,10 @@
                   setTimeout(waiting, 100);
                 } else if (statusArray.every(isTrue)) {
                   swal({
-                        title: 'Nice!',
-                        text: `You created a new project: ${data.name}`,
-                        type: 'success'
-                      },
-                      () => location.reload()
-                  );
+                    title: 'Nice!',
+                    text: `You created a new project: ${data.name}`,
+                    type: 'success'
+                  }, () => $('#new-project-dialog').modal('hide'));
                 }
               })();
             });

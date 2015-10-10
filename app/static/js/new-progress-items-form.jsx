@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  var ProgressItem = React.createClass({
+  const ProgressItem = React.createClass({
     render: function() {
       return (
           <tr className="progressItem">
@@ -20,7 +20,8 @@
       );
     }
   });
-  var NewProgressForm = React.createClass({
+
+  const NewProgressForm = React.createClass({
     getInitialState: function() {
       return {
         numRows: 1
@@ -35,8 +36,8 @@
       }
     },
     render: function() {
-      var rows = [];
-      for (var i = 0; i < this.state.numRows; ++i) {
+      const rows = [];
+      for (let i = 0; i < this.state.numRows; ++i) {
         rows.push(i);
       }
       return (

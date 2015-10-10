@@ -1,7 +1,7 @@
 (() => {
-   'use strict';
+  'use strict';
 
-  var TimePicker = React.createClass({
+  const TimePicker = React.createClass({
     render: function() {
       return (
           <div className="form-group">
@@ -17,7 +17,7 @@
     }
   });
 
-  var Subcontractor = React.createClass({
+  const Subcontractor = React.createClass({
     render: function() {
       return (
           <div className="form-group">
@@ -30,7 +30,7 @@
     }
   });
 
-  var InvoiceNo = React.createClass({
+  const InvoiceNo = React.createClass({
     render: function() {
       return (
           <div className="form-group">
@@ -43,9 +43,9 @@
     }
   });
 
-  var ValueOfWork = React.createClass({
+  const ValueOfWork = React.createClass({
     render: function() {
-      var value = this.props.value;
+      const value = this.props.value;
       return (
           <div className="form-group">
             <label htmlFor="inputAmount" className="col-sm-2 control-label">Value of work</label>
@@ -57,9 +57,9 @@
     }
   });
 
-  var Project = React.createClass({
+  const Project = React.createClass({
     selectChange: function(event) {
-      var p = this.props.projects.find(e => e.id.toString() === event.target.value);
+      const p = this.props.projects.find(e => e.id.toString() === event.target.value);
       this.props.updateMarginAndAdminFee(p);
     },
     render: function() {
@@ -77,9 +77,9 @@
     }
   });
 
-  var Margin = React.createClass({
+  const Margin = React.createClass({
     render: function() {
-      var value = `${accounting.formatNumber(this.props.value * 100.0)} %`;
+      const value = `${accounting.formatNumber(this.props.value * 100.0)} %`;
       return (
           <div className="form-group">
             <label htmlFor="inputAmount" className="col-sm-2 control-label">OH/Profit</label>
@@ -91,9 +91,9 @@
     }
   });
 
-  var AdminFee = React.createClass({
+  const AdminFee = React.createClass({
     render: function() {
-      var value = this.props.value;
+      const value = this.props.value;
       if (value === null) {
         return false;
       }
@@ -108,22 +108,37 @@
     }
   });
 
-  var Subtotal = React.createClass({
+  const Subtotal = React.createClass({
     render: function() {
-      var value = this.props.value;
+      const subtotal = this.props.valueOfWork * (1.0 + this.props.margin) + (this.props.adminFee === null ? 0 : this.props.adminFee);
       return (
           <div className="form-group">
             <label htmlFor="inputAmount" className="col-sm-2 control-label">Subtotal</label>
             <div className="col-sm-10">
-              <input type="text" className="form-control" id="subtotal" value={accounting.formatMoney(value)} placeholder={0.0} disabled/>
+              <input type="text" className="form-control" id="subtotal" value={accounting.formatMoney(subtotal)} placeholder={0.0} disabled/>
             </div>
           </div>
       );
     }
   });
 
-  var VariationItem = React.createClass({
+  const VariationItem = React.createClass({
     render: function() {
+      let mid;
+      if (this.props.toolbar) {
+        mid =
+            <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
+              <a href="javascript:void(0)" className="add-row" onClick={this.props.addRow}><span className="fa fa-plus"> </span>
+                Add</a>
+              /
+              <a href="javascript:void(0)" className="delete-row" onClick={this.props.deleteRow}><span className="fa fa-minus"> </span>
+                Delete</a>
+            </td>
+      } else {
+        mid =
+            <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
+            </td>
+      }
       return (
           <tr className="variationItem">
             <td>
@@ -132,17 +147,13 @@
             <td style={{verticalAlign: 'middle'}}>
               <input type="text" name="amount" className="input-amount form-control" required data-parsley-type="number" onInput={this.props.updateValueOfWork}/>
             </td>
-            <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
-              <a href="javascript:void(0)" className="add-row" onClick={this.props.addRow}><span className="fa fa-plus"> </span> Add</a>
-              /
-              <a href="javascript:void(0)" className="delete-row" onClick={this.props.deleteRow}><span className="fa fa-minus"> </span> Delete</a>
-            </td>
+            {mid}
           </tr>
       );
     }
   });
 
-  var Description = React.createClass({
+  const Description = React.createClass({
     render: function() {
       if (!this.props.show) {
         return false;
@@ -158,7 +169,7 @@
     }
   });
 
-  var NewVariationDialog = React.createClass({
+  const NewVariationDialog = React.createClass({
     submit: function() {
       const instance = $('#form-new-variation').parsley();
       instance.validate();
@@ -269,11 +280,10 @@
                   setTimeout(waiting, 100);
                 } else if (statusArray.every(isTrue)) {
                   swal({
-                        title: 'Nice!',
-                        text: 'You created a new variation',
-                        type: 'success'
-                      },
-                      () => location.reload());
+                    title: 'Nice!',
+                    text: 'You created a new variation',
+                    type: 'success'
+                  }, () => location.reload());
                 }
               })(); // invoke
             });
@@ -284,8 +294,7 @@
         projects: [],
         valueOfWork: 0.0,
         margin: 0.0,
-        adminFee: 0.0,
-        subtotal: 0.0,
+        adminFee: null,
         showDescription: false
       }
     },
@@ -315,11 +324,8 @@
           total += parseFloat(val);
         }
       });
-      let subtotal = total * (1.0 + this.state.margin);
-      subtotal += this.state.margin === null ? 0 : this.state.margin;
       this.setState({
-        valueOfWork: accounting.formatMoney(total),
-        subtotal: subtotal
+        valueOfWork: total
       });
     },
     updateMarginAndAdminFee: function(project) {
@@ -367,7 +373,7 @@
                       <ValueOfWork value={this.state.valueOfWork}/>
                       <Margin value={this.state.margin}/>
                       <AdminFee value={this.state.adminFee}/>
-                      <Subtotal value={this.state.subtotal}/>
+                      <Subtotal valueOfWork={this.state.valueOfWork} margin={this.state.margin} adminFee={this.state.adminFee}/>
                       <Description show={this.state.showDescription}/>
                       <ItemTable updateValueOfWork={this.updateValueOfWork} updateDescription={this.updateDescription}/>
                     </form>
@@ -385,7 +391,7 @@
     }
   });
 
-  var ItemTable = React.createClass({
+  const ItemTable = React.createClass({
     addRow: function() {
       this.props.updateDescription(this.state.numRows + 1);
       this.setState({numRows: this.state.numRows + 1});
@@ -402,8 +408,8 @@
       }
     },
     render: function() {
-      var rows = [];
-      for (var i = 0; i < this.state.numRows; ++i) {
+      const rows = [];
+      for (let i = 0; i < this.state.numRows; ++i) {
         rows.push(i);
       }
       return (
@@ -419,8 +425,8 @@
                 </tr>
                 </thead>
                 <tbody id="items">
-                {rows.map((r) =>
-                <VariationItem key={r} addRow={this.addRow} deleteRow={this.deleteRow} updateValueOfWork={this.props.updateValueOfWork}/>)}
+                {rows.map((r, i) =>
+                <VariationItem key={r} addRow={this.addRow} deleteRow={this.deleteRow} updateValueOfWork={this.props.updateValueOfWork} toolbar={i == rows.length -1}/>)}
                 </tbody>
               </table>
             </div>
@@ -429,7 +435,7 @@
     }
   });
 
-  var project_url = $('#meta-data').data().projectsUrl;
+  const project_url = $('#meta-data').data().projectsUrl;
 
   ReactDOM.render(
       <NewVariationDialog project_url={project_url} pollInterval={2000}/>,
