@@ -44,7 +44,11 @@ module.exports = (grunt) ->
               'app/static/vendor/bootstrap-table/dist/bootstrap-table.min.js'
               'app/static/vendor/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js'
               'app/static/vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js'
-              'app/static/vendor/PACE/pace.min.js']
+              'app/static/vendor/PACE/pace.min.js'
+              'app/static/vendor/react/react.min.js'
+              'app/static/vendor/react/react-dom.min.js'
+              'app/static/vendor/react-bootstrap/react-bootstrap.min.js']
+
       project:
         options:
           sourceMap: true,

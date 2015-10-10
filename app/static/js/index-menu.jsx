@@ -133,23 +133,35 @@
     },
     render: function() {
       return (
-          <ul className="nav navbar-nav">
-            <Home />
-            {
-                this.state.projects.map(function(p, i) {
-                    return <ProjectItem key={i} project={p}/>;
-                    })
-                }
-            <OldProject projects={this.state.projects}/>
-            <li>
-              <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i className="fa fa-plus"></i>
-                New Project</a>
-            </li>
-            <li>
-              <a href="javascript:void(0)" data-toggle="modal" data-target="#new-variation-dialog"><i className="fa fa-plus"></i>
-                New Variation</a>
-            </li>
-          </ul>
+          <div className="navbar navbar-default" role="navigation">
+            <div className="navbar-header">
+              <button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                <span className="icon-bar"></span>
+                <span className="icon-bar"></span>
+                <span className="icon-bar"></span>
+              </button>
+              <a className="navbar-brand" href="/">Varie-fied</a>
+            </div>
+            <div className="navbar-collapse collapse navbar-responsive-collapse">
+              <ul className="nav navbar-nav">
+                <Home />
+                {
+                    this.state.projects.map(function(p, i) {
+                        return <ProjectItem key={i} project={p}/>;
+                        })
+                    }
+                <OldProject projects={this.state.projects}/>
+                <li>
+                  <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i className="fa fa-plus"></i>
+                    New Project</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)" data-toggle="modal" data-target="#new-variation-dialog"><i className="fa fa-plus"></i>
+                    New Variation</a>
+                </li>
+              </ul>
+            </div>
+          </div>
       );
     }
   });
@@ -158,6 +170,6 @@
 
   ReactDOM.render(
       <Project project_url={project_url} pollInterval={2000}/>,
-      document.getElementById('navbar-div')
+      document.getElementById('navbar-menu')
   );
 })();
