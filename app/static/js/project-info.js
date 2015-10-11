@@ -22,8 +22,6 @@
             contentType: 'application/json; charset=utf-8'
           })
           .success(function(data) {
-            console.log(data);
-            console.log(data);
             this.setState({
               name: data.name,
               reference_number: data.reference_number,

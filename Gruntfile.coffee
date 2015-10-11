@@ -12,12 +12,13 @@ module.exports = (grunt) ->
           'app/static/js/progress.compiled.js': ['app/static/js/progress.js']
           'app/static/js/project_base.compiled.js': ['app/static/js/project_base.js']
           'app/static/js/variation.compiled.js': ['app/static/js/variation.js']
-          'app/static/js/new-project-form.compiled.js': ['app/static/js/new-project-form.jsx']
-          'app/static/js/new-variation-form.compiled.js': ['app/static/js/new-variation-form.jsx']
-          'app/static/js/new-progress-items-form.compiled.js': ['app/static/js/new-progress-items-form.jsx']
-          'app/static/js/index-projects.compiled.js': ['app/static/js/index-projects.jsx']
-          'app/static/js/index-menu.compiled.js': ['app/static/js/index-menu.jsx']
-          'app/static/js/edit-project-meta-form.compiled.js': ['app/static/js/edit-project-meta-form.jsx']
+          'app/static/js/new-project-form.compiled.js': ['app/static/js/new-project-form.js']
+          'app/static/js/new-variation-form.compiled.js': ['app/static/js/new-variation-form.js']
+          'app/static/js/new-progress-items-form.compiled.js': ['app/static/js/new-progress-items-form.js']
+          'app/static/js/index-projects.compiled.js': ['app/static/js/index-projects.js']
+          'app/static/js/index-menu.compiled.js': ['app/static/js/index-menu.js']
+          'app/static/js/edit-project-meta-form.compiled.js': ['app/static/js/edit-project-meta-form.js']
+          'app/static/js/project-info.compiled.js': ['app/static/js/project-info.js']
 
     uglify:
       options:
@@ -27,7 +28,6 @@ module.exports = (grunt) ->
         options:
           mangle: false
           compress: false
-          drop_console: true
         files:
           'app/static/js/packed.js':
             ['app/static/vendor/jquery/dist/jquery.min.js'
@@ -47,7 +47,7 @@ module.exports = (grunt) ->
               'app/static/vendor/PACE/pace.min.js'
               'app/static/vendor/react/react.min.js'
               'app/static/vendor/react/react-dom.min.js'
-              'app/static/vendor/react-bootstrap/react-bootstrap.min.js']
+              'app/static/vendor/lodash/lodash.min.js']
 
       project:
         options:
@@ -67,6 +67,8 @@ module.exports = (grunt) ->
           'app/static/js/index-projects.min.js': ['app/static/js/index-projects.compiled.js']
           'app/static/js/index-menu.min.js': ['app/static/js/index-menu.compiled.js']
           'app/static/js/edit-project-meta-form.min.js': ['app/static/js/edit-project-meta-form.compiled.js']
+          'app/static/js/project-info.min.js': ['app/static/js/project-info.compiled.js']
+
     cssmin:
       options:
         shorthandCompacting: false,

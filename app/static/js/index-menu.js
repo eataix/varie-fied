@@ -18,6 +18,7 @@
       }
     }
   });
+
   const ProjectItem = React.createClass({
     render: function() {
       if (!this.props.project.active) {
@@ -68,17 +69,17 @@
                 Archived Projects <span className="caret"></span></a>
               <ul className="dropdown-menu">
                 {
-                    this.props.projects.map(function(p, i) {
-                        if (p.active) {
-                            return false;
-                            }
-                        return (
+                  this.props.projects.map(function(p, i) {
+                    if (p.active) {
+                      return false;
+                    }
+                    return (
                         <li key={i}>
                           <a href={`/project/${p.id}/progress`}>{p.name}</a>
                         </li>
-                            );
-                        })
-                    }
+                    );
+                  })
+                }
               </ul>
             </li>
         )
@@ -89,17 +90,17 @@
                 Archived Projects <span className="caret"></span></a>
               <ul className="dropdown-menu">
                 {
-                    this.props.projects.map(function(p, i) {
-                        if (p.active) {
-                            return false;
-                            }
-                        return (
+                  this.props.projects.map(function(p, i) {
+                    if (p.active) {
+                      return false;
+                    }
+                    return (
                         <li key={i}>
                           <a href={`/project/${p.id}/progress`}>{p.name}</a>
                         </li>
-                            );
-                        })
-                    }
+                    );
+                  })
+                }
               </ul>
             </li>
         )
@@ -144,10 +145,10 @@
               <ul className="nav navbar-nav">
                 <Home />
                 {
-                    this.state.projects.map(function(p, i) {
-                        return <ProjectItem key={i} project={p}/>;
-                        })
-                    }
+                  this.state.projects.map(function(p, i) {
+                    return <ProjectItem key={i} project={p}/>;
+                  })
+                }
                 <OldProject projects={this.state.projects}/>
                 <li>
                   <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i className="fa fa-plus"></i>
