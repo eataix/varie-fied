@@ -12,8 +12,8 @@ dependencies:
     - npm install -g bower
     - bower install
     - npm install
-    - npm install -g grunt-cli
-    - grunt
+    - npm install -g gulp
+    - gulp build
   cache_directories:
     - "~/.cache/pip"
     - "node_modules"

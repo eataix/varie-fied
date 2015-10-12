@@ -140,4 +140,5 @@
   );
 
   gulp.task('default', ['watch', 'vendor', 'react', 'script', 'minify-vendor-css', 'minify-css', 'copy-fonts1', 'copy-fonts2', 'copy-fonts3', 'copy-imgs']);
+  gulp.task('build', ['vendor', 'react', 'script', 'minify-vendor-css', 'minify-css', 'copy-fonts1', 'copy-fonts2', 'copy-fonts3', 'copy-imgs']);
 })();
