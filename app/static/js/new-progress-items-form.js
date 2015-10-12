@@ -81,7 +81,7 @@ const changes = FluxStore.changes;
                           </thead>
                           <tbody id="progressItems">
                           {this.state.list.map((r, index) =>
-                              <ProgressItem key={r+index} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, index)} name={r.name} value={r.value}/>)}
+                              <ProgressItem key={r+index} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, index)} name={r.name} value={r.value} updateItem={this.updateItem.bind(null, index)}/>)}
                           </tbody>
                         </table>
                       </div>
