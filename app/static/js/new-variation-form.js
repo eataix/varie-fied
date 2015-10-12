@@ -10,6 +10,8 @@ const changes = FluxStore.changes;
     componentDidMount: function() {
       $(this.refs.picker.getDOMNode()).datetimepicker({
         showTodayButton: true
+      }).on('dp.change', function(event) {
+        actions.updateTime(event.date.utc().format());
       });
     },
     render: function() {
@@ -28,12 +30,15 @@ const changes = FluxStore.changes;
   });
 
   const Subcontractor = React.createClass({
+    handleChange: function() {
+      actions.updateSubcontractor(event.target.value);
+    },
     render: function() {
       return (
           <div className="form-group">
             <label htmlFor="inputSubcontractor" className="col-sm-2 control-label">Subcontractor*</label>
             <div className="col-sm-10">
-              <input type="text" className="form-control" id="input_subcontractor" placeholder="Name" required/>
+              <input type="text" className="form-control" id="input_subcontractor" placeholder="Name" required onChange={this.handleChange}/>
             </div>
           </div>
       );
@@ -41,12 +46,15 @@ const changes = FluxStore.changes;
   });
 
   const InvoiceNo = React.createClass({
+    handleChange: function() {
+      actions.updateInvoiceNumber(event.target.value);
+    },
     render: function() {
       return (
           <div className="form-group">
             <label htmlFor="inputInvoiceNo" className="col-sm-2 control-label">Invoice Number</label>
             <div className="col-sm-10">
-              <input type="text" className="form-control" id="input_invoice_no" placeholder="Optional"/>
+              <input type="text" className="form-control" id="input_invoice_no" placeholder="Optional" onChange={this.handleChange}/>
             </div>
           </div>
       );
@@ -163,6 +171,9 @@ const changes = FluxStore.changes;
   });
 
   const Description = React.createClass({
+    handleChange: function() {
+      actions.updateDescription(event.target.value);
+    },
     render: function() {
       if (this.props.items.length === 1) {
         return false;
@@ -171,7 +182,7 @@ const changes = FluxStore.changes;
           <div className="form-group" id="descriptionDiv">
             <label htmlFor="inputDescription" className="col-sm-2 control-label">Description*</label>
             <div className="col-sm-10">
-              <textarea className="form-control" id="input_description" rows={5}/>
+              <textarea className="form-control" id="input_description" rows={5} onChange={this.handleChange}/>
             </div>
           </div>
       );
@@ -180,30 +191,31 @@ const changes = FluxStore.changes;
 
   const NewVariationDialog = React.createClass({
     submit: function() {
-      const instance = $('#form-new-variation').parsley();
+      const instance = $(this.refs.form.getDOMNode()).parsley();
       instance.validate();
       if (!instance.isValid()) {
         return;
       }
 
       const project_id = store.getId();
-      const time = $('#picker_datetime').data('DateTimePicker').date();
-      const timeUTC = time.utc().format();
-      const subcontractor = $('#input_subcontractor').val();
-      const invoice_no = $('#input_invoice_no').val();
-      const input_amount = accounting.unformat($('#subtotal').val());
+      const timeUTC = store.getTime();
+      const subcontractor = store.getSubcontractor();
+      const invoice_no = store.getInvoiceNumber();
+      const variationItems = store.getList();
+      let input_amount = 0.0;
+      variationItems.forEach(function(item) {
+        input_amount += item.value;
+      });
       let input_description = '';
-      const $variationItems = $('.variationItem');
-      if ($variationItems.length === 1) {
-        input_description = $variationItems.find('textarea').val();
+      if (variationItems.length === 1) {
+        input_description = variationItems[0].name;
       } else {
-        input_description = $('#input_description').val();
+        input_description = store.getDescription();
       }
 
       swal({
         title: 'Are you sure to add a variation?',
         text: [
-          `Time: ${time.format('Do MMMM YYYY h:mm:ss a')}`,
           `Subcontractor: ${subcontractor}`,
           `Subtotal: ${accounting.formatMoney(input_amount)}`
         ].join('\n'),
@@ -248,17 +260,17 @@ const changes = FluxStore.changes;
             })
             .done(data => {
               const vid = data.vid;
-              const $variationItems = $('.variationItem');
+              const variationItems = store.getList();
 
-              const statusArray = new Array($variationItems.length).fill(null);
+              const statusArray = new Array(variationItems.length).fill(null);
 
               (function createVariationItem(offset) {
-                if (offset >= $variationItems.length) {
+                if (offset >= variationItems.length) {
                   return;
                 }
-                const $elem = $($variationItems[offset]);
-                const desc = $elem.find('.input-desc').val();
-                const amount = $elem.find('.input-amount').val();
+                const item = variationItems[offset];
+                const desc = item.name;
+                const amount = item.value;
 
                 $.ajax({
                       url: newItemUrl,
@@ -354,7 +366,7 @@ const changes = FluxStore.changes;
                 </div>
                 <div className="modal-body">
                   <div className="container-fluid">
-                    <form className="form-horizontal" id="form-new-variation" data-parsley-validate>
+                    <form className="form-horizontal" data-parsley-validate ref="form">
                       <Project projects={this.state.projects}/>
                       <TimePicker />
                       <Subcontractor />

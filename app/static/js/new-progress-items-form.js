@@ -127,17 +127,17 @@ const changes = FluxStore.changes;
           return;
         }
 
-        const $progressItems = $('.progressItem');
+        const progressItems = store.getList();
 
-        const statusArray = new Array($progressItems.length).fill(null);
+        const statusArray = new Array(progressItems.length).fill(null);
 
         (function createItem(offset) {
-          if (offset >= $progressItems.length) {
+          if (offset >= progressItems.length) {
             return;
           }
-          const $o = $($progressItems[offset]);
-          const name = $o.find('textarea').val();
-          const contract_value = accounting.parse($o.find('input').val());
+          const item = progressItems[offset];
+          const name = item.name;
+          const contract_value = item.value;
 
           $.ajax({
                 url: newProgressItemUrl,

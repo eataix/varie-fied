@@ -13,7 +13,10 @@ const constants = {
   REMOVE_ITEM: 'REMOVE_ITEM',
   UPDATE_ITEM: 'UPDATE_ITEM',
   UPDATE_MARGIN_AND_ADMIN_FEE: 'UPDATE_MARGIN_AND_ADMIN_FEE',
-  UPDATE_VALUE_OF_WORK: 'UPDATE_VALUE_OF_WORK'
+  UPDATE_TIME: 'UPDATE_TIME',
+  UPDATE_SUBCONTRACTOR: 'UPDATE_SUBCONTRACTOR',
+  UPDATE_INVOICE_NUMBER: 'UPDATE_INVOICE_NUMBER',
+  UPDATE_DESCRIPTION: 'UPDATE_DESCRIPTION'
 };
 
 const actions = {
@@ -51,6 +54,34 @@ const actions = {
         adminFee: adminFee
       }
     });
+  },
+  updateTime: function(time) {
+    'use strict';
+    AppDispatcher.handleAction({
+      actionType: constants.UPDATE_TIME,
+      data: time
+    });
+  },
+  updateSubcontractor: function(subcontractor) {
+    'use strict';
+    AppDispatcher.handleAction({
+      actionType: constants.UPDATE_SUBCONTRACTOR,
+      data: subcontractor
+    });
+  },
+  updateInvoiceNumber: function(invoiceNumber) {
+    'use strict';
+    AppDispatcher.handleAction({
+      actionType: constants.UPDATE_INVOICE_NUMBER,
+      data: invoiceNumber
+    });
+  },
+  updateDescription: function(description) {
+    'use strict';
+    AppDispatcher.handleAction({
+      actionType: constants.UPDATE_DESCRIPTION,
+      data: description
+    });
   }
 };
 
@@ -66,7 +97,11 @@ var _store = {
   }],
   margin: 0.0,
   adminFee: null,
-  id: null
+  id: null,
+  time: null,
+  subcontract: null,
+  invoiceNumber: null,
+  description: null
 };
 
 const addItem = function(item) {
@@ -93,6 +128,26 @@ const updateMarginAndAdminFee = function(id, margin, adminFee) {
   _store.adminFee = adminFee;
 };
 
+const updateTime = function(time) {
+  'use strict';
+  _store.time = time;
+};
+
+const updateSubcontractor = function(subcontractor) {
+  'use strict';
+  _store.subcontract = subcontractor;
+};
+
+const updateInvoiceNumber = function(invoiceNumber) {
+  'use strict';
+  _store.invoiceNumber = invoiceNumber;
+};
+
+const updateDescription = function(description) {
+  'use strict';
+  _store.description = description;
+};
+
 const store = Object.assign({}, EventEmitter2.prototype, {
   addChangeListener: function(type, cb) {
     'use strict';
@@ -117,6 +172,22 @@ const store = Object.assign({}, EventEmitter2.prototype, {
   getId: function() {
     'use strict';
     return _store.id;
+  },
+  getTime: function() {
+    'use strict';
+    return _store.time;
+  },
+  getSubcontractor: function() {
+    'use strict';
+    return _store.subcontract;
+  },
+  getInvoiceNumber: function() {
+    'use strict';
+    return _store.invoiceNumber;
+  },
+  getDescription: function() {
+    'use strict';
+    return _store.description;
   }
 });
 
@@ -139,6 +210,18 @@ AppDispatcher.register(function(payload) {
     case constants.UPDATE_MARGIN_AND_ADMIN_FEE:
       updateMarginAndAdminFee(action.data.id, action.data.margin, action.data.adminFee);
       store.emit(changes.MARGIN_AND_ADMIN_FEE);
+      break;
+    case constants.UPDATE_TIME:
+      updateTime(action.data);
+      break;
+    case constants.UPDATE_SUBCONTRACTOR:
+      updateSubcontractor(action.data);
+      break;
+    case constants.UPDATE_INVOICE_NUMBER:
+      updateInvoiceNumber(action.data);
+      break;
+    case constants.UPDATE_DESCRIPTION:
+      updateDescription(action.data);
       break;
     default:
       return true;
