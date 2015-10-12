@@ -1,13 +1,23 @@
-(() => {
+const FluxStore = require('./flux');
+const store = FluxStore.store;
+const actions = FluxStore.actions;
+const changes = FluxStore.changes;
+
+(function() {
   'use strict';
 
   const TimePicker = React.createClass({
+    componentDidMount: function() {
+      $(this.refs.picker.getDOMNode()).datetimepicker({
+        showTodayButton: true
+      });
+    },
     render: function() {
       return (
           <div className="form-group">
             <label htmlFor="inputTime" className="col-sm-2 control-label">Time*</label>
             <div className="col-sm-10">
-              <div className="input-group date" id="picker_datetime">
+              <div className="input-group date" ref="picker">
                 <input type="text" className="form-control" required/>
                 <span className="input-group-addon"><i className="fa fa-calendar"/></span>
               </div>
@@ -45,7 +55,8 @@
 
   const ValueOfWork = React.createClass({
     render: function() {
-      const value = this.props.value;
+      let value = 0.0;
+      this.props.items.forEach((item) => value += item.value);
       return (
           <div className="form-group">
             <label htmlFor="inputAmount" className="col-sm-2 control-label">Value of work</label>
@@ -58,16 +69,16 @@
   });
 
   const Project = React.createClass({
-    selectChange: function(event) {
+    handleChange: function(event) {
       const p = this.props.projects.find(e => e.id.toString() === event.target.value);
-      this.props.updateMarginAndAdminFee(p);
+      actions.updateMarginAndAdminFee(p.id, p.margin, p.admin_fee);
     },
     render: function() {
       return (
           <div className="form-group">
             <label className="col-sm-2 control-label">Project*</label>
             <div className="col-sm-10">
-              <select id="select_project_id" className="form-control" onChange={this.selectChange} ref="select">
+              <select id="select_project_id" className="form-control" onChange={this.handleChange} ref="select">
                 <option value="-1">Select a project</option>
                 {this.props.projects.map(v=> <option key={v.id} value={v.id}>{v.name}</option>)}
               </select>
@@ -110,7 +121,11 @@
 
   const Subtotal = React.createClass({
     render: function() {
-      const subtotal = this.props.valueOfWork * (1.0 + this.props.margin) + (this.props.adminFee === null ? 0 : this.props.adminFee);
+      let valueOfWork = 0.0;
+      this.props.items.forEach((item) => {
+        valueOfWork += item.value;
+      });
+      const subtotal = valueOfWork * (1.0 + this.props.margin) + (this.props.adminFee === null ? 0 : this.props.adminFee);
       return (
           <div className="form-group">
             <label htmlFor="inputAmount" className="col-sm-2 control-label">Subtotal</label>
@@ -123,10 +138,18 @@
   });
 
   const VariationItem = React.createClass({
+    handleChange: function() {
+      this.props.updateItem(this.refs.name.getDOMNode().value, this.refs.value.getDOMNode().value);
+    },
     render: function() {
-      let mid;
-      if (this.props.toolbar) {
-        mid =
+      return (
+          <tr className="variationItem">
+            <td>
+              <textarea ref="name" name="description" className="input-desc form-control" required value={this.props.name} onChange={this.handleChange}/>
+            </td>
+            <td style={{verticalAlign: 'middle'}}>
+              <input ref="value" type="text" name="amount" className="input-amount form-control" required data-parsley-type="number" onChange={this.handleChange} value={this.props.value}/>
+            </td>
             <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
               <a href="javascript:void(0)" className="add-row" onClick={this.props.addRow}><span className="fa fa-plus"> </span>
                 Add</a>
@@ -134,20 +157,6 @@
               <a href="javascript:void(0)" className="delete-row" onClick={this.props.deleteRow}><span className="fa fa-minus"> </span>
                 Delete</a>
             </td>
-      } else {
-        mid =
-            <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
-            </td>
-      }
-      return (
-          <tr className="variationItem">
-            <td>
-              <textarea name="description" className="input-desc form-control" required/>
-            </td>
-            <td style={{verticalAlign: 'middle'}}>
-              <input type="text" name="amount" className="input-amount form-control" required data-parsley-type="number" onInput={this.props.updateValueOfWork}/>
-            </td>
-            {mid}
           </tr>
       );
     }
@@ -155,7 +164,7 @@
 
   const Description = React.createClass({
     render: function() {
-      if (!this.props.show) {
+      if (this.props.items.length === 1) {
         return false;
       }
       return (
@@ -177,7 +186,7 @@
         return;
       }
 
-      const project_id = $('#select_project_id').val();
+      const project_id = store.getId();
       const time = $('#picker_datetime').data('DateTimePicker').date();
       const timeUTC = time.utc().format();
       const subcontractor = $('#input_subcontractor').val();
@@ -292,15 +301,32 @@
     getInitialState: function() {
       return {
         projects: [],
-        valueOfWork: 0.0,
-        margin: 0.0,
-        adminFee: null,
+        margin: store.getMargin(),
+        adminFee: store.getAdminFee(),
+        list: store.getList(),
         showDescription: false
       }
     },
     componentDidMount: function() {
       this.loadProjects();
       setInterval(this.loadProjects, this.props.pollInterval);
+      store.addChangeListener(changes.ITEMS_CHANGE, this._onListChange);
+      store.addChangeListener(changes.MARGIN_AND_ADMIN_FEE, this._onMarginChange);
+    },
+    componentWillUnmount: function() {
+      store.removeChangeListener(changes.ITEMS_CHANGE, this._onListChange);
+      store.removeChangeListener(changes.MARGIN_AND_ADMIN_FEE, this._onMarginChange);
+    },
+    _onMarginChange: function() {
+      this.setState({
+        margin: store.getMargin(),
+        adminFee: store.getAdminFee()
+      });
+    },
+    _onListChange: function() {
+      this.setState({
+        list: store.getList()
+      });
     },
     loadProjects: function() {
       $.ajax({
@@ -316,43 +342,6 @@
         }.bind(this)
       });
     },
-    updateValueOfWork: function() {
-      let total = 0.0;
-      $('.input-amount').each((index, element) => {
-        const val = $(element).val();
-        if (val !== '' && $.isNumeric(val)) {
-          total += parseFloat(val);
-        }
-      });
-      this.setState({
-        valueOfWork: total
-      });
-    },
-    updateMarginAndAdminFee: function(project) {
-      if (project !== undefined) {
-        this.setState({
-          margin: project.margin,
-          adminFee: project.admin_fee
-        });
-      } else {
-        this.setState({
-          margin: 0.0,
-          adminFee: 0.0
-        });
-      }
-      this.updateValueOfWork();
-    },
-    updateDescription: function(e) {
-      if (e > 1) {
-        this.setState({
-          showDescription: true
-        });
-      } else {
-        this.setState({
-          showDescription: false
-        });
-      }
-    },
     render: function() {
       return (
           <div id="new-variation-dialog" className="modal fade" tabIndex={-1}>
@@ -366,23 +355,24 @@
                 <div className="modal-body">
                   <div className="container-fluid">
                     <form className="form-horizontal" id="form-new-variation" data-parsley-validate>
-                      <Project projects={this.state.projects} updateMarginAndAdminFee={this.updateMarginAndAdminFee}/>
+                      <Project projects={this.state.projects}/>
                       <TimePicker />
                       <Subcontractor />
                       <InvoiceNo />
-                      <ValueOfWork value={this.state.valueOfWork}/>
+                      <ValueOfWork items={this.state.list}/>
                       <Margin value={this.state.margin}/>
                       <AdminFee value={this.state.adminFee}/>
-                      <Subtotal valueOfWork={this.state.valueOfWork} margin={this.state.margin} adminFee={this.state.adminFee}/>
-                      <Description show={this.state.showDescription}/>
-                      <ItemTable updateValueOfWork={this.updateValueOfWork} updateDescription={this.updateDescription}/>
+                      <Subtotal items={this.state.list} margin={this.state.margin} adminFee={this.state.adminFee}/>
+                      <Description items={this.state.list}/>
+                      <ItemTable items={this.state.list}/>
                     </form>
                   </div>
                 </div>
                 <div className="modal-footer">
                   <p>* Required</p>
                   <button className="btn btn-primary btn-raised" data-dismiss="modal">Dismiss</button>
-                  <button id="btn_submit" className="btn btn-info btn-raised" onClick={this.submit}>Add</button>
+                  <button id="btn_submit" className="btn btn-info btn-raised" onClick={this.submit}>Add
+                  </button>
                 </div>
               </div>
             </div>
@@ -393,25 +383,18 @@
 
   const ItemTable = React.createClass({
     addRow: function() {
-      this.props.updateDescription(this.state.numRows + 1);
-      this.setState({numRows: this.state.numRows + 1});
+      actions.addItem({
+        name: '',
+        value: null
+      });
     },
-    deleteRow: function() {
-      if (this.state.numRows > 1) {
-        this.props.updateDescription(this.state.numRows - 1);
-        this.setState({numRows: this.state.numRows - 1});
-      }
+    deleteRow: function(index) {
+      actions.removeItem(index);
     },
-    getInitialState: function() {
-      return {
-        numRows: 1
-      }
+    updateItem: function(index, name, value) {
+      actions.updateItem(index, {name: name, value: value === '' ? '' : parseFloat(value)});
     },
     render: function() {
-      const rows = [];
-      for (let i = 0; i < this.state.numRows; ++i) {
-        rows.push(i);
-      }
       return (
           <div className="form-group">
             <label htmlFor="inputDescription" className="col-sm-2 control-label">Items*</label>
@@ -425,8 +408,8 @@
                 </tr>
                 </thead>
                 <tbody id="items">
-                {rows.map((r, i) =>
-                <VariationItem key={r} addRow={this.addRow} deleteRow={this.deleteRow} updateValueOfWork={this.props.updateValueOfWork} toolbar={i == rows.length -1}/>)}
+                {this.props.items.map((r, i) =>
+                    <VariationItem name={r.name} value={r.value} key={r + i} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, i)} updateItem={this.updateItem.bind(null, i)}/>)}
                 </tbody>
               </table>
             </div>

@@ -7,6 +7,7 @@
   const rename = require('gulp-rename');
   const sourcemaps = require('gulp-sourcemaps');
   const uglify = require('gulp-uglify');
+  const browserify = require('gulp-browserify');
 
   const paths = {
     external_scripts: [
@@ -27,7 +28,9 @@
       'app/static/vendor/PACE/pace.min.js',
       'app/static/vendor/react/react.min.js',
       'app/static/vendor/react/react-dom.min.js',
-      'app/static/vendor/lodash/lodash.min.js'
+      'app/static/vendor/flux/dist/Flux.min.js',
+      'app/static/vendor/lodash/lodash.min.js',
+      'app/static/vendor/eventemitter2/lib/eventemitter2.js'
     ],
     scripts: [
       'app/static/js/index.js',
@@ -90,6 +93,7 @@
       gulp.src(paths.react_scripts)
           .pipe(sourcemaps.init())
           .pipe(babel())
+          .pipe(browserify())
           .pipe(uglify())
           .pipe(rename({
             extname: '.min.js'

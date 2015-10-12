@@ -28,15 +28,7 @@ function isFalse(element) {
 (() => {
   'use strict';
 
-  $(document).on('ready', () => {
-    $.material.init();
-    $('#picker_datetime').datetimepicker({
-      showTodayButton: true
-    });
-    //$('#select_project_id').selectize({
-    //  sortField: 'text'
-    //});
-  });
+  $(document).on('ready', () => $.material.init());
 
   (function(i, s, o, g, r, a, m) {
     i['GoogleAnalyticsObject'] = r;
