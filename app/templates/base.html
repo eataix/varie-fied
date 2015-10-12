@@ -16,15 +16,15 @@
 {% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/packed.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/packed.css') }}">
 {% endblock styles %}
 
 {% block scripts %}
-    <script src="{{ url_for('static', filename='js/packed.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/new-variation-form.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/new-project-form.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/index-menu.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='dist/js/packed.js') }}"></script>
+    <script src="{{ url_for('static', filename='dist/js/main.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='dist/js/new-variation-form.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='dist/js/new-project-form.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='dist/js/index-menu.min.js') }}"></script>
 {% endblock %}
 
 {% block navbar %}

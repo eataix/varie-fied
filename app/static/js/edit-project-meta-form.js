@@ -1,4 +1,4 @@
-(()=> {
+(() => {
   'use strict';
   const metaData = $('#project-data').data();
   const projectId = metaData.projectId;
@@ -7,7 +7,7 @@
   const projectMargin = parseFloat(metaData.projectMargin);
   const projectAdminFee = $.isNumeric(metaData.projectAdminFee) ? parseFloat(metaData.projectAdminFee) : '';
 
-  const Form = React.createClass({
+  const EditProjectMetaForm = React.createClass({
     render: function() {
       return (
           <div id="edit-dialog" className="modal fade" tabIndex="-1">
@@ -123,7 +123,7 @@
   });
 
   ReactDOM.render(
-      <Form />,
+      <EditProjectMetaForm />,
       document.getElementById('meta-edit-form')
   );
 })();
