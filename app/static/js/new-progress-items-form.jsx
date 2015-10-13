@@ -9,11 +9,12 @@ const changes = FluxStore.changes;
   var Input = ReactBootstrap.Input;
   var Button = ReactBootstrap.Button;
 
-  const ProgressItem = React.createClass({
-    handleChange: function() {
+  class ProgressItem extends React.Component {
+    handleChange() {
       this.props.updateItem(this.refs.name.getDOMNode().value, this.refs.value.getDOMNode().value);
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <tr>
             <td>
@@ -32,38 +33,46 @@ const changes = FluxStore.changes;
           </tr>
       );
     }
-  });
+  }
 
-  const NewProgressForm = React.createClass({
-    getInitialState: function() {
-      return {
+  class NewProgressForm extends React.Component {
+    constructor() {
+      super();
+      this.state = {
         list: store.getList()
       };
-    },
-    addRow: function() {
+    }
+
+    addRow() {
       actions.addItem({
         name: '',
         value: {
           amount: ''
         }
       })
-    },
-    deleteRow: function(index) {
+    }
+
+    deleteRow(index) {
       actions.removeItem(index);
-    },
-    updateItem: function(index, name, value) {
+    }
+
+    updateItem(index, name, value) {
       actions.updateItem(index, {name: name, value: {amount: value === '' ? '' : parseFloat(value)}});
-    },
-    componentDidMount: function() {
+    }
+
+    componentDidMount() {
       store.addChangeListener(changes.ITEMS_CHANGE, this._onListChange);
-    },
-    componentWillUnmount: function() {
+    }
+
+    componentWillUnmount() {
       store.removeChangeListener(changes.ITEMS_CHANGE, this._onListChange);
-    },
-    _onListChange: function() {
+    }
+
+    _onListChange() {
       this.setState({list: store.getList()});
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <div className="modal fade" tabIndex={-1}>
             <div className="modal-dialog modal-lg">
@@ -87,7 +96,7 @@ const changes = FluxStore.changes;
                           </thead>
                           <tbody>
                           {this.state.list.map((r, index) =>
-                              <ProgressItem key={r+index} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, index)} name={r.name} value={r.value.amount} updateItem={this.updateItem.bind(null, index)}/>)}
+                          <ProgressItem key={r+index} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, index)} name={r.name} value={r.value.amount} updateItem={this.updateItem.bind(null, index)}/>)}
                           </tbody>
                         </table>
                       </div>
@@ -102,8 +111,9 @@ const changes = FluxStore.changes;
             </div>
           </div>
       );
-    },
-    submit: function() {
+    }
+
+    submit() {
       const instance = $(this.refs.form.getDOMNode()).parsley();
       instance.validate();
       if (!instance.isValid()) {
@@ -181,7 +191,7 @@ const changes = FluxStore.changes;
         })();
       });
     }
-  });
+  }
 
   ReactDOM.render(
       <NewProgressForm />,

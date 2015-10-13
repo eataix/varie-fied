@@ -9,15 +9,16 @@ const changes = FluxStore.changes;
   var Input = ReactBootstrap.Input;
   var Button = ReactBootstrap.Button;
 
-  const TimePicker = React.createClass({
-    componentDidMount: function() {
+  class TimePicker extends React.Component {
+    componentDidMount() {
       $(this.refs.picker.getDOMNode()).datetimepicker({
         showTodayButton: true
       }).on('dp.change', function(event) {
         actions.updateTime(event.date.utc().format());
       });
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <div className="form-group">
             <label htmlFor="inputTime" className="col-sm-2 control-label">Time*</label>
@@ -30,46 +31,54 @@ const changes = FluxStore.changes;
           </div>
       );
     }
-  });
+  }
 
-  const Subcontractor = React.createClass({
-    handleChange: function() {
+  class Subcontractor extends React.Component {
+    handleChange() {
       actions.updateSubcontractor(event.target.value);
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <Input type="text" label="Subcontractor*" labelClassName="col-sm-2" wrapperClassName="col-sm-10" required onChange={this.handleChange}/>
       );
     }
-  });
+  }
 
-  const InvoiceNo = React.createClass({
-    handleChange: function() {
+  class InvoiceNo extends React.Component {
+    handleChange() {
       actions.updateInvoiceNumber(event.target.value);
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <Input type="text" label="Invoice Number" labelClassName="col-sm-2" wrapperClassName="col-sm-10" placeholder="Optional" onChange={this.handleChange}/>
       );
     }
-  });
+  }
 
-  const ValueOfWork = React.createClass({
-    render: function() {
+  class ValueOfWork extends React.Component {
+    render() {
       let value = 0.0;
       this.props.items.forEach((item) => value += item.value.amount);
       return (
           <Input type="text" label="Value of Work" labelClassName="col-sm-2" wrapperClassName="col-sm-10" value={accounting.formatMoney(value)} placeholder={0.0} disabled/>
       )
     }
-  });
+  }
 
-  const Project = React.createClass({
-    handleChange: function(event) {
+  class Project extends React.Component {
+    constructor() {
+      super();
+      this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange(event) {
       const p = this.props.projects.find(e => e.id.toString() === event.target.value);
       actions.updateMarginAndAdminFee(p.id, p.margin, p.admin_fee);
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <div className="form-group">
             <label className="col-sm-2 control-label">Project*</label>
@@ -82,19 +91,19 @@ const changes = FluxStore.changes;
           </div>
       );
     }
-  });
+  }
 
-  const Margin = React.createClass({
-    render: function() {
+  class Margin extends React.Component {
+    render() {
       const value = `${accounting.formatNumber(this.props.value * 100.0)} %`;
       return (
           <Input type="text" label="OH/Profit" labelClassName="col-sm-2" wrapperClassName="col-sm-10" value={value} placeholder={0.0} disabled/>
       );
     }
-  });
+  }
 
-  const AdminFee = React.createClass({
-    render: function() {
+  class AdminFee extends React.Component {
+    render() {
       const value = this.props.value;
       if (value === null) {
         return false;
@@ -103,10 +112,10 @@ const changes = FluxStore.changes;
           <Input type="text" label="Admin Fee" labelClassName="col-sm-2" wrapperClassName="col-sm-10" value={accounting.formatMoney(value)} placeholder={0.0} disabled/>
       );
     }
-  });
+  }
 
-  const Subtotal = React.createClass({
-    render: function() {
+  class Subtotal extends React.Component {
+    render() {
       let valueOfWork = 0.0;
       this.props.items.forEach((item) => {
         valueOfWork += item.value.amount;
@@ -116,13 +125,19 @@ const changes = FluxStore.changes;
           <Input type="text" label="Subtotal" labelClassName="col-sm-2" wrapperClassName="col-sm-10" value={accounting.formatMoney(subtotal)} placeholder={0.0} disabled/>
       );
     }
-  });
+  }
 
-  const VariationItem = React.createClass({
-    handleChange: function() {
+  class VariationItem extends React.Component {
+    constructor() {
+      super();
+      this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange() {
       this.props.updateItem(this.refs.name.getValue(), this.refs.value.getValue());
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <tr className="variationItem">
             <td>
@@ -141,13 +156,14 @@ const changes = FluxStore.changes;
           </tr>
       );
     }
-  });
+  }
 
-  const Description = React.createClass({
-    handleChange: function() {
+  class Description extends React.Component {
+    handleChange() {
       actions.updateDescription(event.target.value);
-    },
-    render: function() {
+    }
+
+    render() {
       if (this.props.items.length === 1) {
         return false;
       }
@@ -155,10 +171,24 @@ const changes = FluxStore.changes;
           <Input type="textarea" label="Description" labelClassName="col-sm-2" wrapperClassName="col-sm-10" rows={5} onChange={this.handleChange}/>
       );
     }
-  });
+  }
 
-  const NewVariationDialog = React.createClass({
-    submit: function() {
+  class NewVariationDialog extends React.Component {
+    constructor() {
+      super();
+      this._onListChange = this._onListChange.bind(this);
+      this._onMarginChange = this._onMarginChange.bind(this);
+      this.loadProjects = this.loadProjects.bind(this);
+      this.state = {
+        projects: [],
+        margin: store.getMargin(),
+        adminFee: store.getAdminFee(),
+        list: store.getList(),
+        showDescription: false
+      };
+    }
+
+    submit() {
       const instance = $(this.refs.form.getDOMNode()).parsley();
       instance.validate();
       if (!instance.isValid()) {
@@ -277,52 +307,47 @@ const changes = FluxStore.changes;
               })(); // invoke
             });
       });
-    },
-    getInitialState: function() {
-      return {
-        projects: [],
-        margin: store.getMargin(),
-        adminFee: store.getAdminFee(),
-        list: store.getList(),
-        showDescription: false
-      }
-    },
-    componentDidMount: function() {
+    }
+
+    componentDidMount() {
       this.loadProjects();
       setInterval(this.loadProjects, this.props.pollInterval);
       store.addChangeListener(changes.ITEMS_CHANGE, this._onListChange);
       store.addChangeListener(changes.MARGIN_AND_ADMIN_FEE, this._onMarginChange);
-    },
-    componentWillUnmount: function() {
+    }
+
+    componentWillUnmount() {
       store.removeChangeListener(changes.ITEMS_CHANGE, this._onListChange);
       store.removeChangeListener(changes.MARGIN_AND_ADMIN_FEE, this._onMarginChange);
-    },
-    _onMarginChange: function() {
+    }
+
+    _onMarginChange() {
       this.setState({
         margin: store.getMargin(),
         adminFee: store.getAdminFee()
       });
-    },
-    _onListChange: function() {
+    }
+
+    _onListChange() {
       this.setState({
         list: store.getList()
       });
-    },
-    loadProjects: function() {
+    }
+
+    loadProjects() {
       $.ajax({
-        url: this.props.project_url,
-        dataType: 'json',
-        success: function(data) {
-          this.setState({
-            projects: data.projects
-          });
-        }.bind(this),
-        fail: function(xhr, status, err) {
-          console.error(this.props.project_url, status, err.toString())
-        }.bind(this)
-      });
-    },
-    render: function() {
+            url: this.props.project_url,
+            contentType: 'application/json; charset=utf-8'
+          })
+          .success((data =>
+                  this.setState({projects: data.projects})
+          ).bind(this))
+          .fail(((xhr, status, err) =>
+                  console.error(this.props.project_url, status, err.toString())
+          ).bind(this));
+    }
+
+    render() {
       return (
           <div id="new-variation-dialog" className="modal fade" tabIndex={-1}>
             <div className="modal-dialog modal-lg">
@@ -359,24 +384,27 @@ const changes = FluxStore.changes;
           </div>
       );
     }
-  });
+  }
 
-  const ItemTable = React.createClass({
-    addRow: function() {
+  class ItemTable extends React.Component {
+    addRow() {
       actions.addItem({
         name: '',
         value: {
           amount: ''
         }
       });
-    },
-    deleteRow: function(index) {
+    }
+
+    deleteRow(index) {
       actions.removeItem(index);
-    },
-    updateItem: function(index, name, value) {
+    }
+
+    updateItem(index, name, value) {
       actions.updateItem(index, {name: name, value: {amount: value === '' ? '' : parseFloat(value)}});
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <div className="form-group">
             <label htmlFor="inputDescription" className="col-sm-2 control-label">Items*</label>
@@ -391,14 +419,14 @@ const changes = FluxStore.changes;
                 </thead>
                 <tbody>
                 {this.props.items.map((r, i) =>
-                    <VariationItem name={r.name} value={r.value.amount} key={r + i} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, i)} updateItem={this.updateItem.bind(null, i)}/>)}
+                <VariationItem name={r.name} value={r.value.amount} key={r + i} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, i)} updateItem={this.updateItem.bind(null, i)}/>)}
                 </tbody>
               </table>
             </div>
           </div>
       );
     }
-  });
+  }
 
   const project_url = $('#meta-data').data().projectsUrl;
 

@@ -1,17 +1,22 @@
 (() => {
+  'use strict';
+
   var Button = ReactBootstrap.Button;
   var Input = ReactBootstrap.Input;
 
-  'use strict';
   const metaData = $('#project-data').data();
-  const projectId = metaData.projectId;
   const projectRefNo = metaData.projectRefNo;
   const projectName = metaData.projectName;
   const projectMargin = parseFloat(metaData.projectMargin);
   const projectAdminFee = $.isNumeric(metaData.projectAdminFee) ? parseFloat(metaData.projectAdminFee) : '';
 
-  const EditProjectMetaForm = React.createClass({
-    render: function() {
+  class EditProjectMetaForm extends React.Component {
+    constructor() {
+      super();
+      this.onClick = this.onClick.bind(this);
+    }
+
+    render() {
       return (
           <div id="edit-dialog" ref="modal" className="modal fade" tabIndex="-1">
             <div className="modal-dialog modal-lg">
@@ -33,14 +38,15 @@
                 </div>
                 <div className="modal-footer">
                   <Button className="btn btn-primary btn-raised" data-dismiss="modal">Dismiss</Button>
-                  <Button className="btn btn-info btn-raised" onClick={this.submit}>Save</Button>
+                  <Button className="btn btn-info btn-raised" onClick={this.onClick}>Save</Button>
                 </div>
               </div>
             </div>
           </div>
-      )
-    },
-    submit: function() {
+      );
+    }
+
+    onClick() {
       const instance = $(this.refs.form.getDOMNode()).parsley();
       instance.validate();
       if (!instance.isValid()) {
@@ -102,11 +108,12 @@
                   title: 'Nice!',
                   text: 'Save changes',
                   type: 'success'
-                }, () => $(this.refs.modal.getDOMNode()).modal('hide'))
+                }, () =>
+                    $(this.refs.modal.getDOMNode()).modal('hide'))
             );
       });
     }
-  });
+  }
 
   ReactDOM.render(
       <EditProjectMetaForm />,

@@ -9,48 +9,60 @@ const changes = FluxStore.changes;
   var Input = ReactBootstrap.Input;
   var Button = ReactBootstrap.Button;
 
-  const ProjectName = React.createClass({
-    handleChange: function(event) {
+  class ProjectName extends React.Component {
+    handleChange(event) {
       actions.newProjectName(event.target.value);
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <Input type="text" label="Project Name*" labelClassName="col-sm-3" wrapperClassName="col-sm-9" required onChange={this.handleChange} value={this.props.value}/>
       );
     }
-  });
-  const ReferenceNo = React.createClass({
-    handleChange: function(event) {
+  }
+
+  class ReferenceNo extends React.Component {
+    handleChange(event) {
       actions.newProjectRefNum(event.target.value);
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <Input type="text" label="Reference Number*" labelClassName="col-sm-3" wrapperClassName="col-sm-9" required onChange={this.handleChange} value={this.props.value}/>
       );
     }
-  });
-  const OH = React.createClass({
-    handleChange: function(event) {
+  }
+
+  class OH extends React.Component {
+    handleChange(event) {
       actions.newProjectOH(event.target.value);
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <Input type="text" label="OH/Profit*" labelClassName="col-sm-3" wrapperClassName="col-sm-9" required data-parsley-type="number" onChange={this.handleChange} value={this.props.value}/>
       );
     }
-  });
-  const AdminFee = React.createClass({
-    handleChange: function() {
+  }
+
+  class AdminFee extends React.Component {
+    handleChange() {
       actions.newProjectAdminFee(event.target.value);
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <Input type="text" label="Admin Fee*" labelClassName="col-sm-3" wrapperClassName="col-sm-9" data-parsley-type="number" placeholder="optional" onChange={this.handleChange} value={this.props.value}/>
       )
     }
-  });
-  const ClientList = React.createClass({
-    addRow: function() {
+  }
+
+  class ClientList extends React.Component {
+    constructor() {
+      super();
+    }
+
+    addRow() {
       actions.addItem({
         name: '',
         value: {
@@ -58,11 +70,13 @@ const changes = FluxStore.changes;
           second: ''
         }
       })
-    },
-    deleteRow: function(index) {
+    }
+
+    deleteRow(index) {
       actions.removeItem(index);
-    },
-    updateItem: function(index, name, first, second) {
+    }
+
+    updateItem(index, name, first, second) {
       actions.updateItem(index, {
         name: name,
         value: {
@@ -70,8 +84,9 @@ const changes = FluxStore.changes;
           second: second
         }
       });
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <div className="form-group">
             <label className="col-sm-3 control-label">Clients</label>
@@ -87,20 +102,26 @@ const changes = FluxStore.changes;
                 </thead>
                 <tbody>
                 {this.props.clients.map((r, i) =>
-                    <Client key={r + i} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, i)} updateItem={this.updateItem.bind(null, i)} name={r.name} first={r.value.first} second={r.value.second}/>)}
+                <Client key={r + i} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, i)} updateItem={this.updateItem.bind(null, i)} name={r.name} first={r.value.first} second={r.value.second}/>)}
                 </tbody>
               </table>
             </div>
           </div>
       );
     }
-  });
+  }
 
-  const Client = React.createClass({
-    handleChange: function() {
+  class Client extends React.Component {
+    constructor() {
+      super();
+      this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange() {
       this.props.updateItem(this.refs.name.getValue(), this.refs.first.getValue(), this.refs.second.getValue());
-    },
-    render: function() {
+    }
+
+    render() {
       return (<tr className="client">
         <td>
           <Input standalone={true} type="textarea" required ref="name" value={this.props.name} onChange={this.handleChange}/>
@@ -118,38 +139,48 @@ const changes = FluxStore.changes;
         </td>
       </tr>);
     }
-  });
+  }
 
-  const NewProjectForm = React.createClass({
-    getInitialState: function() {
-      return {
+  class NewProjectForm extends React.Component {
+    constructor() {
+      super();
+      this._onInfoChange = this._onInfoChange.bind(this);
+      this._onListChange = this._onListChange.bind(this);
+      this.submit = this.submit.bind(this);
+
+      this.state = {
         name: store.getNewName(),
         margin: store.getNewOH(),
         refNum: store.getNewRefNum(),
         adminFee: store.getNewAdminFee(),
         list: store.getList()
-      }
-    },
-    componentDidMount: function() {
+      };
+    }
+
+    componentDidMount() {
       store.addChangeListener(changes.ITEMS_CHANGE, this._onListChange);
       store.addChangeListener(changes.NEW_INFO_CHANGE, this._onInfoChange);
-    },
-    componentWillUnmount: function() {
+    }
+
+    componentWillUnmount() {
       store.removeChangeListener(changes.NEW_INFO_CHANGE, this._onInfoChange);
       store.removeChangeListener(changes.ITEMS_CHANGE, this._onListChange);
-    },
-    _onInfoChange: function() {
+    }
+
+    _onInfoChange() {
       this.setState({
         name: store.getNewName(),
         refNum: store.getNewRefNum(),
         margin: store.getNewOH(),
         adminFee: store.getNewAdminFee()
       });
-    },
-    _onListChange: function() {
+    }
+
+    _onListChange() {
       this.setState({list: store.getList()});
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <div id="new-project-dialog" ref="modal" className="modal fade" tabIndex={-1}>
             <div className="modal-dialog modal-lg">
@@ -178,8 +209,9 @@ const changes = FluxStore.changes;
             </div>
           </div>
       );
-    },
-    submit: function() {
+    }
+
+    submit() {
       const instance = $(this.refs.form.getDOMNode()).parsley();
       instance.validate();
       if (!instance.isValid()) {
@@ -292,7 +324,7 @@ const changes = FluxStore.changes;
             });
       });
     }
-  });
+  }
 
   ReactDOM.render(
       <NewProjectForm />,

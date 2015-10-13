@@ -3,7 +3,6 @@ const AppDispatcher = new Flux.Dispatcher();
 
 AppDispatcher.handleAction = function(action) {
   'use strict';
-  //noinspection JSUnresolvedFunction
   this.dispatch({
     source: 'VIEW_ACTION',
     action: action

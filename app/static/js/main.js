@@ -30,12 +30,6 @@ function isFalse(element) {
 
   $(document).on('ready', () => {
     $.material.init();
-    //$('#picker_datetime').datetimepicker({
-    //  showTodayButton: true
-    //});
-    //$('#select_project_id').selectize({
-    //  sortField: 'text'
-    //});
   });
 
   (function(i, s, o, g, r, a, m) {

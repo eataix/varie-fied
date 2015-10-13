@@ -2,23 +2,19 @@
   'use strict';
 
   var NavItem = ReactBootstrap.NavItem;
-  var Button = ReactBootstrap.Button;
 
-  const Home = React.createClass({
-    render: function() {
+  class Home extends React.Component {
+    render() {
       return (
           <NavItem active={window.location.pathname === '/'} href='/'>
             <i className="fa fa-home"> </i>Home
           </NavItem>
       );
     }
-  });
+  }
 
-  const ProjectItem = React.createClass({
-    render: function() {
-      if (!this.props.project.active) {
-        return false;
-      }
+  class ProjectItem extends React.Component {
+    render() {
       const id = window.location.pathname.split('/')[2];
       const active = id === this.props.project.id.toString();
       const className = active ? "dropdown active" : "dropdown";
@@ -35,10 +31,10 @@
           </li>
       );
     }
-  });
+  }
 
-  const OldProject = React.createClass({
-    render: function() {
+  class OldProject extends React.Component {
+    render() {
       let p = undefined;
       if (window.location.pathname !== '/') {
         const id = window.location.pathname.split('/')[2];
@@ -55,33 +51,37 @@
             <ul className="dropdown-menu">
               { this.props.projects
                   .filter(function(e) {
-                    return e.active;
+                  return !e.active;
                   })
                   .map(function(p, i) {
-                    return (
-                        <li key={i}>
-                          <a href={`/project/${p.id}/progress`}>{p.name}</a>
-                        </li>
-                    );
+                  return (
+                  <li key={i}>
+                    <a href={`/project/${p.id}/progress`}>{p.name}</a>
+                  </li>
+                      );
                   })
-              }
+                  }
             </ul>
           </li>
       );
     }
-  });
+  }
 
-  const Project = React.createClass({
-    getInitialState: function() {
-      return {
+  class Project extends React.Component {
+    constructor() {
+      super();
+      this.state = {
         projects: []
-      }
-    },
-    componentDidMount: function() {
+      };
+      this.loadProjects = this.loadProjects.bind(this);
+    }
+
+    componentDidMount() {
       this.loadProjects();
       setInterval(this.loadProjects, this.props.pollInterval);
-    },
-    loadProjects: function() {
+    }
+
+    loadProjects() {
       $.ajax({
             url: this.props.project_url,
             contentType: 'application/json; charset=utf-8'
@@ -92,15 +92,19 @@
           .fail(((xhr, status, err) =>
                   console.error(this.props.project_url, status, err.toString())
           ).bind(this));
-    },
-    render: function() {
+    }
+
+    render() {
       return (
           <div className="navbar navbar-default" role="navigation">
             <div className="navbar-header">
               <button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-                <span className="icon-bar"></span>
-                <span className="icon-bar"></span>
-                <span className="icon-bar"></span>
+                <span className="icon-bar">
+                </span>
+                <span className="icon-bar">
+                </span>
+                <span className="icon-bar">
+                </span>
               </button>
               <a className="navbar-brand" href="/">Varie-fied</a>
             </div>
@@ -108,23 +112,27 @@
               <ul className="nav navbar-nav">
                 <Home />
                 {
-                  this.state.projects.map(function(p, i) {
-                    return <ProjectItem key={i} project={p}/>;
-                  })
-                }
+                    this.state.projects
+                        .filter(p => p.active)
+                        .map(function(p, i) {
+                        return <ProjectItem key={i} project={p}/>;
+                        })
+                    }
                 <OldProject projects={this.state.projects}/>
                 <li>
-                  <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i className="fa fa-plus"></i> New Project</a>
+                  <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i className="fa fa-plus"></i>
+                    New Project</a>
                 </li>
                 <li>
-                  <a href="javascript:void(0)" data-toggle="modal" data-target="#new-variation-dialog"><i className="fa fa-plus"></i> New Variation</a>
+                  <a href="javascript:void(0)" data-toggle="modal" data-target="#new-variation-dialog"><i className="fa fa-plus"></i>
+                    New Variation</a>
                 </li>
               </ul>
             </div>
           </div>
       );
     }
-  });
+  }
 
   const project_url = $('#meta-data').data().projectsUrl;
 

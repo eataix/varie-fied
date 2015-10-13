@@ -41,13 +41,13 @@
       'app/static/js/variation.js'
     ],
     react_scripts: [
-      'app/static/js/new-project-form.js',
-      'app/static/js/new-variation-form.js',
-      'app/static/js/new-progress-items-form.js',
-      'app/static/js/index-projects.js',
-      'app/static/js/index-menu.js',
-      'app/static/js/edit-project-meta-form.js',
-      'app/static/js/project-info.js'
+      'app/static/js/new-project-form.jsx',
+      'app/static/js/new-variation-form.jsx',
+      'app/static/js/new-progress-items-form.jsx',
+      'app/static/js/index-projects.jsx',
+      'app/static/js/index-menu.jsx',
+      'app/static/js/edit-project-meta-form.jsx',
+      'app/static/js/project-info.jsx'
     ],
     js_output: 'app/static/dist/js',
     css_output: 'app/static/dist/css',
@@ -77,7 +77,7 @@
   gulp.task('script', () =>
       gulp.src(paths.scripts)
           .pipe(sourcemaps.init())
-          .pipe(babel())
+          .pipe(babel({stage: 0}))
           .pipe(uglify({
             compress: {
               unused: false
@@ -93,7 +93,7 @@
   gulp.task('react', () =>
       gulp.src(paths.react_scripts)
           .pipe(sourcemaps.init())
-          .pipe(babel())
+          .pipe(babel({stage: 0}))
           .pipe(browserify())
           .pipe(uglify())
           .pipe(rename({

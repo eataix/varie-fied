@@ -1,21 +1,25 @@
 (() => {
   'use strict';
 
-  const ProjectInfo = React.createClass({
-    getInitialState: function() {
-      return {
+  class ProjectInfo extends React.Component {
+    constructor() {
+      super();
+      this.state = {
         name: '',
         reference_number: '',
         active: true,
         margin: 0.0,
         admin_fee: null
       };
-    },
-    componentDidMount: function() {
+      this.loadProjects = this.loadProjects.bind(this);
+    }
+
+    componentDidMount() {
       this.loadProjects();
       setInterval(this.loadProjects, this.props.pollInterval);
-    },
-    loadProjects: function() {
+    }
+
+    loadProjects() {
       $.ajax({
             url: this.props.project_url,
             dataType: 'json',
@@ -33,10 +37,11 @@
           .fail(function(xhr, status, err) {
             console.error(this.props.project_url, status, err.toString());
           }.bind(this));
-    },
-    render: function() {
+    }
+
+    render() {
       return (
-          <h2>{this.props.prefix} "{this.state.name}"
+          <h2>{this.props.prefix} of "{this.state.name}"
             <small>(<a href={this.props.alt_url}>{this.props.alt_text}</a>,
                    Reference number: {this.state.reference_number};
                    OH/Profit: {this.state.margin * 100}%
@@ -46,12 +51,13 @@
           </h2>
       );
     }
-  });
+  }
 
   const project_url = $('#project-data').data().editProjectUrl;
   const prefix = window.location.pathname.split('/')[3] === 'progress' ? 'Progress' : 'Variations';
   const alt_url = prefix === 'Progress' ? './variation' : './progress';
   const alt_text = prefix === 'Progress' ? 'Variations' : 'Progress';
+
   ReactDOM.render(
       <ProjectInfo project_url={project_url} pollInterval={2000} prefix={prefix} alt_url={alt_url} alt_text={alt_text}/>,
       document.getElementById('project-info')
