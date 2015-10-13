@@ -21,34 +21,40 @@
 
     loadProjects() {
       $.ajax({
-            url: this.props.project_url,
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8'
-          })
-          .success(function(data) {
-            this.setState({
-              name: data.name,
-              reference_number: data.reference_number,
-              active: data.active,
-              margin: data.margin,
-              admin_fee: data.admin_fee
-            });
-          }.bind(this))
-          .fail(function(xhr, status, err) {
-            console.error(this.props.project_url, status, err.toString());
-          }.bind(this));
+          url: this.props.project_url,
+          dataType: 'json',
+          contentType: 'application/json; charset=utf-8'
+        })
+        .done(function(data) {
+          this.setState({
+            name: data.name,
+            reference_number: data.reference_number,
+            active: data.active,
+            margin: data.margin,
+            admin_fee: data.admin_fee
+          });
+        }.bind(this))
+        .fail(function(xhr, status, err) {
+          console.error(this.props.project_url, status, err.toString());
+        }.bind(this));
     }
 
     render() {
       return (
-          <h2>{this.props.prefix} of "{this.state.name}"
-            <small>(<a href={this.props.alt_url}>{this.props.alt_text}</a>,
-                   Reference number: {this.state.reference_number};
-                   OH/Profit: {this.state.margin * 100}%
-              {this.state.admin_fee === null ? '' : 'Admin fee: ' + this.state.admin_fee}
-              <a href="javascript:void(0)" data-toggle="modal" data-target="#edit-dialog"> edit</a>)
-            </small>
-          </h2>
+        <h2>{this.props.prefix} of "{this.state.name}"
+          <small>(<a href={this.props.alt_url}>{this.props.alt_text}</a>,
+                 Reference number: {this.state.reference_number};
+                 OH/Profit: {this.state.margin * 100}%;
+            {this.state.admin_fee === null ? ' ' : ` Admin fee: ${this.state.admin_fee}`}
+            <a
+              href="javascript:void(0)"
+              data-toggle="modal"
+              data-target="#edit-dialog"
+            >
+              edit
+            </a>)
+          </small>
+        </h2>
       );
     }
   }
@@ -59,7 +65,13 @@
   const alt_text = prefix === 'Progress' ? 'Variations' : 'Progress';
 
   ReactDOM.render(
-      <ProjectInfo project_url={project_url} pollInterval={2000} prefix={prefix} alt_url={alt_url} alt_text={alt_text}/>,
-      document.getElementById('project-info')
+    <ProjectInfo
+      project_url={project_url}
+      pollInterval={2000}
+      prefix={prefix}
+      alt_url={alt_url}
+      alt_text={alt_text}
+    />,
+    document.getElementById('project-info')
   );
 })();

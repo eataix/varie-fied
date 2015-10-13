@@ -6,8 +6,9 @@ const changes = FluxStore.changes;
 (() => {
   'use strict';
 
-  var Input = ReactBootstrap.Input;
-  var Button = ReactBootstrap.Button;
+  const Input = ReactBootstrap.Input;
+  const Button = ReactBootstrap.Button;
+  const Modal = ReactBootstrap.Modal;
 
   class ProgressItem extends React.Component {
     handleChange() {
@@ -16,21 +17,44 @@ const changes = FluxStore.changes;
 
     render() {
       return (
-          <tr>
-            <td>
-              <Input standalone={true} type="textarea" required ref="name" value={this.props.name} onChange={this.handleChange}/>
-            </td>
-            <td style={{verticalAlign: 'middle'}}>
-              <Input standalone={true} type="text" required data-parsley-type="number" ref="value" value={this.props.value} onChange={this.handleChange}/>
-            </td>
-            <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
-              <a href="javascript:void(0)" className="add-progress-item-row" onClick={this.props.addRow}><span className="fa fa-plus"> </span>
-                Add</a>
-              /
-              <a href="javascript:void(0)" className="delete-progress-item-row" onClick={this.props.deleteRow}><span className="fa fa-minus"> </span>
-                Delete</a>
-            </td>
-          </tr>
+        <tr>
+          <td>
+            <Input
+              standalone={true}
+              type="textarea"
+              required
+              ref="name"
+              value={this.props.name}
+              onChange={this.handleChange}
+            />
+          </td>
+          <td style={{verticalAlign: 'middle'}}>
+            <Input
+              standalone={true}
+              type="text"
+              required
+              data-parsley-type="number"
+              ref="value"
+              value={this.props.value}
+              onChange={this.handleChange}
+            />
+          </td>
+          <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
+            <a
+              href="javascript:void(0)"
+              onClick={this.props.addRow}
+            >
+              <span className="fa fa-plus"> </span> Add
+            </a>
+            /
+            <a
+              href="javascript:void(0)"
+              onClick={this.props.deleteRow}
+            >
+              <span className="fa fa-minus"> </span> Delete
+            </a>
+          </td>
+        </tr>
       );
     }
   }
@@ -41,6 +65,8 @@ const changes = FluxStore.changes;
       this.state = {
         list: store.getList()
       };
+      this.onListChange = this.onListChange.bind(this);
+      this.handleHideModal = this.handleHideModal.bind(this);
     }
 
     addRow() {
@@ -61,55 +87,83 @@ const changes = FluxStore.changes;
     }
 
     componentDidMount() {
-      store.addChangeListener(changes.ITEMS_CHANGE, this._onListChange);
+      store.addChangeListener(changes.ITEMS_CHANGE, this.onListChange);
     }
 
     componentWillUnmount() {
-      store.removeChangeListener(changes.ITEMS_CHANGE, this._onListChange);
+      store.removeChangeListener(changes.ITEMS_CHANGE, this.onListChange);
     }
 
-    _onListChange() {
+    onListChange() {
       this.setState({list: store.getList()});
+    }
+
+    handleHideModal() {
+      $(this.refs.modal.getDOMNode()).modal('hide');
     }
 
     render() {
       return (
-          <div className="modal fade" tabIndex={-1}>
-            <div className="modal-dialog modal-lg">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span></button>
-                  <h2 className="modal-title">New Progress Items</h2>
-                </div>
-                <div className="modal-body">
-                  <div className="container-fluid">
-                    <form className="form-horizontal" ref="form">
-                      <div className="form-group">
-                        <table className="table table-bordered">
-                          <thead>
-                          <tr>
-                            <th style={{textAlign: 'center'}}>Name</th>
-                            <th style={{textAlign: 'center'}}>Contract Value</th>
-                            <th style={{textAlign: 'center'}}/>
-                          </tr>
-                          </thead>
-                          <tbody>
-                          {this.state.list.map((r, index) =>
-                          <ProgressItem key={r+index} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, index)} name={r.name} value={r.value.amount} updateItem={this.updateItem.bind(null, index)}/>)}
-                          </tbody>
-                        </table>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <Button className="btn btn-primary btn-raised" data-dismiss="modal">Dismiss</Button>
-                  <Button className="btn btn-info btn-raised" onClick={this.submit}>Save</Button>
+        <div
+          className="modal fade"
+          ref="modal"
+          tabIndex={-1}
+          id="new-progress-item-dialog"
+        >
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <Modal.Header
+                closeButton
+                onHide={this.handleHideModal}
+              >
+                <Modal.Title>New Progress Items</Modal.Title>
+              </Modal.Header>
+              <div className="modal-body">
+                <div className="container-fluid">
+                  <form className="form-horizontal"
+                        ref="form">
+                    <div className="form-group">
+                      <table className="table table-bordered">
+                        <thead>
+                        <tr>
+                          <th style={{textAlign: 'center'}}>Name</th>
+                          <th style={{textAlign: 'center'}}>Contract Value</th>
+                          <th style={{textAlign: 'center'}}/>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {this.state.list.map((r, index) =>
+                        <ProgressItem
+                          key={r+index}
+                          addRow={this.addRow}
+                          deleteRow={this.deleteRow.bind(null, index)}
+                          name={r.name}
+                          value={r.value.amount}
+                          updateItem={this.updateItem.bind(null, index)}
+                        />)}
+                        </tbody>
+                      </table>
+                    </div>
+                  </form>
                 </div>
               </div>
+              <Modal.Footer>
+                <Button
+                  className="btn btn-primary btn-raised"
+                  data-dismiss="modal"
+                >
+                  Dismiss
+                </Button>
+                <Button
+                  className="btn btn-info btn-raised"
+                  onClick={this.submit}
+                >
+                  Save
+                </Button>
+              </Modal.Footer>
             </div>
           </div>
+        </div>
       );
     }
 
@@ -142,6 +196,7 @@ const changes = FluxStore.changes;
         }
 
         const progressItems = store.getList();
+        console.log(progressItems);
 
         const statusArray = new Array(progressItems.length).fill(null);
 
@@ -154,21 +209,21 @@ const changes = FluxStore.changes;
           const contract_value = item.value.amount;
 
           $.ajax({
-                url: newProgressItemUrl,
-                type: 'POST',
-                data: JSON.stringify({
-                  name: name,
-                  contract_value: contract_value,
-                  project_id: projectId
-                }),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json'
-              })
-              .done(() => {
-                statusArray[offset] = true;
-                createItem(offset + 1);
-              })
-              .fail(() => statusArray[offset] = false);
+              url: newProgressItemUrl,
+              type: 'POST',
+              data: JSON.stringify({
+                name: name,
+                contract_value: contract_value,
+                project_id: projectId
+              }),
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json'
+            })
+            .done(() => {
+              statusArray[offset] = true;
+              createItem(offset + 1);
+            })
+            .fail(() => statusArray[offset] = false);
         })(0);
 
         (function waiting() {
@@ -194,7 +249,7 @@ const changes = FluxStore.changes;
   }
 
   ReactDOM.render(
-      <NewProgressForm />,
-      document.getElementById('new-progress-items-form-container')
+    <NewProgressForm />,
+    document.getElementById('new-progress-items-form-container')
   );
 })();

@@ -78,11 +78,11 @@
       gulp.src(paths.scripts)
           .pipe(sourcemaps.init())
           .pipe(babel({stage: 0}))
-          .pipe(uglify({
-            compress: {
-              unused: false
-            }
-          }))
+          //.pipe(uglify({
+          //  compress: {
+          //    unused: false
+          //  }
+          //}))
           .pipe(rename({
             extname: '.min.js'
           }))
@@ -95,7 +95,7 @@
           .pipe(sourcemaps.init())
           .pipe(babel({stage: 0}))
           .pipe(browserify())
-          .pipe(uglify())
+          //.pipe(uglify())
           .pipe(rename({
             extname: '.min.js'
           }))

@@ -1,4 +1,4 @@
-var EventEmitter = require('events');
+const EventEmitter = require('events');
 const AppDispatcher = new Flux.Dispatcher();
 
 AppDispatcher.handleAction = function(action) {
@@ -124,7 +124,7 @@ const changes = {
   NEW_INFO_CHANGE: 'NEW_INFO_CHANGE'
 };
 
-var _store = {
+const _store = {
   list: [{
     name: '',
     value: {}
@@ -267,7 +267,7 @@ const store = Object.assign({}, EventEmitter.prototype, {
 
 AppDispatcher.register(function(payload) {
   'use strict';
-  var action = payload.action;
+  const action = payload.action;
   switch (action.actionType) {
     case constants.ADD_ITEM:
       addItem(action.data);

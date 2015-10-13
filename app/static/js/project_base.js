@@ -50,18 +50,18 @@ const deleteProjectUrl = metaData.deleteProjectUrl;
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
       $.ajax({
-            url: deleteProjectUrl,
-            type: 'DELETE',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => {
-            swal({
-              title: 'Nice!',
-              text: `You delete: ${projectName}`,
-              type: 'success'
-            }, () => window.location.href = '/');
-          });
+          url: deleteProjectUrl,
+          type: 'DELETE',
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        })
+        .done(() => {
+          swal({
+            title: 'Nice!',
+            text: `You delete: ${projectName}`,
+            type: 'success'
+          }, () => window.location.href = '/');
+        });
     });
   });
 
@@ -93,21 +93,21 @@ const deleteProjectUrl = metaData.deleteProjectUrl;
       $button.off('click');
 
       $.ajax({
-            url: editProjectUrl,
-            type: 'PUT',
-            data: JSON.stringify({
-              active: !projectActive
-            }),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => {
-            swal({
-              title: 'Nice!',
-              text: `You ${action}d projectName`,
-              type: 'success'
-            }, () => location.reload());
-          });
+          url: editProjectUrl,
+          type: 'PUT',
+          data: JSON.stringify({
+            active: !projectActive
+          }),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        })
+        .done(() => {
+          swal({
+            title: 'Nice!',
+            text: `You ${action}d projectName`,
+            type: 'success'
+          }, () => location.reload());
+        });
     });
   });
 
