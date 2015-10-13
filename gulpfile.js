@@ -30,7 +30,8 @@
       'app/static/vendor/react/react-dom.min.js',
       'app/static/vendor/flux/dist/Flux.min.js',
       'app/static/vendor/lodash/lodash.min.js',
-      'app/static/vendor/eventemitter2/lib/eventemitter2.js'
+      'app/static/vendor/react-bootstrap/react-bootstrap.min.js'
+      //'app/static/vendor/eventemitter2/lib/eventemitter2.js'
     ],
     scripts: [
       'app/static/js/index.js',

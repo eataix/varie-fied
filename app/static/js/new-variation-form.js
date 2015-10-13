@@ -6,6 +6,9 @@ const changes = FluxStore.changes;
 (function() {
   'use strict';
 
+  var Input = ReactBootstrap.Input;
+  var Button = ReactBootstrap.Button;
+
   const TimePicker = React.createClass({
     componentDidMount: function() {
       $(this.refs.picker.getDOMNode()).datetimepicker({
@@ -35,12 +38,7 @@ const changes = FluxStore.changes;
     },
     render: function() {
       return (
-          <div className="form-group">
-            <label htmlFor="inputSubcontractor" className="col-sm-2 control-label">Subcontractor*</label>
-            <div className="col-sm-10">
-              <input type="text" className="form-control" id="input_subcontractor" placeholder="Name" required onChange={this.handleChange}/>
-            </div>
-          </div>
+          <Input type="text" label="Subcontractor*" labelClassName="col-sm-2" wrapperClassName="col-sm-10" required onChange={this.handleChange}/>
       );
     }
   });
@@ -51,12 +49,7 @@ const changes = FluxStore.changes;
     },
     render: function() {
       return (
-          <div className="form-group">
-            <label htmlFor="inputInvoiceNo" className="col-sm-2 control-label">Invoice Number</label>
-            <div className="col-sm-10">
-              <input type="text" className="form-control" id="input_invoice_no" placeholder="Optional" onChange={this.handleChange}/>
-            </div>
-          </div>
+          <Input type="text" label="Invoice Number" labelClassName="col-sm-2" wrapperClassName="col-sm-10" placeholder="Optional" onChange={this.handleChange}/>
       );
     }
   });
@@ -64,14 +57,9 @@ const changes = FluxStore.changes;
   const ValueOfWork = React.createClass({
     render: function() {
       let value = 0.0;
-      this.props.items.forEach((item) => value += item.value);
+      this.props.items.forEach((item) => value += item.value.amount);
       return (
-          <div className="form-group">
-            <label htmlFor="inputAmount" className="col-sm-2 control-label">Value of work</label>
-            <div className="col-sm-10">
-              <input type="text" className="form-control" id="value-of-work" value={accounting.formatMoney(value)} placeholder={0.0} disabled/>
-            </div>
-          </div>
+          <Input type="text" label="Value of Work" labelClassName="col-sm-2" wrapperClassName="col-sm-10" value={accounting.formatMoney(value)} placeholder={0.0} disabled/>
       )
     }
   });
@@ -86,7 +74,7 @@ const changes = FluxStore.changes;
           <div className="form-group">
             <label className="col-sm-2 control-label">Project*</label>
             <div className="col-sm-10">
-              <select id="select_project_id" className="form-control" onChange={this.handleChange} ref="select">
+              <select className="form-control" onChange={this.handleChange} ref="select">
                 <option value="-1">Select a project</option>
                 {this.props.projects.map(v=> <option key={v.id} value={v.id}>{v.name}</option>)}
               </select>
@@ -100,13 +88,8 @@ const changes = FluxStore.changes;
     render: function() {
       const value = `${accounting.formatNumber(this.props.value * 100.0)} %`;
       return (
-          <div className="form-group">
-            <label htmlFor="inputAmount" className="col-sm-2 control-label">OH/Profit</label>
-            <div className="col-sm-10">
-              <input type="text" className="form-control" id="margin" value={value} placeholder={0.0} disabled/>
-            </div>
-          </div>
-      )
+          <Input type="text" label="OH/Profit" labelClassName="col-sm-2" wrapperClassName="col-sm-10" value={value} placeholder={0.0} disabled/>
+      );
     }
   });
 
@@ -117,13 +100,8 @@ const changes = FluxStore.changes;
         return false;
       }
       return (
-          <div className="form-group">
-            <label htmlFor="inputAdminFee" className="col-sm-2 control-label">Admin-fee</label>
-            <div className="col-sm-10">
-              <input type="text" className="form-control" id="admin-fee" value={accounting.formatMoney(value)} placeholder={0.0} disabled/>
-            </div>
-          </div>
-      )
+          <Input type="text" label="Admin Fee" labelClassName="col-sm-2" wrapperClassName="col-sm-10" value={accounting.formatMoney(value)} placeholder={0.0} disabled/>
+      );
     }
   });
 
@@ -131,32 +109,27 @@ const changes = FluxStore.changes;
     render: function() {
       let valueOfWork = 0.0;
       this.props.items.forEach((item) => {
-        valueOfWork += item.value;
+        valueOfWork += item.value.amount;
       });
       const subtotal = valueOfWork * (1.0 + this.props.margin) + (this.props.adminFee === null ? 0 : this.props.adminFee);
       return (
-          <div className="form-group">
-            <label htmlFor="inputAmount" className="col-sm-2 control-label">Subtotal</label>
-            <div className="col-sm-10">
-              <input type="text" className="form-control" id="subtotal" value={accounting.formatMoney(subtotal)} placeholder={0.0} disabled/>
-            </div>
-          </div>
+          <Input type="text" label="Subtotal" labelClassName="col-sm-2" wrapperClassName="col-sm-10" value={accounting.formatMoney(subtotal)} placeholder={0.0} disabled/>
       );
     }
   });
 
   const VariationItem = React.createClass({
     handleChange: function() {
-      this.props.updateItem(this.refs.name.getDOMNode().value, this.refs.value.getDOMNode().value);
+      this.props.updateItem(this.refs.name.getValue(), this.refs.value.getValue());
     },
     render: function() {
       return (
           <tr className="variationItem">
             <td>
-              <textarea ref="name" name="description" className="input-desc form-control" required value={this.props.name} onChange={this.handleChange}/>
+              <Input standalone={true} type="textarea" ref="name" required value={this.props.name} onChange={this.handleChange}/>
             </td>
             <td style={{verticalAlign: 'middle'}}>
-              <input ref="value" type="text" name="amount" className="input-amount form-control" required data-parsley-type="number" onChange={this.handleChange} value={this.props.value}/>
+              <Input standalone={true} type="text" ref="value" required data-parsley-type="number" onChange={this.handleChange} value={this.props.value}/>
             </td>
             <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
               <a href="javascript:void(0)" className="add-row" onClick={this.props.addRow}><span className="fa fa-plus"> </span>
@@ -179,12 +152,7 @@ const changes = FluxStore.changes;
         return false;
       }
       return (
-          <div className="form-group" id="descriptionDiv">
-            <label htmlFor="inputDescription" className="col-sm-2 control-label">Description*</label>
-            <div className="col-sm-10">
-              <textarea className="form-control" id="input_description" rows={5} onChange={this.handleChange}/>
-            </div>
-          </div>
+          <Input type="textarea" label="Description" labelClassName="col-sm-2" wrapperClassName="col-sm-10" rows={5} onChange={this.handleChange}/>
       );
     }
   });
@@ -204,7 +172,7 @@ const changes = FluxStore.changes;
       const variationItems = store.getList();
       let input_amount = 0.0;
       variationItems.forEach(function(item) {
-        input_amount += item.value;
+        input_amount += item.value.amount;
       });
       let input_description = '';
       if (variationItems.length === 1) {
@@ -270,7 +238,7 @@ const changes = FluxStore.changes;
                 }
                 const item = variationItems[offset];
                 const desc = item.name;
-                const amount = item.value;
+                const amount = item.value.amount;
 
                 $.ajax({
                       url: newItemUrl,
@@ -383,7 +351,7 @@ const changes = FluxStore.changes;
                 <div className="modal-footer">
                   <p>* Required</p>
                   <button className="btn btn-primary btn-raised" data-dismiss="modal">Dismiss</button>
-                  <button id="btn_submit" className="btn btn-info btn-raised" onClick={this.submit}>Add
+                  <button className="btn btn-info btn-raised" onClick={this.submit}>Add
                   </button>
                 </div>
               </div>
@@ -397,14 +365,16 @@ const changes = FluxStore.changes;
     addRow: function() {
       actions.addItem({
         name: '',
-        value: null
+        value: {
+          amount: ''
+        }
       });
     },
     deleteRow: function(index) {
       actions.removeItem(index);
     },
     updateItem: function(index, name, value) {
-      actions.updateItem(index, {name: name, value: value === '' ? '' : parseFloat(value)});
+      actions.updateItem(index, {name: name, value: {amount: value === '' ? '' : parseFloat(value)}});
     },
     render: function() {
       return (
@@ -419,9 +389,9 @@ const changes = FluxStore.changes;
                   <th style={{textAlign: 'center'}}>Action</th>
                 </tr>
                 </thead>
-                <tbody id="items">
+                <tbody>
                 {this.props.items.map((r, i) =>
-                    <VariationItem name={r.name} value={r.value} key={r + i} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, i)} updateItem={this.updateItem.bind(null, i)}/>)}
+                    <VariationItem name={r.name} value={r.value.amount} key={r + i} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, i)} updateItem={this.updateItem.bind(null, i)}/>)}
                 </tbody>
               </table>
             </div>

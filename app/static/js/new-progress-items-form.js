@@ -6,18 +6,21 @@ const changes = FluxStore.changes;
 (() => {
   'use strict';
 
+  var Input = ReactBootstrap.Input;
+  var Button = ReactBootstrap.Button;
+
   const ProgressItem = React.createClass({
     handleChange: function() {
       this.props.updateItem(this.refs.name.getDOMNode().value, this.refs.value.getDOMNode().value);
     },
     render: function() {
       return (
-          <tr className="progressItem">
+          <tr>
             <td>
-              <textarea name="name" className="input-progress-item-name form-control" required ref="name" value={this.props.name} onChange={this.handleChange}/>
+              <Input standalone={true} type="textarea" required ref="name" value={this.props.name} onChange={this.handleChange}/>
             </td>
             <td style={{verticalAlign: 'middle'}}>
-              <input type="text" name="amount" className="input-progress-item-value form-control" required data-parsley-type="number" ref="value" value={this.props.value} onChange={this.handleChange}/>
+              <Input standalone={true} type="text" required data-parsley-type="number" ref="value" value={this.props.value} onChange={this.handleChange}/>
             </td>
             <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
               <a href="javascript:void(0)" className="add-progress-item-row" onClick={this.props.addRow}><span className="fa fa-plus"> </span>
@@ -38,13 +41,18 @@ const changes = FluxStore.changes;
       };
     },
     addRow: function() {
-      actions.addItem({name: '', value: ''})
+      actions.addItem({
+        name: '',
+        value: {
+          amount: ''
+        }
+      })
     },
     deleteRow: function(index) {
       actions.removeItem(index);
     },
     updateItem: function(index, name, value) {
-      actions.updateItem(index, {name: name, value: value === '' ? '' : parseFloat(value)});
+      actions.updateItem(index, {name: name, value: {amount: value === '' ? '' : parseFloat(value)}});
     },
     componentDidMount: function() {
       store.addChangeListener(changes.ITEMS_CHANGE, this._onListChange);
@@ -53,13 +61,11 @@ const changes = FluxStore.changes;
       store.removeChangeListener(changes.ITEMS_CHANGE, this._onListChange);
     },
     _onListChange: function() {
-      this.setState({
-        list: store.getList()
-      });
+      this.setState({list: store.getList()});
     },
     render: function() {
       return (
-          <div id="new-progress-item-dialog" className="modal fade" tabIndex={-1}>
+          <div className="modal fade" tabIndex={-1}>
             <div className="modal-dialog modal-lg">
               <div className="modal-content">
                 <div className="modal-header">
@@ -69,7 +75,7 @@ const changes = FluxStore.changes;
                 </div>
                 <div className="modal-body">
                   <div className="container-fluid">
-                    <form className="form-horizontal" id="new-progress-items-form">
+                    <form className="form-horizontal" ref="form">
                       <div className="form-group">
                         <table className="table table-bordered">
                           <thead>
@@ -79,9 +85,9 @@ const changes = FluxStore.changes;
                             <th style={{textAlign: 'center'}}/>
                           </tr>
                           </thead>
-                          <tbody id="progressItems">
+                          <tbody>
                           {this.state.list.map((r, index) =>
-                              <ProgressItem key={r+index} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, index)} name={r.name} value={r.value} updateItem={this.updateItem.bind(null, index)}/>)}
+                              <ProgressItem key={r+index} addRow={this.addRow} deleteRow={this.deleteRow.bind(null, index)} name={r.name} value={r.value.amount} updateItem={this.updateItem.bind(null, index)}/>)}
                           </tbody>
                         </table>
                       </div>
@@ -89,10 +95,8 @@ const changes = FluxStore.changes;
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button className="btn btn-primary btn-raised" data-dismiss="modal">Dismiss</button>
-                  <button id="btn-add-new-progress-items" className="btn btn-info btn-raised" onClick={this.submit}>
-                    Save
-                  </button>
+                  <Button className="btn btn-primary btn-raised" data-dismiss="modal">Dismiss</Button>
+                  <Button className="btn btn-info btn-raised" onClick={this.submit}>Save</Button>
                 </div>
               </div>
             </div>
@@ -100,7 +104,7 @@ const changes = FluxStore.changes;
       );
     },
     submit: function() {
-      const instance = $('#new-progress-items-form').parsley();
+      const instance = $(this.refs.form.getDOMNode()).parsley();
       instance.validate();
       if (!instance.isValid()) {
         return;
@@ -137,7 +141,7 @@ const changes = FluxStore.changes;
           }
           const item = progressItems[offset];
           const name = item.name;
-          const contract_value = item.value;
+          const contract_value = item.value.amount;
 
           $.ajax({
                 url: newProgressItemUrl,

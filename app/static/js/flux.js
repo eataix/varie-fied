@@ -1,7 +1,9 @@
+var EventEmitter = require('events');
 const AppDispatcher = new Flux.Dispatcher();
 
 AppDispatcher.handleAction = function(action) {
   'use strict';
+  //noinspection JSUnresolvedFunction
   this.dispatch({
     source: 'VIEW_ACTION',
     action: action
@@ -16,7 +18,11 @@ const constants = {
   UPDATE_TIME: 'UPDATE_TIME',
   UPDATE_SUBCONTRACTOR: 'UPDATE_SUBCONTRACTOR',
   UPDATE_INVOICE_NUMBER: 'UPDATE_INVOICE_NUMBER',
-  UPDATE_DESCRIPTION: 'UPDATE_DESCRIPTION'
+  UPDATE_DESCRIPTION: 'UPDATE_DESCRIPTION',
+  NEW_PROJECT_NAME: 'NEW_PROJECT_NAME',
+  NEW_PROJECT_REF_NUMBER: 'NEW_PROJECT_REF_NUMBER',
+  NEW_PROJECT_OH: 'NEW_PROJECT_OH',
+  NEW_PROJECT_ADMIN_FEE: 'NEW_PROJECT_ADMIN_FEE'
 };
 
 const actions = {
@@ -82,26 +88,59 @@ const actions = {
       actionType: constants.UPDATE_DESCRIPTION,
       data: description
     });
+  },
+  newProjectName: function(name) {
+    'use strict';
+    AppDispatcher.handleAction({
+      actionType: constants.NEW_PROJECT_NAME,
+      data: name
+    });
+  },
+  newProjectRefNum: function(name) {
+    'use strict';
+    AppDispatcher.handleAction({
+      actionType: constants.NEW_PROJECT_REF_NUMBER,
+      data: name
+    });
+  },
+  newProjectOH: function(name) {
+    'use strict';
+    AppDispatcher.handleAction({
+      actionType: constants.NEW_PROJECT_OH,
+      data: name
+    });
+  },
+  newProjectAdminFee: function(name) {
+    'use strict';
+    AppDispatcher.handleAction({
+      actionType: constants.NEW_PROJECT_ADMIN_FEE,
+      data: name
+    });
   }
 };
 
 const changes = {
   ITEMS_CHANGE: 'ITEMS_CHANGE',
-  MARGIN_AND_ADMIN_FEE: 'MARGIN_AND_ADMIN_FEE'
+  MARGIN_AND_ADMIN_FEE: 'MARGIN_AND_ADMIN_FEE',
+  NEW_INFO_CHANGE: 'NEW_INFO_CHANGE'
 };
 
 var _store = {
   list: [{
     name: '',
-    value: null
+    value: {}
   }],
   margin: 0.0,
-  adminFee: null,
+  adminFee: '',
   id: null,
-  time: null,
-  subcontract: null,
-  invoiceNumber: null,
-  description: null
+  time: '',
+  subcontract: '',
+  invoiceNumber: '',
+  description: '',
+  newName: '',
+  newRefNum: '',
+  newOH: '',
+  newAdminFee: ''
 };
 
 const addItem = function(item) {
@@ -148,7 +187,27 @@ const updateDescription = function(description) {
   _store.description = description;
 };
 
-const store = Object.assign({}, EventEmitter2.prototype, {
+const newProjectName = function(name) {
+  'use strict';
+  _store.newName = name;
+};
+
+const newProjectRefNum = function(refNum) {
+  'use strict';
+  _store.newRefNum = refNum;
+};
+
+const newProjectOH = function(oh) {
+  'use strict';
+  _store.newOH = oh;
+};
+
+const newProjectAdminFee = function(adminFee) {
+  'use strict';
+  _store.newAdminFee = adminFee;
+};
+
+const store = Object.assign({}, EventEmitter.prototype, {
   addChangeListener: function(type, cb) {
     'use strict';
     this.on(type, cb);
@@ -188,6 +247,22 @@ const store = Object.assign({}, EventEmitter2.prototype, {
   getDescription: function() {
     'use strict';
     return _store.description;
+  },
+  getNewName: function() {
+    'use strict';
+    return _store.newName;
+  },
+  getNewRefNum: function() {
+    'use strict';
+    return _store.newRefNum;
+  },
+  getNewOH: function() {
+    'use strict';
+    return _store.newOH;
+  },
+  getNewAdminFee: function() {
+    'use strict';
+    return _store.newAdminFee;
   }
 });
 
@@ -222,6 +297,22 @@ AppDispatcher.register(function(payload) {
       break;
     case constants.UPDATE_DESCRIPTION:
       updateDescription(action.data);
+      break;
+    case constants.NEW_PROJECT_NAME:
+      newProjectName(action.data);
+      store.emit(changes.NEW_INFO_CHANGE);
+      break;
+    case constants.NEW_PROJECT_REF_NUMBER:
+      newProjectRefNum(action.data);
+      store.emit(changes.NEW_INFO_CHANGE);
+      break;
+    case constants.NEW_PROJECT_OH:
+      newProjectOH(action.data);
+      store.emit(changes.NEW_INFO_CHANGE);
+      break;
+    case constants.NEW_PROJECT_ADMIN_FEE:
+      newProjectAdminFee(action.data);
+      store.emit(changes.NEW_INFO_CHANGE);
       break;
     default:
       return true;

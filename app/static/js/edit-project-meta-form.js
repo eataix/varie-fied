@@ -1,4 +1,7 @@
 (() => {
+  var Button = ReactBootstrap.Button;
+  var Input = ReactBootstrap.Input;
+
   'use strict';
   const metaData = $('#project-data').data();
   const projectId = metaData.projectId;
@@ -10,7 +13,7 @@
   const EditProjectMetaForm = React.createClass({
     render: function() {
       return (
-          <div id="edit-dialog" className="modal fade" tabIndex="-1">
+          <div ref="modal" className="modal fade" tabIndex="-1">
             <div className="modal-dialog modal-lg">
               <div className="modal-content">
                 <div className="modal-header">
@@ -20,41 +23,17 @@
                 </div>
                 <div className="modal-body">
                   <div className="container-fluid">
-                    <form className="form-horizontal" id="edit-project-meta-form">
-                      <div className="form-group">
-                        <label htmlFor="new_name" className="col-sm-3 control-label">Project Name</label>
-
-                        <div className="col-sm-9">
-                          <input type="text" className="form-control" id="new_name" placeholder="Name" required defaultValue={projectName}/>
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="new_ref_number" className="col-sm-3 control-label">Reference Number</label>
-
-                        <div className="col-sm-9">
-                          <input type="text" className="form-control" id="new_ref_number" placeholder="Reference Number" required defaultValue={projectRefNo}/>
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="new_margin" className="col-sm-3 control-label">OH/Profit</label>
-
-                        <div className="col-sm-9">
-                          <input type="text" className="form-control" id="new_margin" placeholder="Optional" required defaultValue={projectMargin} data-parsley-type="number"/>
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="new_admin_fee" className="col-sm-3 control-label">Fixed Administration
-                                                                                          fee</label>
-                        <div className="col-sm-9">
-                          <input type="text" className="form-control" id="new_admin_fee" placeholder="(optional)" defaultValue={projectAdminFee}/>
-                        </div>
-                      </div>
+                    <form className="form-horizontal" ref="form">
+                      <Input ref="name" type="text" label="Project Name" labelClassName="col-sm-3" wrapperClassName="col-sm-9" placeholder="Name" required defaultValue={projectName}/>
+                      <Input ref="refNo" type="text" label="Reference Number" labelClassName="col-sm-3" wrapperClassName="col-sm-9" placeholder="Reference Number" required defaultValue={projectRefNo}/>
+                      <Input ref="margin" type="text" label="OH/Profit" labelClassName="col-sm-3" wrapperClassName="col-sm-9" placeholder="" required defaultValue={projectMargin} data-parsley-type="number"/>
+                      <Input ref="adminFee" type="text" label="Fixed Administration Fee" labelClassName="col-sm-3" wrapperClassName="col-sm-9" placeholder="(optional)" defaultValue={projectAdminFee} data-parsley-type="number"/>
                     </form>
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button className="btn btn-primary btn-raised" data-dismiss="modal">Dismiss</button>
-                  <button id="btn-save-meta" className="btn btn-info btn-raised" onClick={this.submit}>Save</button>
+                  <Button className="btn btn-primary btn-raised" data-dismiss="modal">Dismiss</Button>
+                  <Button className="btn btn-info btn-raised" onClick={this.submit}>Save</Button>
                 </div>
               </div>
             </div>
@@ -62,7 +41,7 @@
       )
     },
     submit: function() {
-      const instance = $('#edit-project-meta-form').parsley();
+      const instance = $(this.refs.form.getDOMNode()).parsley();
       instance.validate();
       if (!instance.isValid()) {
         return;
@@ -92,13 +71,20 @@
         const html = $button.html();
         $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
-        const new_name = $('#new_name').val();
-        const new_margin = $('#new_margin').val();
-        const new_reference_number = $('#new_ref_number').val();
-        let new_admin_fee = $('#new_admin_fee').val();
+        const new_name = this.refs.name.getValue();
+        const new_margin = this.refs.margin.getValue();
+        const new_reference_number = this.refs.refNo.getValue();
+        let new_admin_fee = this.refs.adminFee.getValue();
         if (new_admin_fee === '') {
           new_admin_fee = null;
         }
+
+        console.log({
+          name: new_name,
+          margin: new_margin,
+          admin_fee: new_admin_fee,
+          reference_number: new_reference_number
+        });
         $.ajax({
               url: editProjectUrl,
               type: 'PUT',
@@ -116,7 +102,7 @@
                   title: 'Nice!',
                   text: 'Save changes',
                   type: 'success'
-                }, () => $('#edit-dialog').modal('hide'))
+                }, () => $(this.refs.modal.getDOMNode()).modal('hide'))
             );
       });
     }
