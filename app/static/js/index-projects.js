@@ -31,34 +31,34 @@
             <div>
               <ul>
                 {this.state.projects.map(function(project) {
-                    if (project.active) {
-                        return  (
+                  if (project.active) {
+                    return (
                         <li key={project.id}>
                           <a href={`project/${project.id}/progress`} style={{fontSize: '1.3em'}}>{project.name}</a>
                         </li>
-                            )
-                        } else {
-                        return false;
-                        }
-                    })
-                    }
+                    )
+                  } else {
+                    return false;
+                  }
+                })
+                }
               </ul>
             </div>
             <h1>Previous projects</h1>
             <div>
               <ul>
                 {this.state.projects.map(function(project) {
-                    if (!project.active) {
-                        return  (
+                  if (!project.active) {
+                    return (
                         <li key={project.id}>
                           <a href={`project/${project.id}/progress`} style={{fontSize: '1.3em'}}>{project.name}</a>
                         </li>
-                            )
-                        } else {
-                        return false;
-                        }
-                    })
-                    }
+                    )
+                  } else {
+                    return false;
+                  }
+                })
+                }
               </ul>
             </div>
           </div>

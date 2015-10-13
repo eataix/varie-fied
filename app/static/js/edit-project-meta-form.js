@@ -13,7 +13,7 @@
   const EditProjectMetaForm = React.createClass({
     render: function() {
       return (
-          <div ref="modal" className="modal fade" tabIndex="-1">
+          <div id="edit-dialog" ref="modal" className="modal fade" tabIndex="-1">
             <div className="modal-dialog modal-lg">
               <div className="modal-content">
                 <div className="modal-header">

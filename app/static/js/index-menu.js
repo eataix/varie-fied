@@ -1,21 +1,16 @@
 (() => {
   'use strict';
 
+  var NavItem = ReactBootstrap.NavItem;
+  var Button = ReactBootstrap.Button;
+
   const Home = React.createClass({
     render: function() {
-      if (window.location.pathname === '/') {
-        return (
-            <li className='active'>
-              <a href="/"><i className="fa fa-home"> </i>Home</a>
-            </li>
-        );
-      } else {
-        return (
-            <li>
-              <a href="/"><i className="fa fa-home"> </i>Home</a>
-            </li>
-        );
-      }
+      return (
+          <NavItem active={window.location.pathname === '/'} href='/'>
+            <i className="fa fa-home"> </i>Home
+          </NavItem>
+      );
     }
   });
 
@@ -25,31 +20,20 @@
         return false;
       }
       const id = window.location.pathname.split('/')[2];
-      if (id === this.props.project.id.toString()) {
-        return (
-            <li className="dropdown active">
-              <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                <i className="fa fa-folder-open"></i> {this.props.project.name}<span className="caret"></span>
-              </a>
-              <ul className="dropdown-menu">
-                <li><a href={`/project/${this.props.project.id}/progress`}>Progress</a></li>
-                <li><a href={`/project/${this.props.project.id}/variation`}>Variations</a></li>
-              </ul>
-            </li>
-        );
-      } else {
-        return (
-            <li className="dropdown">
-              <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                <i className="fa fa-folder"></i> {this.props.project.name}<span className="caret"></span>
-              </a>
-              <ul className="dropdown-menu">
-                <li><a href={`/project/${this.props.project.id}/progress`}>Progress</a></li>
-                <li><a href={`/project/${this.props.project.id}/variation`}>Variations</a></li>
-              </ul>
-            </li>
-        )
-      }
+      const active = id === this.props.project.id.toString();
+      const className = active ? "dropdown active" : "dropdown";
+      const iClassName = active ? "fa fa-folder-open" : "fa fa-folder";
+      return (
+          <li className={className}>
+            <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+              <i className={iClassName}></i> {this.props.project.name}<span className="caret"></span>
+            </a>
+            <ul className="dropdown-menu">
+              <li><a href={`/project/${this.props.project.id}/progress`}>Progress</a></li>
+              <li><a href={`/project/${this.props.project.id}/variation`}>Variations</a></li>
+            </ul>
+          </li>
+      );
     }
   });
 
@@ -62,49 +46,28 @@
           return e.active && e.id.toString() === id;
         });
       }
-      if (window.location.pathname !== '/' && p === undefined) {
-        return (
-            <li className="dropdown active">
-              <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
-                Archived Projects <span className="caret"></span></a>
-              <ul className="dropdown-menu">
-                {
-                  this.props.projects.map(function(p, i) {
-                    if (p.active) {
-                      return false;
-                    }
+      const active = window.location.pathname !== '/' && p === undefined;
+      const className = active ? "dropdown active" : "dropdown";
+      return (
+          <li className={className}>
+            <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+              Archived Projects <span className="caret"></span></a>
+            <ul className="dropdown-menu">
+              { this.props.projects
+                  .filter(function(e) {
+                    return e.active;
+                  })
+                  .map(function(p, i) {
                     return (
                         <li key={i}>
                           <a href={`/project/${p.id}/progress`}>{p.name}</a>
                         </li>
                     );
                   })
-                }
-              </ul>
-            </li>
-        )
-      } else {
-        return (
-            <li className="dropdown">
-              <a href="javascript:void(0)" className="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
-                Archived Projects <span className="caret"></span></a>
-              <ul className="dropdown-menu">
-                {
-                  this.props.projects.map(function(p, i) {
-                    if (p.active) {
-                      return false;
-                    }
-                    return (
-                        <li key={i}>
-                          <a href={`/project/${p.id}/progress`}>{p.name}</a>
-                        </li>
-                    );
-                  })
-                }
-              </ul>
-            </li>
-        )
-      }
+              }
+            </ul>
+          </li>
+      );
     }
   });
 
@@ -151,12 +114,10 @@
                 }
                 <OldProject projects={this.state.projects}/>
                 <li>
-                  <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i className="fa fa-plus"></i>
-                    New Project</a>
+                  <a href="javascript:void(0)" data-toggle="modal" data-target="#new-project-dialog"><i className="fa fa-plus"></i> New Project</a>
                 </li>
                 <li>
-                  <a href="javascript:void(0)" data-toggle="modal" data-target="#new-variation-dialog"><i className="fa fa-plus"></i>
-                    New Variation</a>
+                  <a href="javascript:void(0)" data-toggle="modal" data-target="#new-variation-dialog"><i className="fa fa-plus"></i> New Variation</a>
                 </li>
               </ul>
             </div>

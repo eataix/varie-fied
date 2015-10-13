@@ -35,7 +35,7 @@ const changes = FluxStore.changes;
     },
     render: function() {
       return (
-          <Input type="text" label="Reference Number*" labelClassName="col-sm-3" wrapperClassName="col-sm-9" required data-parsley-type="number" onChange={this.handleChange} value={this.props.value}/>
+          <Input type="text" label="OH/Profit*" labelClassName="col-sm-3" wrapperClassName="col-sm-9" required data-parsley-type="number" onChange={this.handleChange} value={this.props.value}/>
       );
     }
   });
@@ -45,7 +45,7 @@ const changes = FluxStore.changes;
     },
     render: function() {
       return (
-          <Input type="text" label="Reference Number*" labelClassName="col-sm-3" wrapperClassName="col-sm-9" data-parsley-type="number" placeholder="optional" onChange={this.handleChange} value={this.props.value}/>
+          <Input type="text" label="Admin Fee*" labelClassName="col-sm-3" wrapperClassName="col-sm-9" data-parsley-type="number" placeholder="optional" onChange={this.handleChange} value={this.props.value}/>
       )
     }
   });
@@ -145,18 +145,9 @@ const changes = FluxStore.changes;
         margin: store.getNewOH(),
         adminFee: store.getNewAdminFee()
       });
-      console.log({
-        name: store.getNewName(),
-        refNum: store.getNewRefNum(),
-        margin: store.getNewOH(),
-        adminFee: store.getNewAdminFee()
-      });
     },
     _onListChange: function() {
       this.setState({list: store.getList()});
-      console.log({
-        list: store.getList()
-      });
     },
     render: function() {
       return (
@@ -189,13 +180,11 @@ const changes = FluxStore.changes;
       );
     },
     submit: function() {
-      console.log(store);
       const instance = $(this.refs.form.getDOMNode()).parsley();
       instance.validate();
       if (!instance.isValid()) {
         return;
       }
-
 
       const project_name = store.getNewName();
       const margin = store.getNewOH();
