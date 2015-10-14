@@ -1,3 +1,4 @@
+const Flux = require('flux');
 const EventEmitter = require('events');
 const AppDispatcher = new Flux.Dispatcher();
 
@@ -21,7 +22,8 @@ const constants = {
   NEW_PROJECT_NAME: 'NEW_PROJECT_NAME',
   NEW_PROJECT_REF_NUMBER: 'NEW_PROJECT_REF_NUMBER',
   NEW_PROJECT_OH: 'NEW_PROJECT_OH',
-  NEW_PROJECT_ADMIN_FEE: 'NEW_PROJECT_ADMIN_FEE'
+  NEW_PROJECT_ADMIN_FEE: 'NEW_PROJECT_ADMIN_FEE',
+  LOAD_PROJECTS: 'LOAD_PROJECTS'
 };
 
 const actions = {
@@ -115,13 +117,21 @@ const actions = {
       actionType: constants.NEW_PROJECT_ADMIN_FEE,
       data: name
     });
+  },
+  loadProjects: function(projects) {
+    'use strict';
+    AppDispatcher.handleAction({
+      actionType: constants.LOAD_PROJECTS,
+      data: projects
+    });
   }
 };
 
 const changes = {
   ITEMS_CHANGE: 'ITEMS_CHANGE',
   MARGIN_AND_ADMIN_FEE: 'MARGIN_AND_ADMIN_FEE',
-  NEW_INFO_CHANGE: 'NEW_INFO_CHANGE'
+  NEW_INFO_CHANGE: 'NEW_INFO_CHANGE',
+  PROJECTS_LOADED: 'PROJECTS_LOADED'
 };
 
 const _store = {
@@ -139,7 +149,8 @@ const _store = {
   newName: '',
   newRefNum: '',
   newOH: '',
-  newAdminFee: ''
+  newAdminFee: '',
+  projects: []
 };
 
 const addItem = function(item) {
@@ -206,6 +217,14 @@ const newProjectAdminFee = function(adminFee) {
   _store.newAdminFee = adminFee;
 };
 
+const loadProjects = function(projects) {
+  'use strict';
+  console.log('loadProyy')
+  console.log(projects);
+  console.log('loadProyy')
+  _store.projects  = projects;
+};
+
 const store = Object.assign({}, EventEmitter.prototype, {
   addChangeListener: function(type, cb) {
     'use strict';
@@ -262,6 +281,10 @@ const store = Object.assign({}, EventEmitter.prototype, {
   getNewAdminFee: function() {
     'use strict';
     return _store.newAdminFee;
+  },
+  getProjects: function() {
+    'use strict';
+    return _store.projects;
   }
 });
 
@@ -312,6 +335,10 @@ AppDispatcher.register(function(payload) {
     case constants.NEW_PROJECT_ADMIN_FEE:
       newProjectAdminFee(action.data);
       store.emit(changes.NEW_INFO_CHANGE);
+      break;
+    case constants.LOAD_PROJECTS:
+      loadProjects(action.data);
+      store.emit(changes.PROJECTS_LOADED);
       break;
     default:
       return true;

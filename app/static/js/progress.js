@@ -1,20 +1,8 @@
-function paddingFormatterA(value) {
-  'use strict';
-  return value.toFixed(2);
-}
-
-function paddingFormatterB(value) {
-  'use strict';
-  return value.toFixed(2);
-}
-
-function percentageFormatter(value) {
-  'use strict';
-  return `${(value * 100).toFixed(2)}%`;
-}
-
 (() => {
   'use strict';
+
+  const metaData = $('#project-data').data();
+  const getProjectProgressItemsUrl = metaData.getProjectProgressItemsUrl;
 
   const $table = $('#table');
 

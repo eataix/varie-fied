@@ -28,13 +28,12 @@
       'app/static/vendor/PACE/pace.min.js',
       'app/static/vendor/react/react.min.js',
       'app/static/vendor/react/react-dom.min.js',
-      'app/static/vendor/flux/dist/Flux.min.js',
       'app/static/vendor/lodash/lodash.min.js',
       'app/static/vendor/react-bootstrap/react-bootstrap.min.js'
       //'app/static/vendor/eventemitter2/lib/eventemitter2.js'
     ],
     scripts: [
-      'app/static/js/index.js',
+      'app/static/js/index.jsx',
       'app/static/js/main.js',
       'app/static/js/progress.js',
       'app/static/js/project_base.js',
@@ -78,6 +77,10 @@
       gulp.src(paths.scripts)
           .pipe(sourcemaps.init())
           .pipe(babel({stage: 0}))
+          .pipe(browserify({
+              transform: ['babelify'],
+              extensions: ['.jsx']
+          }))
           //.pipe(uglify({
           //  compress: {
           //    unused: false
@@ -90,23 +93,9 @@
           .pipe(gulp.dest(paths.js_output))
   );
 
-  gulp.task('react', () =>
-      gulp.src(paths.react_scripts)
-          .pipe(sourcemaps.init())
-          .pipe(babel({stage: 0}))
-          .pipe(browserify())
-          //.pipe(uglify())
-          .pipe(rename({
-            extname: '.min.js'
-          }))
-          .pipe(sourcemaps.write('.'))
-          .pipe(gulp.dest(paths.js_output))
-  );
-
   gulp.task('watch', () => {
     gulp.watch(paths.external_scripts, ['vendor']);
     gulp.watch(paths.scripts, ['script']);
-    gulp.watch(paths.react_scripts, ['react']);
   });
 
   gulp.task('minify-vendor-css', () =>
@@ -144,6 +133,6 @@
           .pipe(gulp.dest('app/static/dist/img'))
   );
 
-  gulp.task('default', ['watch', 'vendor', 'react', 'script', 'minify-vendor-css', 'minify-css', 'copy-fonts1', 'copy-fonts2', 'copy-fonts3', 'copy-imgs']);
-  gulp.task('build', ['vendor', 'react', 'script', 'minify-vendor-css', 'minify-css', 'copy-fonts1', 'copy-fonts2', 'copy-fonts3', 'copy-imgs']);
+  gulp.task('default', ['watch', 'vendor', 'script', 'minify-vendor-css', 'minify-css', 'copy-fonts1', 'copy-fonts2', 'copy-fonts3', 'copy-imgs']);
+  gulp.task('build', ['vendor', 'script', 'minify-vendor-css', 'minify-css', 'copy-fonts1', 'copy-fonts2', 'copy-fonts3', 'copy-imgs']);
 })();

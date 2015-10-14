@@ -1,24 +1,28 @@
+const Menu = require('./Menu');
+const ProjectList = require('./ProjectList');
+const ProjectInfo = require('./ProjectInfo');
+const Toolbar = require('./Toolbar');
+const FluxStore = require('./flux');
+const React = require('react');
+const ReactDOM = require('react-dom');
+const $ = require('jquery');
+const EditProjectMetaForm = require('./EditProjectMetaForm')
+const NewProjectForm = require('./NewProjectForm')
+const NewVariationForm = require('./NewVariationForm')
+const NewProgressItemsForm = require('./NewProgressItemsForm')
+
 const metaData = $('#project-data').data();
 
-//noinspection JSUnresolvedVariable
 const projectId = metaData.projectId;
-//noinspection JSUnresolvedVariable
 const projectName = metaData.projectName;
-//noinspection JSUnresolvedVariable
 const projectActive = metaData.projectActive === 'True';
-//noinspection JSUnresolvedVariable
 const projectMargin = parseFloat(metaData.projectMargin);
-//noinspection JSUnresolvedVariable
 const projectAdminFee = $.isNumeric(metaData.projectAdminFee) ? parseFloat(metaData.projectAdminFee) : 0;
 
-//noinspection JSUnresolvedVariable
 const getProjectProgressItemsUrl = metaData.getProjectProgressItemsUrl;
-//noinspection JSUnresolvedVariable
 const getProjectVariationsUrl = metaData.getProjectVariationsUrl;
 
-//noinspection JSUnresolvedVariable
 const editProjectUrl = metaData.editProjectUrl;
-//noinspection JSUnresolvedVariable
 const deleteProjectUrl = metaData.deleteProjectUrl;
 
 (() => {
@@ -111,7 +115,7 @@ const deleteProjectUrl = metaData.deleteProjectUrl;
     });
   });
 
-  $.fn.editable.defaults.mode = 'inline';
+  //$.fn.editable.defaults.mode = 'inline';
 
   const $table = $('#table');
 
@@ -133,4 +137,62 @@ const deleteProjectUrl = metaData.deleteProjectUrl;
       $('#btn-delete').prop('disabled', true);
     }
   });
+
+  const store = FluxStore.store;
+  const actions = FluxStore.actions;
+  const changes = FluxStore.changes;
+
+  const list_project_url = $('#meta-data').data().projectsUrl;
+  const project_url = $('#project-data').data().editProjectUrl;
+  const prefix = window.location.pathname.split('/')[3] === 'progress' ? 'Progress' : 'Variations';
+  const alt_url = prefix === 'Progress' ? './variation' : './progress';
+  const alt_text = prefix === 'Progress' ? 'Variations' : 'Progress';
+
+  class ProjectPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <Menu
+            project_url={list_project_url}
+            pollInterval={2000}
+            store={store}
+            actions={actions}
+            changes={changes}
+          />
+          <div className="container-fluid">
+          <ProjectInfo
+            project_url={project_url}
+            pollInterval={2000}
+            prefix={prefix}
+            alt_url={alt_url}
+            alt_text={alt_text}
+            />
+          <Toolbar
+            alt_text={alt_text}
+            active={true}
+          />
+          <div id="toolbar">
+            <div className="form-inline" role="form">
+              <div className="form-group">
+                <button id="btn-save" type="button" className="btn btn-info btn-raised" disabled>Save</button>
+              </div>
+              <div className="form-group">
+                <button id="btn-delete" type="button" className="btn btn-danger btn-raised" disabled>Delete</button>
+              </div>
+            </div>
+          </div>
+          <table id="table" className="table table-condensed"></table>
+          </div>
+          <NewProjectForm />
+          <NewVariationForm project_url={list_project_url} pollInterval={2000}/>
+          <NewProgressItemsForm />
+        </div>
+      )
+    }
+  }
+
+  ReactDOM.render(
+    <ProjectPage />,
+    document.getElementById('content')
+  );
 })();

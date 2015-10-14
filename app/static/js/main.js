@@ -30,6 +30,7 @@ function isFalse(element) {
 
   $(document).on('ready', () => {
     $.material.init();
+    $('body').addClass('loaded');
   });
 
   (function(i, s, o, g, r, a, m) {
