@@ -1,3 +1,7 @@
+const React = require('react');
+const ReactDOM = require('react-dom');
+const ProjectPage = require('./ProjectPage');
+
 function pendingClick(cb) {
   'use strict';
   const $tr = $(cb).parents('tr');
@@ -181,6 +185,10 @@ function detailFormatter(index, row) {
 
 (() => {
   'use strict';
+
+  const metaData = $('#project-data').data();
+  const getProjectVariationsUrl = metaData.getProjectVariationsUrl;
+  const projectActive = metaData.projectActive === 'True';
 
   $.ajax({
       url: getProjectVariationsUrl,
@@ -451,4 +459,12 @@ function detailFormatter(index, row) {
       })();
     });
   });
+
+  ReactDOM.render(
+    <ProjectPage
+      progress={false}
+      active={projectActive}
+    />,
+    document.getElementById('content')
+  );
 })();

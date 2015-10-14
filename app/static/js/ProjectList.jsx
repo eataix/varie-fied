@@ -65,4 +65,4 @@ class ProjectList extends React.Component {
   }
 }
 
-module.exports = ProjectList
+module.exports = ProjectList;

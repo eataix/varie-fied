@@ -1,12 +1,8 @@
+const React = require('react');
+const ReactBootstrap = require('react-bootstrap');
 const Button = ReactBootstrap.Button;
 const Input = ReactBootstrap.Input;
 const Modal = ReactBootstrap.Modal;
-
-const metaData = $('#project-data').data();
-const projectRefNo = metaData.projectRefNo;
-const projectName = metaData.projectName;
-const projectMargin = parseFloat(metaData.projectMargin);
-const projectAdminFee = $.isNumeric(metaData.projectAdminFee) ? parseFloat(metaData.projectAdminFee) : '';
 
 class EditProjectMetaForm extends React.Component {
   constructor() {
@@ -16,19 +12,22 @@ class EditProjectMetaForm extends React.Component {
   }
 
   render() {
+    if (this.props.project === null) {
+      return false;
+    }
     return (
       <div
         id="edit-dialog"
         ref="modal"
         className="modal fade"
         tabIndex="-1"
-        >
+      >
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <Modal.Header
               closeButton
               onHide={this.handleHideModal}
-              >
+            >
               <Modal.Title>Edit Project</Modal.Title>
             </Modal.Header>
             <div className="modal-body">
@@ -42,7 +41,7 @@ class EditProjectMetaForm extends React.Component {
                     wrapperClassName="col-sm-9"
                     placeholder="Name"
                     required
-                    defaultValue={projectName}
+                    defaultValue={this.props.project.name}
                   />
                   <Input
                     ref="refNo"
@@ -52,7 +51,7 @@ class EditProjectMetaForm extends React.Component {
                     wrapperClassName="col-sm-9"
                     placeholder="Reference Number"
                     required
-                    defaultValue={projectRefNo}
+                    defaultValue={this.props.project.reference_number}
                   />
                   <Input
                     ref="margin"
@@ -62,7 +61,7 @@ class EditProjectMetaForm extends React.Component {
                     wrapperClassName="col-sm-9"
                     placeholder=""
                     required
-                    defaultValue={projectMargin}
+                    defaultValue={this.props.project.margin}
                     data-parsley-type="number"
                   />
                   <Input
@@ -72,7 +71,7 @@ class EditProjectMetaForm extends React.Component {
                     labelClassName="col-sm-3"
                     wrapperClassName="col-sm-9"
                     placeholder="(optional)"
-                    defaultValue={projectAdminFee}
+                    defaultValue={this.props.project.admin_fee}
                     data-parsley-type="number"
                   />
                 </form>
@@ -164,15 +163,15 @@ class EditProjectMetaForm extends React.Component {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
       }).done(() =>
-      swal({
-        title: 'Nice!',
-        text: 'Save changes',
-        type: 'success'
-      }, () =>
-      $(this.refs.modal.getDOMNode()).modal('hide'))
-             );
+        swal({
+          title: 'Nice!',
+          text: 'Save changes',
+          type: 'success'
+        }, () =>
+          $(this.refs.modal.getDOMNode()).modal('hide'))
+      );
     });
   }
 }
 
-module.exports =  EditProjectMetaForm;
+module.exports = EditProjectMetaForm;

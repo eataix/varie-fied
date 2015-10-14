@@ -1,16 +1,16 @@
 const React = require('react');
-const $ = require('jquery');
-const NavItem = require('react-bootstrap').NavItem;
+const ReactBootStrap = require('react-bootstrap');
+const NavItem = ReactBootStrap.NavItem;
 
-class Home extends React.Component {
+class HomeBar extends React.Component {
   render() {
     const active = window.location.pathname === '/';
     return (
       <NavItem
         active={active}
         href="/"
-        >
-        <i className="fa fa-home"></i> Home
+      >
+        <i className="fa fa-home"/> Home
       </NavItem>
     );
   }
@@ -34,8 +34,8 @@ class ProjectItem extends React.Component {
           role="button"
           aria-haspopup="true"
           aria-expanded="false"
-          >
-          <i className={iClassName}></i> {this.props.project.name}<span className="caret"></span>
+        >
+          <i className={iClassName}/> {this.props.project.name}<span className="caret"/>
         </a>
         <ul className="dropdown-menu">
           <li><a href={`/project/${this.props.project.id}/progress`}>Progress</a></li>
@@ -72,8 +72,8 @@ class OldProjectList extends React.Component {
           className="dropdown-toggle"
           data-toggle="dropdown"
           data-hover="dropdown"
-          >
-          Archived Projects <span className="caret"></span>
+        >
+          Archived Projects <span className="caret"/>
         </a>
         <ul className="dropdown-menu">
           { this.props.projects.filter(e => !e.active).map((p, i) => <OldProject key={i} id={p.id} name={p.name}/>) }
@@ -88,7 +88,7 @@ class Menu extends React.Component {
     super();
     this.state = {
       projects: []
-    }
+    };
     this.loadProjects = this.loadProjects.bind(this);
     this.onProjectsChange = this.onProjectsChange.bind(this);
   }
@@ -108,11 +108,11 @@ class Menu extends React.Component {
 
   loadProjects() {
     $.ajax({
-      url: this.props.project_url,
-      contentType: 'application/json; charset=utf-8'
-    })
-    .done((data => this.props.actions.loadProjects(data.projects)).bind(this))
-    .fail(((xhr, status, err) => console.error(this.props.project_url, status, err.toString())).bind(this));
+        url: this.props.project_url,
+        contentType: 'application/json; charset=utf-8'
+      })
+      .done((data => this.props.actions.loadProjects(data.projects)).bind(this))
+      .fail(((xhr, status, err) => console.error(this.props.project_url, status, err.toString())).bind(this));
   }
 
   render() {
@@ -120,14 +120,14 @@ class Menu extends React.Component {
       <div
         className="navbar navbar-default"
         role="navigation"
-        >
+      >
         <div className="navbar-header">
           <button
             type="button"
             className="navbar-toggle"
             data-toggle="collapse"
             data-target=".navbar-responsive-collapse"
-            >
+          >
             <span className="icon-bar"/>
             <span className="icon-bar"/>
             <span className="icon-bar"/>
@@ -136,7 +136,7 @@ class Menu extends React.Component {
         </div>
         <div className="navbar-collapse collapse navbar-responsive-collapse">
           <ul className="nav navbar-nav">
-            <Home />
+            <HomeBar />
             { this.state.projects.map((p, i) => <ProjectItem key={i} project={p}/>) }
             <OldProjectList projects={this.state.projects}/>
             <li>
@@ -144,8 +144,8 @@ class Menu extends React.Component {
                 href="javascript:void(0)"
                 data-toggle="modal"
                 data-target="#new-project-dialog"
-                >
-                <i className="fa fa-plus"></i> New Project
+              >
+                <i className="fa fa-plus"/> New Project
               </a>
             </li>
             <li>
@@ -153,8 +153,8 @@ class Menu extends React.Component {
                 href="javascript:void(0)"
                 data-toggle="modal"
                 data-target="#new-variation-dialog"
-                >
-                <i className="fa fa-plus"></i> New Variation
+              >
+                <i className="fa fa-plus"/> New Variation
               </a>
             </li>
           </ul>

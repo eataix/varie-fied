@@ -1,19 +1,16 @@
-const FluxStore = require('./flux');
-const store = FluxStore.store;
-const actions = FluxStore.actions;
-const changes = FluxStore.changes;
+const React = require('react');
 
-
+const ReactBootstrap = require('react-bootstrap');
 const Input = ReactBootstrap.Input;
 const Button = ReactBootstrap.Button;
 const Modal = ReactBootstrap.Modal;
 
 class TimePicker extends React.Component {
   componentDidMount() {
-    $(this.refs.picker.getDOMNode()).datetimepicker({
+    $(this.refs.picker).datetimepicker({
       showTodayButton: true
     }).on('dp.change', function(event) {
-      actions.updateTime(event.date.utc().format());
+      this.props.actions.updateTime(event.date.utc().format());
     });
   }
 
@@ -23,7 +20,7 @@ class TimePicker extends React.Component {
         <label
           htmlFor="inputTime"
           className="col-sm-2 control-label"
-          >Time*</label>
+        >Time*</label>
         <div className="col-sm-10">
           <div
             className="input-group date"
@@ -45,7 +42,7 @@ class TimePicker extends React.Component {
 
 class Subcontractor extends React.Component {
   handleChange() {
-    actions.updateSubcontractor(event.target.value);
+    this.props.actions.updateSubcontractor(event.target.value);
   }
 
   render() {
@@ -64,7 +61,7 @@ class Subcontractor extends React.Component {
 
 class InvoiceNo extends React.Component {
   handleChange() {
-    actions.updateInvoiceNumber(event.target.value);
+    this.props.actions.updateInvoiceNumber(event.target.value);
   }
 
   render() {
@@ -107,7 +104,7 @@ class Project extends React.Component {
 
   handleChange(event) {
     const p = this.props.projects.find(e => e.id.toString() === event.target.value);
-    actions.updateMarginAndAdminFee(p.id, p.margin, p.admin_fee);
+    this.props.actions.updateMarginAndAdminFee(p.id, p.margin, p.admin_fee);
   }
 
   render() {
@@ -119,7 +116,7 @@ class Project extends React.Component {
             className="form-control"
             onChange={this.handleChange}
             ref="select"
-            >
+          >
             <option value="-1">Select a project</option>
             {this.props.projects.map(v=> <option key={v.id} value={v.id}>{v.name}</option>)}
           </select>
@@ -226,7 +223,7 @@ class VariationItem extends React.Component {
             href="javascript:void(0)"
             className="add-row"
             onClick={this.props.addRow}
-            >
+          >
             <span className="fa fa-plus"/> Add
           </a>
           /
@@ -234,7 +231,7 @@ class VariationItem extends React.Component {
             href="javascript:void(0)"
             className="delete-row"
             onClick={this.props.deleteRow}
-            >
+          >
             <span className="fa fa-minus"/> Delete
           </a>
         </td>
@@ -245,7 +242,7 @@ class VariationItem extends React.Component {
 
 class Description extends React.Component {
   handleChange() {
-    actions.updateDescription(event.target.value);
+    this.props.actions.updateDescription(event.target.value);
   }
 
   render() {
@@ -274,25 +271,26 @@ class NewVariationForm extends React.Component {
     this.handleHideModal = this.handleHideModal.bind(this);
     this.state = {
       projects: [],
-      margin: store.getMargin(),
-      adminFee: store.getAdminFee(),
-      list: store.getList(),
+      margin: '',
+      adminFee: '',
+      list: [],
       showDescription: false
     };
+    this.handleClick = this.handleClick.bind(this);
   }
 
-  onClick() {
+  handleClick() {
     const instance = $(this.refs.form.getDOMNode()).parsley();
     instance.validate();
     if (!instance.isValid()) {
       return;
     }
 
-    const project_id = store.getId();
-    const timeUTC = store.getTime();
-    const subcontractor = store.getSubcontractor();
-    const invoice_no = store.getInvoiceNumber();
-    const variationItems = store.getList();
+    const project_id = this.props.store.getId();
+    const timeUTC = this.props.store.getTime();
+    const subcontractor = this.props.store.getSubcontractor();
+    const invoice_no = this.props.store.getInvoiceNumber();
+    const variationItems = this.props.store.getList();
     let input_amount = 0.0;
     variationItems.forEach(function(item) {
       input_amount += item.value.amount;
@@ -301,7 +299,7 @@ class NewVariationForm extends React.Component {
     if (variationItems.length === 1) {
       input_description = variationItems[0].name;
     } else {
-      input_description = store.getDescription();
+      input_description = this.props.store.getDescription();
     }
 
     swal({
@@ -344,115 +342,115 @@ class NewVariationForm extends React.Component {
       });
 
       $.ajax({
-        url: newVariationUrl,
-        type: 'POST',
-        data: JSON.stringify({
-          project_id: project_id,
-          date: timeUTC,
-          subcontractor: subcontractor,
-          invoice_no: invoice_no,
-          amount: input_amount,
-          description: input_description
-        }),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json'
-      })
-      .fail(() => {
-        swal({
-          title: 'Error',
-          text: 'Cannot save the variation... Please try again.',
-          type: 'error'
+          url: newVariationUrl,
+          type: 'POST',
+          data: JSON.stringify({
+            project_id: project_id,
+            date: timeUTC,
+            subcontractor: subcontractor,
+            invoice_no: invoice_no,
+            amount: input_amount,
+            description: input_description
+          }),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        })
+        .fail(() => {
+          swal({
+            title: 'Error',
+            text: 'Cannot save the variation... Please try again.',
+            type: 'error'
+          });
+        })
+        .done(data => {
+          const vid = data.vid;
+          const variationItems = this.props.store.getList();
+          console.log(variationItems);
+          const statusArray = new Array(variationItems.length).fill(null);
+
+          (function createVariationItem(offset) {
+            if (offset >= variationItems.length) {
+              return;
+            }
+            const item = variationItems[offset];
+            const desc = item.name;
+            const amount = item.value.amount;
+
+            $.ajax({
+                url: newItemUrl,
+                type: 'POST',
+                data: JSON.stringify({
+                  variation_id: vid,
+                  description: desc,
+                  amount: amount
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json'
+              })
+              .done(() => {
+                statusArray[offset] = true;
+                createVariationItem(offset + 1);
+              })
+              .fail(() => statusArray[offset] = false);
+          })(0); // invoke
+
+          (function waiting() {
+            if (statusArray.some(isFalse)) {
+              swal({
+                title: 'Error',
+                text: 'Cannot save the variation... Please try again.',
+                type: 'error'
+              });
+            } else if (statusArray.some(isNull)) {
+              setTimeout(waiting, 100);
+            } else if (statusArray.every(isTrue)) {
+              swal({
+                title: 'Nice!',
+                text: 'You created a new variation',
+                type: 'success'
+              }, () => location.reload());
+            }
+          })(); // invoke
         });
-      })
-      .done(data => {
-        const vid = data.vid;
-        const variationItems = store.getList();
-        console.log(variationItems);
-        const statusArray = new Array(variationItems.length).fill(null);
-
-        (function createVariationItem(offset) {
-          if (offset >= variationItems.length) {
-            return;
-          }
-          const item = variationItems[offset];
-          const desc = item.name;
-          const amount = item.value.amount;
-
-          $.ajax({
-            url: newItemUrl,
-            type: 'POST',
-            data: JSON.stringify({
-              variation_id: vid,
-              description: desc,
-              amount: amount
-            }),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => {
-            statusArray[offset] = true;
-            createVariationItem(offset + 1);
-          })
-          .fail(() => statusArray[offset] = false);
-        })(0); // invoke
-
-        (function waiting() {
-          if (statusArray.some(isFalse)) {
-            swal({
-              title: 'Error',
-              text: 'Cannot save the variation... Please try again.',
-              type: 'error'
-            });
-          } else if (statusArray.some(isNull)) {
-            setTimeout(waiting, 100);
-          } else if (statusArray.every(isTrue)) {
-            swal({
-              title: 'Nice!',
-              text: 'You created a new variation',
-              type: 'success'
-            }, () => location.reload());
-          }
-        })(); // invoke
-      });
     });
   }
 
   componentDidMount() {
     this.loadProjects();
     setInterval(this.loadProjects, this.props.pollInterval);
-    store.addChangeListener(changes.ITEMS_CHANGE, this._onListChange);
-    store.addChangeListener(changes.MARGIN_AND_ADMIN_FEE, this._onMarginChange);
+    this.props.store.addChangeListener(this.props.changes.ITEMS_CHANGE, this._onListChange);
+    this.props.store.addChangeListener(this.props.changes.MARGIN_AND_ADMIN_FEE, this._onMarginChange);
   }
 
   componentWillUnmount() {
-    store.removeChangeListener(changes.ITEMS_CHANGE, this._onListChange);
-    store.removeChangeListener(changes.MARGIN_AND_ADMIN_FEE, this._onMarginChange);
+    this.props.store.removeChangeListener(this.props.changes.ITEMS_CHANGE, this._onListChange);
+    this.props.store.removeChangeListener(this.props.changes.MARGIN_AND_ADMIN_FEE, this._onMarginChange);
   }
 
   _onMarginChange() {
     this.setState({
-      margin: store.getMargin(),
-      adminFee: store.getAdminFee()
+      margin: this.props.store.getMargin(),
+      adminFee: this.props.store.getAdminFee()
     });
   }
 
   _onListChange() {
     this.setState({
-      list: store.getList()
+      list: this.props.store.getList()
     });
   }
 
   loadProjects() {
     $.ajax({
-      url: this.props.project_url,
-      contentType: 'application/json; charset=utf-8'
-    })
-    .success((data =>
-              this.setState({projects: data.projects})
-             ).bind(this))
-             .fail(((xhr, status, err) =>
-                    console.error(this.props.project_url, status, err.toString())
-                   ).bind(this));
+        url: this.props.project_url,
+        contentType: 'application/json; charset=utf-8'
+      })
+      .success((data =>
+          this.setState({projects: data.projects})
+      ).bind(this))
+      .fail(((xhr, status, err) =>
+          console.error(this.props.project_url, status, err.toString())
+      ).bind(this));
   }
 
   handleHideModal() {
@@ -466,13 +464,13 @@ class NewVariationForm extends React.Component {
         ref="modal"
         className="modal fade"
         tabIndex={-1}
-        >
+      >
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <Modal.Header
               closeButton
               onHide={this.handleHideModal}
-              >
+            >
               <Modal.Title>New Variation</Modal.Title>
             </Modal.Header>
             <div className="modal-body">
@@ -500,13 +498,13 @@ class NewVariationForm extends React.Component {
               <Button
                 className="btn btn-primary btn-raised"
                 data-dismiss="modal"
-                >
+              >
                 Dismiss
               </Button>
               <Button
                 className="btn btn-info btn-raised"
-                onClick={this.onClick}
-                >
+                onClick={this.handleClick}
+              >
                 Add
               </Button>
             </Modal.Footer>
@@ -519,7 +517,7 @@ class NewVariationForm extends React.Component {
 
 class ItemTable extends React.Component {
   addRow() {
-    actions.addItem({
+    this.props.actions.addItem({
       name: '',
       value: {
         amount: ''
@@ -528,48 +526,47 @@ class ItemTable extends React.Component {
   }
 
   deleteRow(index) {
-    actions.removeItem(index);
+    this.props.actions.removeItem(index);
   }
 
   updateItem(index, name, value) {
-    actions.updateItem(index, {name: name, value: {amount: value === '' ? '' : parseFloat(value)}});
+    this.props.actions.updateItem(index, {name: name, value: {amount: value === '' ? '' : parseFloat(value)}});
   }
 
   render() {
     return (
       <div className="form-group">
         <label htmlFor="inputDescription"
-          className="col-sm-2 control-label"
-          >
+               className="col-sm-2 control-label"
+        >
           Items*
         </label>
         <div className="col-sm-10">
           <table className="table table-bordered">
             <thead>
-              <tr>
-                <th style={{textAlign: 'center'}}>Name</th>
-                <th style={{textAlign: 'center'}}>Amount</th>
-                <th style={{textAlign: 'center'}}>Action</th>
-              </tr>
+            <tr>
+              <th style={{textAlign: 'center'}}>Name</th>
+              <th style={{textAlign: 'center'}}>Amount</th>
+              <th style={{textAlign: 'center'}}>Action</th>
+            </tr>
             </thead>
             <tbody>
-              {this.props.items.map((r, i) =>
-                                    <VariationItem
-                                      name={r.name}
-                                      value={r.value.amount}
-                                      key={r + i}
-                                      addRow={this.addRow}
-                                      deleteRow={this.deleteRow.bind(null, i)}
-                                      updateItem={this.updateItem.bind(null, i)}
-                                    />)}
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
+            {this.props.items.map((r, i) =>
+            <VariationItem
+              name={r.name}
+              value={r.value.amount}
+              key={r + i}
+              addRow={this.addRow}
+              deleteRow={this.deleteRow.bind(null, i)}
+              updateItem={this.updateItem.bind(null, i)}
+            />)}
+            </tbody>
+          </table>
+        </div>
+      </div>
     );
   }
 }
-
 
 
 module.exports = NewVariationForm;

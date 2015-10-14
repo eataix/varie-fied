@@ -25,28 +25,14 @@
       'app/static/vendor/bootstrap-table/dist/bootstrap-table.min.js',
       'app/static/vendor/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js',
       'app/static/vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
-      'app/static/vendor/PACE/pace.min.js',
-      'app/static/vendor/react/react.min.js',
-      'app/static/vendor/react/react-dom.min.js',
-      'app/static/vendor/lodash/lodash.min.js',
-      'app/static/vendor/react-bootstrap/react-bootstrap.min.js'
-      //'app/static/vendor/eventemitter2/lib/eventemitter2.js'
+      'app/static/vendor/lodash/lodash.min.js'
     ],
     scripts: [
-      'app/static/js/index.jsx',
+      'app/static/js/index.js',
       'app/static/js/main.js',
       'app/static/js/progress.js',
       'app/static/js/project_base.js',
       'app/static/js/variation.js'
-    ],
-    react_scripts: [
-      'app/static/js/new-project-form.jsx',
-      'app/static/js/new-variation-form.jsx',
-      'app/static/js/new-progress-items-form.jsx',
-      'app/static/js/index-projects.jsx',
-      'app/static/js/index-menu.jsx',
-      'app/static/js/edit-project-meta-form.jsx',
-      'app/static/js/project-info.jsx'
     ],
     js_output: 'app/static/dist/js',
     css_output: 'app/static/dist/css',
@@ -68,69 +54,69 @@
   };
 
   gulp.task('vendor', () =>
-      gulp.src(paths.external_scripts)
-          .pipe(concat('packed.js'))
-          .pipe(gulp.dest(paths.js_output))
+    gulp.src(paths.external_scripts)
+      .pipe(concat('packed.js'))
+      .pipe(gulp.dest(paths.js_output))
   );
 
   gulp.task('script', () =>
-      gulp.src(paths.scripts)
-          .pipe(sourcemaps.init())
-          .pipe(babel({stage: 0}))
-          .pipe(browserify({
-              transform: ['babelify'],
-              extensions: ['.jsx']
-          }))
-          //.pipe(uglify({
-          //  compress: {
-          //    unused: false
-          //  }
-          //}))
-          .pipe(rename({
-            extname: '.min.js'
-          }))
-          .pipe(sourcemaps.write('.'))
-          .pipe(gulp.dest(paths.js_output))
+    gulp.src(paths.scripts)
+      .pipe(babel({stage: 0}))
+      //.pipe(sourcemaps.init())
+      .pipe(browserify({
+        transform: ['babelify'],
+        extensions: ['.jsx']
+      }))
+      .pipe(uglify({
+        compress: {
+          unused: false
+        }
+      }))
+      .pipe(rename({
+        extname: '.min.js'
+      }))
+      //.pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest(paths.js_output))
   );
 
   gulp.task('watch', () => {
     gulp.watch(paths.external_scripts, ['vendor']);
-    gulp.watch(paths.scripts, ['script']);
+    gulp.watch('app/static/js/*', ['script']);
   });
 
   gulp.task('minify-vendor-css', () =>
-      gulp.src(paths.vendor_css)
-          .pipe(minifyCss())
-          .pipe(concat('packed.css'))
-          .pipe(gulp.dest(paths.css_output))
+    gulp.src(paths.vendor_css)
+      .pipe(minifyCss())
+      .pipe(concat('packed.css'))
+      .pipe(gulp.dest(paths.css_output))
   );
 
   gulp.task('minify-css', () =>
-      gulp.src(paths.css)
-          .pipe(sourcemaps.init())
-          .pipe(minifyCss())
-          .pipe(rename({
-            extname: '.min.css'
-          }))
-          .pipe(sourcemaps.write('.'))
-          .pipe(gulp.dest(paths.css_output))
+    gulp.src(paths.css)
+      .pipe(sourcemaps.init())
+      .pipe(minifyCss())
+      .pipe(rename({
+        extname: '.min.css'
+      }))
+      .pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest(paths.css_output))
   );
 
   gulp.task('copy-fonts1', () =>
-      gulp.src('app/static/vendor/bootstrap/fonts/**')
-          .pipe(gulp.dest('app/static/dist/fonts'))
+    gulp.src('app/static/vendor/bootstrap/fonts/**')
+      .pipe(gulp.dest('app/static/dist/fonts'))
   );
   gulp.task('copy-fonts2', () =>
-      gulp.src('app/static/vendor/font-awesome/fonts/**')
-          .pipe(gulp.dest('app/static/dist/fonts'))
+    gulp.src('app/static/vendor/font-awesome/fonts/**')
+      .pipe(gulp.dest('app/static/dist/fonts'))
   );
   gulp.task('copy-fonts3', () =>
-      gulp.src('app/static/vendor/bootstrap-material-design/fonts/**')
-          .pipe(gulp.dest('app/static/dist/fonts'))
+    gulp.src('app/static/vendor/bootstrap-material-design/fonts/**')
+      .pipe(gulp.dest('app/static/dist/fonts'))
   );
   gulp.task('copy-imgs', () =>
-      gulp.src('app/static/vendor/x-editable/dist/bootstrap3-editable/img/**')
-          .pipe(gulp.dest('app/static/dist/img'))
+    gulp.src('app/static/vendor/x-editable/dist/bootstrap3-editable/img/**')
+      .pipe(gulp.dest('app/static/dist/img'))
   );
 
   gulp.task('default', ['watch', 'vendor', 'script', 'minify-vendor-css', 'minify-css', 'copy-fonts1', 'copy-fonts2', 'copy-fonts3', 'copy-imgs']);

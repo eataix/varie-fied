@@ -1,3 +1,7 @@
+const React = require('react');
+const ReactDOM = require('react-dom');
+const ProjectPage = require('./ProjectPage');
+
 (() => {
   'use strict';
 
@@ -190,4 +194,11 @@
         toolbar: '#toolbar'
       });
     });
+
+  ReactDOM.render(
+    <ProjectPage
+      progress={true}
+    />,
+    document.getElementById('content')
+  );
 })();

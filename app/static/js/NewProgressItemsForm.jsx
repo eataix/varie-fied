@@ -1,9 +1,6 @@
-const FluxStore = require('./flux');
-const store = FluxStore.store;
-const actions = FluxStore.actions;
-const changes = FluxStore.changes;
+const React = require('react');
 
-
+const ReactBootstrap = require('react-bootstrap');
 const Input = ReactBootstrap.Input;
 const Button = ReactBootstrap.Button;
 const Modal = ReactBootstrap.Modal;
@@ -41,14 +38,14 @@ class ProgressItem extends React.Component {
           <a
             href="javascript:void(0)"
             onClick={this.props.addRow}
-            >
+          >
             <span className="fa fa-plus"> </span> Add
           </a>
           /
           <a
             href="javascript:void(0)"
             onClick={this.props.deleteRow}
-            >
+          >
             <span className="fa fa-minus"> </span> Delete
           </a>
         </td>
@@ -61,14 +58,14 @@ class NewProgressItemsForm extends React.Component {
   constructor() {
     super();
     this.state = {
-      list: store.getList()
+      list: []
     };
     this.onListChange = this.onListChange.bind(this);
     this.handleHideModal = this.handleHideModal.bind(this);
   }
 
   addRow() {
-    actions.addItem({
+    this.props.actions.addItem({
       name: '',
       value: {
         amount: ''
@@ -77,23 +74,23 @@ class NewProgressItemsForm extends React.Component {
   }
 
   deleteRow(index) {
-    actions.removeItem(index);
+    this.props.actions.removeItem(index);
   }
 
   updateItem(index, name, value) {
-    actions.updateItem(index, {name: name, value: {amount: value === '' ? '' : parseFloat(value)}});
+    this.props.actions.updateItem(index, {name: name, value: {amount: value === '' ? '' : parseFloat(value)}});
   }
 
   componentDidMount() {
-    store.addChangeListener(changes.ITEMS_CHANGE, this.onListChange);
+    this.props.store.addChangeListener(this.props.changes.ITEMS_CHANGE, this.onListChange);
   }
 
   componentWillUnmount() {
-    store.removeChangeListener(changes.ITEMS_CHANGE, this.onListChange);
+    this.props.store.removeChangeListener(this.props.changes.ITEMS_CHANGE, this.onListChange);
   }
 
   onListChange() {
-    this.setState({list: store.getList()});
+    this.setState({list: this.props.store.getList()});
   }
 
   handleHideModal() {
@@ -107,61 +104,61 @@ class NewProgressItemsForm extends React.Component {
         ref="modal"
         tabIndex={-1}
         id="new-progress-item-dialog"
-        >
+      >
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <Modal.Header
               closeButton
               onHide={this.handleHideModal}
-              >
+            >
               <Modal.Title>New Progress Items</Modal.Title>
             </Modal.Header>
             <div className="modal-body">
               <div className="container-fluid">
                 <form className="form-horizontal"
-                  ref="form">
+                      ref="form">
                   <div className="form-group">
                     <table className="table table-bordered">
                       <thead>
-                        <tr>
-                          <th style={{textAlign: 'center'}}>Name</th>
-                          <th style={{textAlign: 'center'}}>Contract Value</th>
-                          <th style={{textAlign: 'center'}}/>
-                        </tr>
+                      <tr>
+                        <th style={{textAlign: 'center'}}>Name</th>
+                        <th style={{textAlign: 'center'}}>Contract Value</th>
+                        <th style={{textAlign: 'center'}}/>
+                      </tr>
                       </thead>
                       <tbody>
-                        {this.state.list.map((r, index) =>
-                                             <ProgressItem
-                                               key={r+index}
-                                               addRow={this.addRow}
-                                               deleteRow={this.deleteRow.bind(null, index)}
-                                               name={r.name}
-                                               value={r.value.amount}
-                                               updateItem={this.updateItem.bind(null, index)}
-                                             />)}
-                                           </tbody>
-                                         </table>
-                                       </div>
-                                     </form>
-                                   </div>
-                                 </div>
-                                 <Modal.Footer>
-                                   <Button
-                                     className="btn btn-primary btn-raised"
-                                     data-dismiss="modal"
-                                     >
-                                     Dismiss
-                                   </Button>
-                                   <Button
-                                     className="btn btn-info btn-raised"
-                                     onClick={this.submit}
-                                     >
-                                     Save
-                                   </Button>
-                                 </Modal.Footer>
-                               </div>
-                             </div>
-                           </div>
+                      {this.state.list.map((r, index) =>
+                      <ProgressItem
+                        key={r+index}
+                        addRow={this.addRow}
+                        deleteRow={this.deleteRow.bind(null, index)}
+                        name={r.name}
+                        value={r.value.amount}
+                        updateItem={this.updateItem.bind(null, index)}
+                      />)}
+                      </tbody>
+                    </table>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <Modal.Footer>
+              <Button
+                className="btn btn-primary btn-raised"
+                data-dismiss="modal"
+              >
+                Dismiss
+              </Button>
+              <Button
+                className="btn btn-info btn-raised"
+                onClick={this.submit}
+              >
+                Save
+              </Button>
+            </Modal.Footer>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -193,7 +190,7 @@ class NewProgressItemsForm extends React.Component {
         return;
       }
 
-      const progressItems = store.getList();
+      const progressItems = this.props.store.getList();
       console.log(progressItems);
 
       const statusArray = new Array(progressItems.length).fill(null);
@@ -207,28 +204,28 @@ class NewProgressItemsForm extends React.Component {
         const contract_value = item.value.amount;
 
         $.ajax({
-          url: newProgressItemUrl,
-          type: 'POST',
-          data: JSON.stringify({
-            name: name,
-            contract_value: contract_value,
-            project_id: projectId
-          }),
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .done(() => {
-          statusArray[offset] = true;
-          createItem(offset + 1);
-        })
-        .fail(() => statusArray[offset] = false);
+            url: newProgressItemUrl,
+            type: 'POST',
+            data: JSON.stringify({
+              name: name,
+              contract_value: contract_value,
+              project_id: projectId
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          })
+          .done(() => {
+            statusArray[offset] = true;
+            createItem(offset + 1);
+          })
+          .fail(() => statusArray[offset] = false);
       })(0);
 
       (function waiting() {
         if (statusArray.some(isFalse)) {
           swal({
             title: 'Error',
-            text: 'Failed to save some changes.',
+            text: 'Failed to save some this.props.changes.',
             type: 'error'
           });
           console.log('error');

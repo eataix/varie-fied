@@ -1,17 +1,15 @@
-const FluxStore = require('./flux');
-const store = FluxStore.store;
-const actions = FluxStore.actions;
-const changes = FluxStore.changes;
-
 'use strict';
 
+const React = require('react');
+
+const ReactBootstrap = require('react-bootstrap');
 const Input = ReactBootstrap.Input;
 const Button = ReactBootstrap.Button;
 const Modal = ReactBootstrap.Modal;
 
 class ProjectName extends React.Component {
   handleChange(event) {
-    actions.newProjectName(event.target.value);
+    this.props.actions.newProjectName(event.target.value);
   }
 
   render() {
@@ -31,7 +29,7 @@ class ProjectName extends React.Component {
 
 class ReferenceNo extends React.Component {
   handleChange(event) {
-    actions.newProjectRefNum(event.target.value);
+    this.props.actions.newProjectRefNum(event.target.value);
   }
 
   render() {
@@ -51,7 +49,7 @@ class ReferenceNo extends React.Component {
 
 class OH extends React.Component {
   handleChange(event) {
-    actions.newProjectOH(event.target.value);
+    this.props.actions.newProjectOH(event.target.value);
   }
 
   render() {
@@ -72,7 +70,7 @@ class OH extends React.Component {
 
 class AdminFee extends React.Component {
   handleChange() {
-    actions.newProjectAdminFee(event.target.value);
+    this.props.actions.newProjectAdminFee(event.target.value);
   }
 
   render() {
@@ -97,7 +95,7 @@ class ClientList extends React.Component {
   }
 
   addRow() {
-    actions.addItem({
+    this.props.actions.addItem({
       name: '',
       value: {
         first: '',
@@ -107,11 +105,11 @@ class ClientList extends React.Component {
   }
 
   deleteRow(index) {
-    actions.removeItem(index);
+    this.props.actions.removeItem(index);
   }
 
   updateItem(index, name, first, second) {
-    actions.updateItem(index, {
+    this.props.actions.updateItem(index, {
       name: name,
       value: {
         first: first,
@@ -127,25 +125,25 @@ class ClientList extends React.Component {
         <div className="col-sm-9">
           <table className="table table-bordered">
             <thead>
-              <tr>
-                <th style={{textAlign: 'center'}}>Client Name</th>
-                <th style={{textAlign: 'center'}}>Address First Line</th>
-                <th style={{textAlign: 'center'}}>Address Second Line</th>
-                <th style={{textAlign: 'center'}}/>
-              </tr>
+            <tr>
+              <th style={{textAlign: 'center'}}>Client Name</th>
+              <th style={{textAlign: 'center'}}>Address First Line</th>
+              <th style={{textAlign: 'center'}}>Address Second Line</th>
+              <th style={{textAlign: 'center'}}/>
+            </tr>
             </thead>
             <tbody>
-              {
-                this.props.clients.map((r, i) =>
-                                       <Client
-                                         key={r + i}
-                                         addRow={this.addRow}
-                                         deleteRow={this.deleteRow.bind(null, i)}
-                                         updateItem={this.updateItem.bind(null, i)}
-                                         name={r.name}
-                                         first={r.value.first}
-                                         second={r.value.second}
-                                       />)
+            {
+              this.props.clients.map((r, i) =>
+              <Client
+                key={r + i}
+                addRow={this.addRow}
+                deleteRow={this.deleteRow.bind(null, i)}
+                updateItem={this.updateItem.bind(null, i)}
+                name={r.name}
+                first={r.value.first}
+                second={r.value.second}
+              />)
               }
             </tbody>
           </table>
@@ -198,14 +196,14 @@ class Client extends React.Component {
         <a
           href="javascript:void(0)"
           onClick={this.props.addRow}
-          >
+        >
           <i className="fa fa-plus"></i>
         </a>
         /
         <a
           href="javascript:void(0)"
           onClick={this.props.deleteRow}
-          >
+        >
           <i className="fa fa-minus"></i>
         </a>
       </td>
@@ -222,35 +220,35 @@ class NewProjectForm extends React.Component {
     this.handleHideModal = this.handleHideModal.bind(this);
 
     this.state = {
-      name: store.getNewName(),
-      margin: store.getNewOH(),
-      refNum: store.getNewRefNum(),
-      adminFee: store.getNewAdminFee(),
-      list: store.getList()
+      name: '',
+      margin: '',
+      refNum: '',
+      adminFee: null,
+      list: []
     };
   }
 
   componentDidMount() {
-    store.addChangeListener(changes.ITEMS_CHANGE, this._onListChange);
-    store.addChangeListener(changes.NEW_INFO_CHANGE, this._onInfoChange);
+    this.props.store.addChangeListener(this.props.changes.ITEMS_CHANGE, this._onListChange);
+    this.props.store.addChangeListener(this.props.changes.NEW_INFO_CHANGE, this._onInfoChange);
   }
 
   componentWillUnmount() {
-    store.removeChangeListener(changes.NEW_INFO_CHANGE, this._onInfoChange);
-    store.removeChangeListener(changes.ITEMS_CHANGE, this._onListChange);
+    this.props.store.removeChangeListener(this.props.changes.NEW_INFO_CHANGE, this._onInfoChange);
+    this.props.store.removeChangeListener(this.props.changes.ITEMS_CHANGE, this._onListChange);
   }
 
   _onInfoChange() {
     this.setState({
-      name: store.getNewName(),
-      refNum: store.getNewRefNum(),
-      margin: store.getNewOH(),
-      adminFee: store.getNewAdminFee()
+      name: this.props.store.getNewName(),
+      refNum: this.props.store.getNewRefNum(),
+      margin: this.props.store.getNewOH(),
+      adminFee: this.props.store.getNewAdminFee()
     });
   }
 
   _onListChange() {
-    this.setState({list: store.getList()});
+    this.setState({list: this.props.store.getList()});
   }
 
   handleHideModal() {
@@ -263,13 +261,14 @@ class NewProjectForm extends React.Component {
         id="new-project-dialog"
         ref="modal"
         className="modal fade"
-        tabIndex={-1}>
+        tabIndex={-1}
+      >
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <Modal.Header
               closeButton
               onHide={this.handleHideModal}
-              >
+            >
               <Modal.Title>Add Project</Modal.Title>
             </Modal.Header>
 
@@ -279,7 +278,7 @@ class NewProjectForm extends React.Component {
                   ref="form"
                   className="form-horizontal"
                   data-parsley-validate
-                  >
+                >
                   <ProjectName value={this.state.name}/>
                   <ReferenceNo value={this.state.refNum}/>
                   <OH value={this.state.margin}/>
@@ -310,10 +309,10 @@ class NewProjectForm extends React.Component {
       return;
     }
 
-    const project_name = store.getNewName();
-    const margin = store.getNewOH();
-    const reference_number = store.getNewRefNum();
-    let admin_fee = store.getNewAdminFee();
+    const project_name = this.props.store.getNewName();
+    const margin = this.props.store.getNewOH();
+    const reference_number = this.props.store.getNewRefNum();
+    let admin_fee = this.props.store.getNewAdminFee();
     // in case admin_fee is unspecified
     if (admin_fee === '') {
       admin_fee = null;
@@ -358,76 +357,76 @@ class NewProjectForm extends React.Component {
       });
 
       $.ajax({
-        url: newProjectUrl,
-        type: 'POST',
-        data: JSON.stringify({
-          name: project_name,
-          margin: margin,
-          reference_number: reference_number,
-          admin_fee: admin_fee
-        }),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json'
-      })
-      .fail(() => {
-        swal({
-          title: 'Error',
-          text: 'Cannot save the project... Please try again.',
-          type: 'error'
+          url: newProjectUrl,
+          type: 'POST',
+          data: JSON.stringify({
+            name: project_name,
+            margin: margin,
+            reference_number: reference_number,
+            admin_fee: admin_fee
+          }),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        })
+        .fail(() => {
+          swal({
+            title: 'Error',
+            text: 'Cannot save the project... Please try again.',
+            type: 'error'
+          });
+        })
+        .done(data => {
+          const clients = this.props.store.getList();
+          console.log(clients);
+          const statusArray = new Array(clients.length).fill(null);
+
+          (function createClient(offset) {
+            if (offset >= clients.length) {
+              return;
+            }
+            const client = clients[offset];
+            const name = client.name;
+            let first_line_address = client.value.first;
+            if (first_line_address === '') {
+              first_line_address = null;
+            }
+            let second_line_address = client.value.second;
+            if (second_line_address === '') {
+              second_line_address = null;
+            }
+            $.ajax({
+                url: newClientUrl,
+                type: 'POST',
+                data: JSON.stringify({
+                  name: name,
+                  first_line_address: first_line_address,
+                  second_line_address: second_line_address,
+                  project_id: data.id
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json'
+              })
+              .done(() => {
+                statusArray[offset] = true;
+                createClient(offset + 1);
+              })
+              .fail(() => statusArray[offset] = false);
+          })(0); // IIFE
+
+          (function waiting() {
+            if (statusArray.some(isFalse)) {
+              swal('Error', 'Cannot save the project... Please try again.', 'error');
+            } else if (statusArray.some(isNull)) {
+              setTimeout(waiting, 100);
+            } else if (statusArray.every(isTrue)) {
+              swal({
+                title: 'Nice!',
+                text: `You created a new project: ${data.name}`,
+                type: 'success'
+              }, () => $(this.refs.modal.getDOMNode()).modal('hide'));
+            }
+          })();
         });
-      })
-      .done(data => {
-        const clients = store.getList();
-        console.log(clients);
-        const statusArray = new Array(clients.length).fill(null);
-
-        (function createClient(offset) {
-          if (offset >= clients.length) {
-            return;
-          }
-          const client = clients[offset];
-          const name = client.name;
-          let first_line_address = client.value.first;
-          if (first_line_address === '') {
-            first_line_address = null;
-          }
-          let second_line_address = client.value.second;
-          if (second_line_address === '') {
-            second_line_address = null;
-          }
-          $.ajax({
-            url: newClientUrl,
-            type: 'POST',
-            data: JSON.stringify({
-              name: name,
-              first_line_address: first_line_address,
-              second_line_address: second_line_address,
-              project_id: data.id
-            }),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => {
-            statusArray[offset] = true;
-            createClient(offset + 1);
-          })
-          .fail(() => statusArray[offset] = false);
-        })(0); // IIFE
-
-        (function waiting() {
-          if (statusArray.some(isFalse)) {
-            swal('Error', 'Cannot save the project... Please try again.', 'error');
-          } else if (statusArray.some(isNull)) {
-            setTimeout(waiting, 100);
-          } else if (statusArray.every(isTrue)) {
-            swal({
-              title: 'Nice!',
-              text: `You created a new project: ${data.name}`,
-              type: 'success'
-            }, () => $(this.refs.modal.getDOMNode()).modal('hide'));
-          }
-        })();
-      });
     });
   }
 }
