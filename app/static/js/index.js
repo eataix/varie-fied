@@ -1,12 +1,19 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
+import React from 'react';
+import { render } from 'react-dom';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 
-const FrontPage = require('./FrontPage');
+import FrontPage from './FrontPage';
+import app from './redux/reducers';
+
+let store = createStore(app);
 
 (() => {
   'use strict';
-  ReactDOM.render(
-    <FrontPage />,
+  render(
+    <Provider store={store}>
+      <FrontPage />
+    </Provider>,
     document.getElementById('content')
   );
 })();

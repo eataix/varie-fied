@@ -1,4 +1,5 @@
-const React = require('react');
+import React from 'react';
+import { connect } from 'react-redux';
 
 class ProjectItem extends React.Component {
   render() {
@@ -35,34 +36,19 @@ class InactiveProjectList extends React.Component {
 }
 
 class ProjectList extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      projects: []
-    };
-    this.onProjectsChange = this.onProjectsChange.bind(this);
-  }
-
-  componentDidMount() {
-    this.props.store.addChangeListener(this.props.changes.PROJECTS_LOADED, this.onProjectsChange);
-  }
-
-  onProjectsChange() {
-    this.setState({
-      projects: this.props.store.getProjects()
-    });
-  }
-
   render() {
     return (
       <div>
         <h1>Active projects</h1>
-        <ActiveProjectList projects={this.state.projects}/>
+        <ActiveProjectList projects={this.props.projects}/>
         <h1>Previous projects</h1>
-        <InactiveProjectList projects={this.state.projects}/>
+        <InactiveProjectList projects={this.props.projects}/>
       </div>
     );
   }
 }
 
-module.exports = ProjectList;
+export default connect(s=> {
+  console.log(s);
+  return {projects: s.projects}
+})(ProjectList);

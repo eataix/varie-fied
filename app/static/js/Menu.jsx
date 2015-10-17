@@ -1,6 +1,7 @@
-const React = require('react');
-const ReactBootStrap = require('react-bootstrap');
-const NavItem = ReactBootStrap.NavItem;
+import React from 'react';
+import { loadProjects } from './redux/actions';
+import { connect } from 'react-redux';
+import { NavItem } from 'react-bootstrap';
 
 class HomeBar extends React.Component {
   render() {
@@ -86,24 +87,13 @@ class OldProjectList extends React.Component {
 class Menu extends React.Component {
   constructor() {
     super();
-    this.state = {
-      projects: []
-    };
     this.loadProjects = this.loadProjects.bind(this);
-    this.onProjectsChange = this.onProjectsChange.bind(this);
   }
 
   componentDidMount() {
     this.loadProjects();
     setInterval(this.loadProjects, this.props.pollInterval);
     $('body').addClass('loaded');
-    this.props.store.addChangeListener(this.props.changes.PROJECTS_LOADED, this.onProjectsChange);
-  }
-
-  onProjectsChange() {
-    this.setState({
-      projects: this.props.store.getProjects()
-    });
   }
 
   loadProjects() {
@@ -111,7 +101,7 @@ class Menu extends React.Component {
         url: this.props.project_url,
         contentType: 'application/json; charset=utf-8'
       })
-      .done((data => this.props.actions.loadProjects(data.projects)).bind(this))
+      .done(data=> this.props.dispatch(loadProjects(data.projects)))
       .fail(((xhr, status, err) => console.error(this.props.project_url, status, err.toString())).bind(this));
   }
 
@@ -137,8 +127,8 @@ class Menu extends React.Component {
         <div className="navbar-collapse collapse navbar-responsive-collapse">
           <ul className="nav navbar-nav">
             <HomeBar />
-            { this.state.projects.map((p, i) => <ProjectItem key={i} project={p}/>) }
-            <OldProjectList projects={this.state.projects}/>
+            { this.props.projects.map((p, i) => <ProjectItem key={i} project={p}/>) }
+            <OldProjectList projects={this.props.projects}/>
             <li>
               <a
                 href="javascript:void(0)"
@@ -164,4 +154,6 @@ class Menu extends React.Component {
   }
 }
 
-module.exports = Menu
+export default connect(s=> {
+  return {projects: s.projects}
+})(Menu);

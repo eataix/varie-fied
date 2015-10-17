@@ -144,9 +144,18 @@ const changes = {
 };
 
 const _store = {
-  list: [{
+  variationItems: [{
     name: '',
     value: {}
+  }],
+  clientList: [{
+    name: '',
+    first: '',
+    second: ''
+  }],
+  progressItemsList: [{
+    name: '',
+    value: ''
   }],
   margin: 0.0,
   adminFee: '',
@@ -163,7 +172,7 @@ const _store = {
   project: null
 };
 
-const addItem = function(item) {
+const addVariationItem = function(item) {
   'use strict';
   _store.list.push(item);
 };
@@ -219,7 +228,7 @@ const newProjectRefNum = function(refNum) {
 
 const newProjectOH = function(oh) {
   'use strict';
-  _store.newOH = oh;
+  _store.newMargin = oh;
 };
 
 const newProjectAdminFee = function(adminFee) {
@@ -288,7 +297,7 @@ const store = Object.assign({}, EventEmitter.prototype, {
   },
   getNewOH: function() {
     'use strict';
-    return _store.newOH;
+    return _store.newMargin;
   },
   getNewAdminFee: function() {
     'use strict';

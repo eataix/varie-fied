@@ -67,11 +67,11 @@
         transform: ['babelify'],
         extensions: ['.jsx']
       }))
-      .pipe(uglify({
-        compress: {
-          unused: false
-        }
-      }))
+      //.pipe(uglify({
+      //  compress: {
+      //    unused: false
+      //  }
+      //}))
       .pipe(rename({
         extname: '.min.js'
       }))
@@ -81,7 +81,7 @@
 
   gulp.task('watch', () => {
     gulp.watch(paths.external_scripts, ['vendor']);
-    gulp.watch('app/static/js/*', ['script']);
+    gulp.watch('app/static/js/**', ['script']);
   });
 
   gulp.task('minify-vendor-css', () =>

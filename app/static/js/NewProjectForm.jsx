@@ -1,15 +1,21 @@
-'use strict';
+import React from 'react';
+import { connect } from 'react-redux';
+import ReactBootstrap from 'react-bootstrap';
+import { Input, Button, Modal } from 'react-bootstrap';
+import { addClient, deleteClient, editClient, newProjectName, newProjectRefNumber, newProjectMargin, newProjectAdminFee } from './redux/actions';
 
-const React = require('react');
-
-const ReactBootstrap = require('react-bootstrap');
-const Input = ReactBootstrap.Input;
-const Button = ReactBootstrap.Button;
-const Modal = ReactBootstrap.Modal;
+const metaData = $('#meta-data').data();
+const newProjectUrl = metaData.newProjectUrl;
+const newClientUrl = metaData.newClientUrl;
 
 class ProjectName extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
   handleChange(event) {
-    this.props.actions.newProjectName(event.target.value);
+    this.props.dispatch(newProjectName(event.target.value));
   }
 
   render() {
@@ -28,8 +34,13 @@ class ProjectName extends React.Component {
 }
 
 class ReferenceNo extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
   handleChange(event) {
-    this.props.actions.newProjectRefNum(event.target.value);
+    this.props.dispatch(newProjectRefNumber(event.target.value));
   }
 
   render() {
@@ -47,9 +58,14 @@ class ReferenceNo extends React.Component {
   }
 }
 
-class OH extends React.Component {
+class Margin extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
   handleChange(event) {
-    this.props.actions.newProjectOH(event.target.value);
+    this.props.dispatch(newProjectMargin(event.target.value));
   }
 
   render() {
@@ -69,8 +85,13 @@ class OH extends React.Component {
 }
 
 class AdminFee extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
   handleChange() {
-    this.props.actions.newProjectAdminFee(event.target.value);
+    this.props.dispatch(newProjectAdminFee(event.target.value));
   }
 
   render() {
@@ -92,30 +113,25 @@ class AdminFee extends React.Component {
 class ClientList extends React.Component {
   constructor() {
     super();
+    this.addRow = this.addRow.bind(this);
+    this.deleteRow = this.deleteRow.bind(this);
+    this.updateItem = this.updateItem.bind(this);
   }
 
   addRow() {
-    this.props.actions.addItem({
+    this.props.dispatch(addClient({
       name: '',
-      value: {
-        first: '',
-        second: ''
-      }
-    })
+      first: '',
+      second: ''
+    }))
   }
 
   deleteRow(index) {
-    this.props.actions.removeItem(index);
+    this.props.dispatch(deleteClient(index));
   }
 
   updateItem(index, name, first, second) {
-    this.props.actions.updateItem(index, {
-      name: name,
-      value: {
-        first: first,
-        second: second
-      }
-    });
+    this.props.dispatch(editClient(index, name, first, second));
   }
 
   render() {
@@ -138,11 +154,12 @@ class ClientList extends React.Component {
               <Client
                 key={r + i}
                 addRow={this.addRow}
-                deleteRow={this.deleteRow.bind(null, i)}
-                updateItem={this.updateItem.bind(null, i)}
+                deleteRow={this.deleteRow.bind(this, i)}
+                updateItem={this.updateItem.bind(this, i)}
                 name={r.name}
-                first={r.value.first}
-                second={r.value.second}
+                first={r.first}
+                second={r.second}
+                dispatch={this.props.dispatch}
               />)
               }
             </tbody>
@@ -214,41 +231,8 @@ class Client extends React.Component {
 class NewProjectForm extends React.Component {
   constructor() {
     super();
-    this._onInfoChange = this._onInfoChange.bind(this);
-    this._onListChange = this._onListChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleHideModal = this.handleHideModal.bind(this);
-
-    this.state = {
-      name: '',
-      margin: '',
-      refNum: '',
-      adminFee: null,
-      list: []
-    };
-  }
-
-  componentDidMount() {
-    this.props.store.addChangeListener(this.props.changes.ITEMS_CHANGE, this._onListChange);
-    this.props.store.addChangeListener(this.props.changes.NEW_INFO_CHANGE, this._onInfoChange);
-  }
-
-  componentWillUnmount() {
-    this.props.store.removeChangeListener(this.props.changes.NEW_INFO_CHANGE, this._onInfoChange);
-    this.props.store.removeChangeListener(this.props.changes.ITEMS_CHANGE, this._onListChange);
-  }
-
-  _onInfoChange() {
-    this.setState({
-      name: this.props.store.getNewName(),
-      refNum: this.props.store.getNewRefNum(),
-      margin: this.props.store.getNewOH(),
-      adminFee: this.props.store.getNewAdminFee()
-    });
-  }
-
-  _onListChange() {
-    this.setState({list: this.props.store.getList()});
   }
 
   handleHideModal() {
@@ -279,11 +263,26 @@ class NewProjectForm extends React.Component {
                   className="form-horizontal"
                   data-parsley-validate
                 >
-                  <ProjectName value={this.state.name}/>
-                  <ReferenceNo value={this.state.refNum}/>
-                  <OH value={this.state.margin}/>
-                  <AdminFee value={this.state.adminFee}/>
-                  <ClientList clients={this.state.list}/>
+                  <ProjectName
+                    value={this.props.name}
+                    dispatch={this.props.dispatch}
+                  />
+                  <ReferenceNo
+                    value={this.props.refNum}
+                    dispatch={this.props.dispatch}
+                  />
+                  <Margin
+                    value={this.props.margin}
+                    dispatch={this.props.dispatch}
+                  />
+                  <AdminFee
+                    value={this.props.adminFee}
+                    dispatch={this.props.dispatch}
+                  />
+                  <ClientList
+                    clients={this.props.clients}
+                    dispatch={this.props.dispatch}
+                  />
                 </form>
               </div>
             </div>
@@ -309,10 +308,10 @@ class NewProjectForm extends React.Component {
       return;
     }
 
-    const project_name = this.props.store.getNewName();
-    const margin = this.props.store.getNewOH();
-    const reference_number = this.props.store.getNewRefNum();
-    let admin_fee = this.props.store.getNewAdminFee();
+    const project_name = this.props.name;
+    const margin = this.props.refNum;
+    const reference_number = this.props.margin;
+    let admin_fee = this.props.adminFee;
     // in case admin_fee is unspecified
     if (admin_fee === '') {
       admin_fee = null;
@@ -376,7 +375,7 @@ class NewProjectForm extends React.Component {
           });
         })
         .done(data => {
-          const clients = this.props.store.getList();
+          const clients = this.props.clients;
           console.log(clients);
           const statusArray = new Array(clients.length).fill(null);
 
@@ -386,11 +385,11 @@ class NewProjectForm extends React.Component {
             }
             const client = clients[offset];
             const name = client.name;
-            let first_line_address = client.value.first;
+            let first_line_address = client.first;
             if (first_line_address === '') {
               first_line_address = null;
             }
-            let second_line_address = client.value.second;
+            let second_line_address = client.second;
             if (second_line_address === '') {
               second_line_address = null;
             }
@@ -431,4 +430,12 @@ class NewProjectForm extends React.Component {
   }
 }
 
-module.exports = NewProjectForm;
+export default connect(state => {
+  return {
+    name: state.newName,
+    refNum: state.newRefNum,
+    margin: state.newMargin,
+    adminFee: state.newAdminFee,
+    clients: state.clients
+  }
+})(NewProjectForm);

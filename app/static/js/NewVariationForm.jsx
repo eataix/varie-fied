@@ -1,16 +1,14 @@
-const React = require('react');
-
-const ReactBootstrap = require('react-bootstrap');
-const Input = ReactBootstrap.Input;
-const Button = ReactBootstrap.Button;
-const Modal = ReactBootstrap.Modal;
+import React from 'react';
+import { connect } from 'react-redux';
+import { Input, Button, Modal } from 'react-bootstrap';
+import { updateTime, updateSubcontractor, updateInvoiceNumber, updateMarginAndAdminFee, updateDescription, addVariationItem, deleteVariationItem, editVariationItem } from './redux/actions'
 
 class TimePicker extends React.Component {
   componentDidMount() {
     $(this.refs.picker).datetimepicker({
       showTodayButton: true
     }).on('dp.change', function(event) {
-      this.props.actions.updateTime(event.date.utc().format());
+      this.props.dispatch(updateTime(event.date.utc().format()));
     });
   }
 
@@ -41,8 +39,13 @@ class TimePicker extends React.Component {
 }
 
 class Subcontractor extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
   handleChange() {
-    this.props.actions.updateSubcontractor(event.target.value);
+    this.props.dispatch(updateSubcontractor(event.target.value));
   }
 
   render() {
@@ -60,8 +63,13 @@ class Subcontractor extends React.Component {
 }
 
 class InvoiceNo extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
   handleChange() {
-    this.props.actions.updateInvoiceNumber(event.target.value);
+    this.props.dispatch(updateInvoiceNumber(event.target.value));
   }
 
   render() {
@@ -104,7 +112,7 @@ class Project extends React.Component {
 
   handleChange(event) {
     const p = this.props.projects.find(e => e.id.toString() === event.target.value);
-    this.props.actions.updateMarginAndAdminFee(p.id, p.margin, p.admin_fee);
+    this.props.dispatch(updateMarginAndAdminFee(p.id, p.margin, p.admin_fee));
   }
 
   render() {
@@ -145,6 +153,7 @@ class Margin extends React.Component {
 
 class AdminFee extends React.Component {
   render() {
+    console.log('value: ' + this.props.value);
     const value = this.props.value;
     if (value === null) {
       return false;
@@ -242,11 +251,11 @@ class VariationItem extends React.Component {
 
 class Description extends React.Component {
   handleChange() {
-    this.props.actions.updateDescription(event.target.value);
+    this.props.dispatch(updateDescription(event.target.value));
   }
 
   render() {
-    if (this.props.items.length === 1) {
+    if (this.props.items.size === 1) {
       return false;
     }
     return (
@@ -265,17 +274,7 @@ class Description extends React.Component {
 class NewVariationForm extends React.Component {
   constructor() {
     super();
-    this._onListChange = this._onListChange.bind(this);
-    this._onMarginChange = this._onMarginChange.bind(this);
-    this.loadProjects = this.loadProjects.bind(this);
     this.handleHideModal = this.handleHideModal.bind(this);
-    this.state = {
-      projects: [],
-      margin: '',
-      adminFee: '',
-      list: [],
-      showDescription: false
-    };
     this.handleClick = this.handleClick.bind(this);
   }
 
@@ -415,44 +414,6 @@ class NewVariationForm extends React.Component {
     });
   }
 
-  componentDidMount() {
-    this.loadProjects();
-    setInterval(this.loadProjects, this.props.pollInterval);
-    this.props.store.addChangeListener(this.props.changes.ITEMS_CHANGE, this._onListChange);
-    this.props.store.addChangeListener(this.props.changes.MARGIN_AND_ADMIN_FEE, this._onMarginChange);
-  }
-
-  componentWillUnmount() {
-    this.props.store.removeChangeListener(this.props.changes.ITEMS_CHANGE, this._onListChange);
-    this.props.store.removeChangeListener(this.props.changes.MARGIN_AND_ADMIN_FEE, this._onMarginChange);
-  }
-
-  _onMarginChange() {
-    this.setState({
-      margin: this.props.store.getMargin(),
-      adminFee: this.props.store.getAdminFee()
-    });
-  }
-
-  _onListChange() {
-    this.setState({
-      list: this.props.store.getList()
-    });
-  }
-
-  loadProjects() {
-    $.ajax({
-        url: this.props.project_url,
-        contentType: 'application/json; charset=utf-8'
-      })
-      .success((data =>
-          this.setState({projects: data.projects})
-      ).bind(this))
-      .fail(((xhr, status, err) =>
-          console.error(this.props.project_url, status, err.toString())
-      ).bind(this));
-  }
-
   handleHideModal() {
     $(this.refs.modal.getDOMNode()).modal('hide');
   }
@@ -476,20 +437,40 @@ class NewVariationForm extends React.Component {
             <div className="modal-body">
               <div className="container-fluid">
                 <form className="form-horizontal" data-parsley-validate ref="form">
-                  <Project projects={this.state.projects}/>
-                  <TimePicker />
-                  <Subcontractor />
-                  <InvoiceNo />
-                  <ValueOfWork items={this.state.list}/>
-                  <Margin value={this.state.margin}/>
-                  <AdminFee value={this.state.adminFee}/>
-                  <Subtotal
-                    items={this.state.list}
-                    margin={this.state.margin}
-                    adminFee={this.state.adminFee}
+                  <Project
+                    projects={this.props.projects}
+                    dispatch={this.props.dispatch}
                   />
-                  <Description items={this.state.list}/>
-                  <ItemTable items={this.state.list}/>
+                  <TimePicker dispatch={this.props.dispatch}/>
+                  <Subcontractor dispatch={this.props.dispatch}
+                  />
+                  <InvoiceNo dispatch={this.props.dispatch}/>
+                  <ValueOfWork
+                    items={this.props.variations}
+                    dispatch={this.props.dispatch}
+                  />
+                  <Margin
+                    value={this.props.margin}
+                    dispatch={this.props.dispatch}
+                  />
+                  <AdminFee
+                    value={this.props.adminFee}
+                    dispatch={this.props.dispatch}
+                  />
+                  <Subtotal
+                    items={this.props.variations}
+                    margin={this.props.margin}
+                    adminFee={this.props.adminFee}
+                    dispatch={this.props.dispatch}
+                  />
+                  <Description
+                    items={this.props.variations}
+                    dispatch={this.props.dispatch}
+                  />
+                  <ItemTable
+                    items={this.props.variations}
+                    dispatch={this.props.dispatch}
+                  />
                 </form>
               </div>
             </div>
@@ -517,20 +498,15 @@ class NewVariationForm extends React.Component {
 
 class ItemTable extends React.Component {
   addRow() {
-    this.props.actions.addItem({
-      name: '',
-      value: {
-        amount: ''
-      }
-    });
+    this.props.dispatch(addVariationItem('', ''));
   }
 
   deleteRow(index) {
-    this.props.actions.removeItem(index);
+    this.props.dispatch(deleteVariationItem(index));
   }
 
   updateItem(index, name, value) {
-    this.props.actions.updateItem(index, {name: name, value: {amount: value === '' ? '' : parseFloat(value)}});
+    this.props.dispatch(editVariationItem(index, name, value === '' ? '' : parseFloat(value)));
   }
 
   render() {
@@ -557,8 +533,8 @@ class ItemTable extends React.Component {
               value={r.value.amount}
               key={r + i}
               addRow={this.addRow}
-              deleteRow={this.deleteRow.bind(null, i)}
-              updateItem={this.updateItem.bind(null, i)}
+              deleteRow={this.deleteRow.bind(this, i)}
+              updateItem={this.updateItem.bind(this, i)}
             />)}
             </tbody>
           </table>
@@ -569,4 +545,11 @@ class ItemTable extends React.Component {
 }
 
 
-module.exports = NewVariationForm;
+export default connect(s => {
+  return {
+    projects: s.projects,
+    margin: s.margin,
+    adminFee: s.adminFee,
+    variations: s.variations
+  };
+})(NewVariationForm);
