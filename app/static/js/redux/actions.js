@@ -22,6 +22,11 @@ export const NEW_PROJECT_ADMIN_FEE = 'NEW_PROJECT_ADMIN_FEE';
 export const LOAD_PROJECTS = 'LOAD_PROJECTS';
 export const LOAD_PROJECT = 'LOAD_PROJECT';
 
+export const EDIT_PROJECT_NAME = 'EDIT_PROJECT_NAME';
+export const EDIT_PROJECT_REF_NUMBER = 'EDIT_PROJECT_REF_NUMBER';
+export const EDIT_PROJECT_MARGIN = 'EDIT_PROJECT_MARGIN';
+export const EDIT_PROJECT_ADMIN_FEE = 'EDIT_PROJECT_ADMIN_FEE';
+
 export function addVariationItem(name, value) {
   'use strict';
   return {
@@ -191,5 +196,34 @@ export function loadProject(project) {
   return {
     type: LOAD_PROJECT,
     project
+  };
+}
+
+export function editProjectName(name) {
+  'use strict';
+  return {
+    type: EDIT_PROJECT_NAME,
+    name
+  };
+}
+export function editProjectRefNumber(refNumber) {
+  'use strict';
+  return {
+    type: EDIT_PROJECT_REF_NUMBER,
+    refNumber
+  };
+}
+export function editProjectMargin(margin) {
+  'use strict';
+  return {
+    type: EDIT_PROJECT_MARGIN,
+    margin
+  };
+}
+export function editProjectAdminFee(adminFee) {
+  'use strict';
+  return {
+    type: EDIT_PROJECT_ADMIN_FEE,
+    adminFee
   };
 }

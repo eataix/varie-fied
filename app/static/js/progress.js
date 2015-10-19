@@ -1,6 +1,11 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
-const ProjectPage = require('./ProjectPage');
+import React from 'react';
+import { render } from 'react-dom';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import { isTrue, isFalse, isNull } from './main.js';
+
+import ProjectPage from './ProjectPage';
+import app from './redux/reducers';
 
 (() => {
   'use strict';
@@ -145,60 +150,62 @@ const ProjectPage = require('./ProjectPage');
   });
 
   $.ajax({
-      url: getProjectProgressItemsUrl,
-      type: 'GET',
-      contentType: 'application/json; charset=utf-8'
-    })
-    .done(data => {
-      $('#table').bootstrapTable({
-        columns: [{
-          checkbox: true
-        }, {
-          field: 'name',
-          title: 'Name',
-          halign: 'center',
-          editable: {
-            type: 'text'
-          },
-          sortable: true
-        }, {
-          field: 'contract_value',
-          title: 'Contract Value',
-          halign: 'center',
-          editable: {
-            type: 'text'
-          },
-          align: 'right',
-          sortable: true
-        }, {
-          field: 'completed_value',
-          title: 'Completed To Date',
-          halign: 'center',
-          editable: {
-            type: 'text'
-          },
-          align: 'right',
-          sortable: true
-        }, {
-          field: 'percentage',
-          title: '%',
-          halign: 'center',
-          sortable: true,
-          formatter: 'percentageFormatter',
-          align: 'right',
-          valign: 'center',
-          width: '100px'
-        }],
-        data: data.progress_items,
-        rowStyle: 'rowStyle',
-        toolbar: '#toolbar'
-      });
+    url: getProjectProgressItemsUrl,
+    type: 'GET',
+    contentType: 'application/json; charset=utf-8'
+  }).done(data => {
+    $('#table').bootstrapTable({
+      columns: [{
+        checkbox: true
+      }, {
+        field: 'name',
+        title: 'Name',
+        halign: 'center',
+        editable: {
+          type: 'text'
+        },
+        sortable: true
+      }, {
+        field: 'contract_value',
+        title: 'Contract Value',
+        halign: 'center',
+        editable: {
+          type: 'text'
+        },
+        align: 'right',
+        sortable: true
+      }, {
+        field: 'completed_value',
+        title: 'Completed To Date',
+        halign: 'center',
+        editable: {
+          type: 'text'
+        },
+        align: 'right',
+        sortable: true
+      }, {
+        field: 'percentage',
+        title: '%',
+        halign: 'center',
+        sortable: true,
+        formatter: 'percentageFormatter',
+        align: 'right',
+        valign: 'center',
+        width: '100px'
+      }],
+      data: data.progress_items,
+      rowStyle: 'rowStyle',
+      toolbar: '#toolbar'
     });
+  });
 
-  ReactDOM.render(
-    <ProjectPage
-      progress={true}
-    />,
+  const store = createStore(app);
+  render(
+    <Provider store={store}>
+      <ProjectPage
+        progress={true}
+      />
+    </Provider>,
     document.getElementById('content')
   );
 })();

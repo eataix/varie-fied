@@ -1,20 +1,12 @@
 import Immutable from 'immutable';
+
 import {
   ADD_VARIATION_ITEM, DELETE_VARIATION_ITEM, EDIT_VARIATION_ITEM,
-
   ADD_CLIENT, DELETE_CLIENT, EDIT_CLIENT,
-
   ADD_PROGRESS_ITEM, DELETE_PROGRESS_ITEM, EDIT_PROGRESS_ITEM,
-
-  UPDATE_MARGIN_AND_ADMIN_FEE,
-  UPDATE_TIME,
-  UPDATE_SUBCONTRACTOR,
-  UPDATE_INVOICE_NUMBER,
-  UPDATE_DESCRIPTION,
-  NEW_PROJECT_NAME,
-  NEW_PROJECT_REF_NUMBER,
-  NEW_PROJECT_MARGIN,
-  NEW_PROJECT_ADMIN_FEE,
+  UPDATE_MARGIN_AND_ADMIN_FEE, UPDATE_TIME, UPDATE_SUBCONTRACTOR, UPDATE_INVOICE_NUMBER, UPDATE_DESCRIPTION,
+  NEW_PROJECT_NAME, NEW_PROJECT_REF_NUMBER, NEW_PROJECT_MARGIN, NEW_PROJECT_ADMIN_FEE,
+  EDIT_PROJECT_NAME, EDIT_PROJECT_REF_NUMBER, EDIT_PROJECT_MARGIN, EDIT_PROJECT_ADMIN_FEE,
   LOAD_PROJECTS,
   LOAD_PROJECT,
 } from './actions';
@@ -44,7 +36,11 @@ const initialState = {
   newMargin: '',
   newAdminFee: '',
   projects: [],
-  project: null
+  project: null,
+  editName: '',
+  editRefNum: '',
+  editMargin: '',
+  editAdminFee: ''
 };
 
 export default function app(state = initialState, action) {
@@ -76,7 +72,6 @@ export default function app(state = initialState, action) {
         })
       });
     case DELETE_CLIENT:
-      console.log('index ' + action.index);
       return Object.assign({}, state, {
         clients: state.clients.delete(action.index)
       });
@@ -97,7 +92,7 @@ export default function app(state = initialState, action) {
       });
     case DELETE_PROGRESS_ITEM:
       return Object.assign({}, state, {
-        progressItem: state.progressItems.delete(action.index)
+        progressItems: state.progressItems.delete(action.index)
       });
     case EDIT_PROGRESS_ITEM:
       return Object.assign({}, state, {
@@ -149,6 +144,22 @@ export default function app(state = initialState, action) {
     case LOAD_PROJECT:
       return Object.assign({}, state, {
         project: action.project
+      });
+    case EDIT_PROJECT_NAME:
+      return Object.assign({}, state, {
+        editName: action.name
+      });
+    case EDIT_PROJECT_REF_NUMBER:
+      return Object.assign({}, state, {
+        editRefNum: action.refNumber
+      });
+    case EDIT_PROJECT_MARGIN:
+      return Object.assign({}, state, {
+        editMargin: action.margin
+      });
+    case EDIT_PROJECT_ADMIN_FEE:
+      return Object.assign({}, state, {
+        editAdminFee: action.adminFee
       });
     default:
       return state;

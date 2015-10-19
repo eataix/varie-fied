@@ -1,24 +1,17 @@
-const metaData = $('#meta-data').data();
-const newProjectUrl = metaData.newProjectUrl;
-const newVariationUrl = metaData.newVariationUrl;
-const newItemUrl = metaData.newItemUrl;
-const newClientUrl = metaData.newClientUrl;
-const newProgressItemUrl = metaData.newProgressItemUrl;
-
-function isNull(element) {
+export const isNull = function(element) {
   'use strict';
   return element === null;
-}
+};
 
-function isTrue(element) {
+export const isTrue = function(element) {
   'use strict';
   return element === true;
-}
+};
 
-function isFalse(element) {
+export const isFalse = function(element) {
   'use strict';
   return element === false;
-}
+};
 
 (() => {
   'use strict';

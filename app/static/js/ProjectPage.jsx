@@ -1,49 +1,31 @@
-const React = require('react');
-const $ = require('jquery');
+import React from 'react';
+import $ from 'jquery';
+import { connect } from 'react-redux';
 
-const Menu = require('./Menu');
-const ProjectList = require('./ProjectList');
-const ProjectInfo = require('./ProjectInfo');
-const Toolbar = require('./Toolbar');
-const FluxStore = require('./flux');
+import Menu from './Menu';
+import ProjectList from './ProjectList';
+import ProjectInfo from './ProjectInfo';
+import Toolbar from './Toolbar';
 
-const EditProjectMetaForm = require('./EditProjectMetaForm');
-const NewProjectForm = require('./NewProjectForm');
-const NewVariationForm = require('./NewVariationForm');
-const NewProgressItemsForm = require('./NewProgressItemsForm');
+import EditProjectMetaForm from './EditProjectMetaForm';
+import NewProjectForm from './NewProjectForm';
+import NewVariationForm from './NewVariationForm';
+import NewProgressItemsForm from './NewProgressItemsForm';
 
-const store = FluxStore.store;
-const actions = FluxStore.actions;
-const changes = FluxStore.changes;
+import { loadProject } from './redux/actions';
 
 const metaData = $('#project-data').data();
-
-const getProjectProgressItemsUrl = metaData.getProjectProgressItemsUrl;
-const getProjectVariationsUrl = metaData.getProjectVariationsUrl;
-
 const editProjectUrl = metaData.editProjectUrl;
-const deleteProjectUrl = metaData.deleteProjectUrl;
 
 class ProjectPage extends React.Component {
   constructor() {
     super();
-    this.state = {
-      project: null
-    };
     this.loadProject = this.loadProject.bind(this);
-    this.onProjectChange = this.onProjectChange.bind(this);
   }
 
   componentDidMount() {
     this.loadProject();
     setInterval(this.loadProject, 2000);
-    store.addChangeListener(changes.PROJECT_LOADED, this.onProjectChange);
-  }
-
-  onProjectChange() {
-    this.setState({
-      project: store.getProject()
-    });
   }
 
   loadProject() {
@@ -51,37 +33,30 @@ class ProjectPage extends React.Component {
         url: editProjectUrl,
         contentType: 'application/json; charset=utf-8'
       })
-      .done((data => actions.loadProject(data)).bind(this))
+      .done((data => this.props.dispatch(loadProject(data))).bind(this))
       .fail(((xhr, status, err) => console.error(editProjectUrl, status, err.toString())).bind(this));
   }
 
   render() {
-    const list_project_url = $('#meta-data').data().projectsUrl;
     const prefix = this.props.progress ? 'Progress' : 'Variations';
     const alt_url = this.props.progress ? './variation' : './progress';
     const alt_text = this.props.progress ? 'Variations' : 'Progress';
 
     return (
       <div>
-        <Menu
-          project_url={list_project_url}
-          pollInterval={2000}
-          store={store}
-          actions={actions}
-          changes={changes}
-        />
+        <Menu pollInterval={2000}/>
         <div className="container-fluid">
           <ProjectInfo
             pollInterval={2000}
             prefix={prefix}
             alt_url={alt_url}
             alt_text={alt_text}
-            project={this.state.project}
+            project={this.props.project}
           />
           <Toolbar
             alt_text={alt_text}
             progress={this.props.progress}
-            project={this.state.project}
+            project={this.props.project}
           />
           <div id="toolbar">
             <div className="form-inline" role="form">
@@ -112,29 +87,17 @@ class ProjectPage extends React.Component {
             className="table table-condensed"
           />
         </div>
-        <NewProjectForm
-          store={store}
-          actions={actions}
-          changes={changes}
-        />
+        <NewProjectForm />
         <NewVariationForm
-          project_url={list_project_url}
           pollInterval={2000}
-          store={store}
-          actions={actions}
-          changes={changes}
         />
-        <NewProgressItemsForm
-          store={store}
-          actions={actions}
-          changes={changes}
-        />
+        <NewProgressItemsForm />
         <EditProjectMetaForm
-          project={this.state.project}
+          project={this.props.project}
         />
       </div>
     )
   }
 }
 
-module.exports = ProjectPage;
+export default connect(s=>s)(ProjectPage);

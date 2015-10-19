@@ -1,7 +1,6 @@
-const React = require('react');
-const $ = require('jquery');
+import React from 'react';
 
-class ProjectInfo extends React.Component {
+export default class ProjectInfo extends React.Component {
   render() {
     if (this.props.project === null) {
       return false;
@@ -25,4 +24,3 @@ class ProjectInfo extends React.Component {
   }
 }
 
-module.exports = ProjectInfo;

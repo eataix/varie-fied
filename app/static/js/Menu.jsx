@@ -3,6 +3,8 @@ import { loadProjects } from './redux/actions';
 import { connect } from 'react-redux';
 import { NavItem } from 'react-bootstrap';
 
+const project_url = $('#meta-data').data().projectsUrl;
+
 class HomeBar extends React.Component {
   render() {
     const active = window.location.pathname === '/';
@@ -92,17 +94,17 @@ class Menu extends React.Component {
 
   componentDidMount() {
     this.loadProjects();
-    setInterval(this.loadProjects, this.props.pollInterval);
+    setInterval(this.loadProjects, 10000);
     $('body').addClass('loaded');
   }
 
   loadProjects() {
     $.ajax({
-        url: this.props.project_url,
+        url: project_url,
         contentType: 'application/json; charset=utf-8'
       })
       .done(data=> this.props.dispatch(loadProjects(data.projects)))
-      .fail(((xhr, status, err) => console.error(this.props.project_url, status, err.toString())).bind(this));
+      .fail(((xhr, status, err) => console.error(project_url, status, err.toString())).bind(this));
   }
 
   render() {

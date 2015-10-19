@@ -29,7 +29,6 @@
     ],
     scripts: [
       'app/static/js/index.js',
-      'app/static/js/main.js',
       'app/static/js/progress.js',
       'app/static/js/project_base.js',
       'app/static/js/variation.js'

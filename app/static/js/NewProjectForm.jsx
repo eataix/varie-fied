@@ -3,10 +3,7 @@ import { connect } from 'react-redux';
 import ReactBootstrap from 'react-bootstrap';
 import { Input, Button, Modal } from 'react-bootstrap';
 import { addClient, deleteClient, editClient, newProjectName, newProjectRefNumber, newProjectMargin, newProjectAdminFee } from './redux/actions';
-
-const metaData = $('#meta-data').data();
-const newProjectUrl = metaData.newProjectUrl;
-const newClientUrl = metaData.newClientUrl;
+import { isTrue, isFalse, isNull } from './main.js';
 
 class ProjectName extends React.Component {
   constructor() {
@@ -341,6 +338,10 @@ class NewProjectForm extends React.Component {
       const $button = $('.newProjectConfirmation').find('.confirm');
       const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+
+      const metaData = $('#meta-data').data();
+      const newProjectUrl = metaData.newProjectUrl;
+      const newClientUrl = metaData.newClientUrl;
 
       console.log({
         url: newProjectUrl,

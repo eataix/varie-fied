@@ -49,6 +49,5 @@ class ProjectList extends React.Component {
 }
 
 export default connect(s=> {
-  console.log(s);
   return {projects: s.projects}
 })(ProjectList);

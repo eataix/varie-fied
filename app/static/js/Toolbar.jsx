@@ -1,6 +1,8 @@
 const React = require('react');
 
-class Toolbar extends React.Component {
+const deleteProjectUrl = $('#project-data').data().deleteProjectUrl;
+
+export default class Toolbar extends React.Component {
   handleDelete() {
     swal({
       title: 'Are you sure to delete this project?',
@@ -27,18 +29,17 @@ class Toolbar extends React.Component {
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
       $.ajax({
-          url: deleteProjectUrl,
-          type: 'DELETE',
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .done(() => {
-          swal({
-            title: 'Nice!',
-            text: `You delete: ${projectName}`,
-            type: 'success'
-          }, () => window.location.href = '/');
-        });
+        url: deleteProjectUrl,
+        type: 'DELETE',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json'
+      }).done(() => {
+        swal({
+          title: 'Nice!',
+          text: `You delete: ${projectName}`,
+          type: 'success'
+        }, () => window.location.href = '/');
+      });
     });
   }
 
@@ -147,5 +148,3 @@ class Toolbar extends React.Component {
     );
   }
 }
-
-module.exports = Toolbar;

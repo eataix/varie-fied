@@ -1,13 +1,17 @@
-const React = require('react');
-
-const ReactBootstrap = require('react-bootstrap');
-const Input = ReactBootstrap.Input;
-const Button = ReactBootstrap.Button;
-const Modal = ReactBootstrap.Modal;
+import React from 'react';
+import { connect } from 'react-redux';
+import { Input, Button, Modal } from 'react-bootstrap';
+import { addProgressItem, deleteProgressItem, editProgressItem } from './redux/actions';
+import { isTrue, isFalse, isNull } from './main.js';
 
 class ProgressItem extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
   handleChange() {
-    this.props.updateItem(this.refs.name.getDOMNode().value, this.refs.value.getDOMNode().value);
+    this.props.updateItem(this.refs.name.getValue(), this.refs.value.getValue());
   }
 
   render() {
@@ -54,47 +58,32 @@ class ProgressItem extends React.Component {
   }
 }
 
-class NewProgressItemsForm extends React.Component {
+export default class NewProgressItemsForm extends React.Component {
   constructor() {
     super();
-    this.state = {
-      list: []
-    };
-    this.onListChange = this.onListChange.bind(this);
     this.handleHideModal = this.handleHideModal.bind(this);
+    this.addRow = this.addRow.bind(this);
+    this.deleteRow = this.deleteRow.bind(this);
+    this.updateItem = this.updateItem.bind(this);
   }
 
   addRow() {
-    this.props.actions.addItem({
+    this.props.dispatch(addProgressItem({
       name: '',
-      value: {
-        amount: ''
-      }
-    })
+      value: ''
+    }));
   }
 
   deleteRow(index) {
-    this.props.actions.removeItem(index);
+    this.props.dispatch(deleteProgressItem(index));
   }
 
   updateItem(index, name, value) {
-    this.props.actions.updateItem(index, {name: name, value: {amount: value === '' ? '' : parseFloat(value)}});
-  }
-
-  componentDidMount() {
-    this.props.store.addChangeListener(this.props.changes.ITEMS_CHANGE, this.onListChange);
-  }
-
-  componentWillUnmount() {
-    this.props.store.removeChangeListener(this.props.changes.ITEMS_CHANGE, this.onListChange);
-  }
-
-  onListChange() {
-    this.setState({list: this.props.store.getList()});
+    this.props.dispatch(editProgressItem(index, name, value === '' ? '' : parseFloat(value)));
   }
 
   handleHideModal() {
-    $(this.refs.modal.getDOMNode()).modal('hide');
+    $(this.refs.modal).modal('hide');
   }
 
   render() {
@@ -115,8 +104,10 @@ class NewProgressItemsForm extends React.Component {
             </Modal.Header>
             <div className="modal-body">
               <div className="container-fluid">
-                <form className="form-horizontal"
-                      ref="form">
+                <form
+                  className="form-horizontal"
+                  ref="form"
+                >
                   <div className="form-group">
                     <table className="table table-bordered">
                       <thead>
@@ -127,14 +118,14 @@ class NewProgressItemsForm extends React.Component {
                       </tr>
                       </thead>
                       <tbody>
-                      {this.state.list.map((r, index) =>
+                      {this.props.progressItems.map((r, index) =>
                       <ProgressItem
                         key={r+index}
-                        addRow={this.addRow}
-                        deleteRow={this.deleteRow.bind(null, index)}
+                        addRow={this.addRow.bind(this)}
+                        deleteRow={this.deleteRow.bind(this, index)}
                         name={r.name}
-                        value={r.value.amount}
-                        updateItem={this.updateItem.bind(null, index)}
+                        value={r.value}
+                        updateItem={this.updateItem.bind(this, index)}
                       />)}
                       </tbody>
                     </table>
@@ -163,7 +154,7 @@ class NewProgressItemsForm extends React.Component {
   }
 
   submit() {
-    const instance = $(this.refs.form.getDOMNode()).parsley();
+    const instance = $(this.refs.form).parsley();
     instance.validate();
     if (!instance.isValid()) {
       return;
@@ -190,10 +181,12 @@ class NewProgressItemsForm extends React.Component {
         return;
       }
 
-      const progressItems = this.props.store.getList();
+      const progressItems = this.props.progressItems;
       console.log(progressItems);
 
       const statusArray = new Array(progressItems.length).fill(null);
+
+      const newProgressItemUrl = $('#meta-data').data().newProgressItemUrl;
 
       (function createItem(offset) {
         if (offset >= progressItems.length) {
@@ -243,4 +236,8 @@ class NewProgressItemsForm extends React.Component {
   }
 }
 
-module.exports = NewProgressItemsForm;
+export default connect(s=> {
+  return {
+    progressItems: s.progressItems
+  };
+})(NewProgressItemsForm);

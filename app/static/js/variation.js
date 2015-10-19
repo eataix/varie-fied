@@ -1,17 +1,22 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
-const ProjectPage = require('./ProjectPage');
+import React from 'react';
+import { render } from 'react-dom';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 
-function pendingClick(cb) {
+import { isTrue, isFalse, isNull } from './main.js';
+import ProjectPage from './ProjectPage';
+import app from './redux/reducers';
+
+const pendingClick = function(cb) {
   'use strict';
   const $tr = $(cb).parents('tr');
   $tr.attr('class', 'info');
   $tr.find('.checkbox-approved').prop('checked', false);
   $tr.find('.checkbox-declined').prop('checked', false);
   $('#btn-save').prop('disabled', false);
-}
+};
 
-function pendingFormatter(value) {
+const pendingFormatter = function(value) {
   'use strict';
   const mid = value ? 'checked=""' : '';
   return [
@@ -19,18 +24,18 @@ function pendingFormatter(value) {
     `  <input class="checkbox checkbox-pending" type="checkbox" ${mid} onclick="pendingClick(this);">`,
     '</label>'
   ].join('\n');
-}
+};
 
-function approvedClick(cb) {
+const approvedClick = function(cb) {
   'use strict';
   const $tr = $(cb).parents('tr');
   $tr.attr('class', 'success');
   $tr.find('.checkbox-pending').prop('checked', false);
   $tr.find('.checkbox-declined').prop('checked', false);
   $('#btn-save').prop('disabled', false);
-}
+};
 
-function approvedFormatter(value) {
+const approvedFormatter = function(value) {
   'use strict';
   const mid = value ? 'checked=""' : '';
   return [
@@ -38,18 +43,18 @@ function approvedFormatter(value) {
     `<input class="checkbox checkbox-approved" type="checkbox" ${mid} onclick="approvedClick(this);">`,
     '</label>'
   ].join('\n');
-}
+};
 
-function declinedClick(cb) {
+const declinedClick = function(cb) {
   'use strict';
   const $tr = $(cb).parents('tr');
   $tr.attr('class', 'danger');
   $tr.find('.checkbox-pending').prop('checked', false);
   $tr.find('.checkbox-approved').prop('checked', false);
   $('#btn-save').prop('disabled', false);
-}
+};
 
-function declinedFormatter(value) {
+const declinedFormatter = function(value) {
   'use strict';
   const mid = value ? 'checked=""' : '';
   return [
@@ -57,14 +62,14 @@ function declinedFormatter(value) {
     `  <input class="checkbox checkbox-declined" type="checkbox" ${mid} onclick="declinedClick(this);">`,
     '</label>'
   ].join('\n');
-}
+};
 
-function completeClick() {
+const completeClick = function() {
   'use strict';
   $('#btn-save').prop('disabled', false);
-}
+};
 
-function completeFormatter(value) {
+const completeFormatter = function(value) {
   'use strict';
   const mid = value ? 'checked=""' : '';
   return [
@@ -72,9 +77,9 @@ function completeFormatter(value) {
     `<input class="checkbox checkbox-complete" type="checkbox" ${mid} onclick="completeClick();">`,
     '</label>'
   ].join('\n');
-}
+};
 
-function rowStyle(row) {
+const rowStyle = function(row) {
   'use strict';
   if (row.pending) {
     return {
@@ -93,30 +98,30 @@ function rowStyle(row) {
       classes: 'active'
     };
   }
-}
+};
 
-function timeFormatter(value) {
+const timeFormatter = function(value) {
   'use strict';
   return `<p>${moment(value).toDate()}</p>`;
-}
+};
 
-function moneyFormatter(value) {
+const moneyFormatter = function(value) {
   'use strict';
   return accounting.formatMoney(value);
-}
+};
 
-function validate_required(v) {
+const validate_required = function(v) {
   'use strict';
   if (v === null || v === '') {
     return 'Cannot be empty!';
   }
-}
+};
 
-function detailFormatter(index, row) {
+const detailFormatter = function(index, row) {
   'use strict';
 
   $.ajax({
-      url: `/api/v1.0/variations/${row.vid}\/items/`,
+      url: `/api/v1.0/variations/${row.vid}/items/`,
       type: 'GET',
       contentType: 'application/json; charset=utf-8',
       dataType: 'json'
@@ -181,14 +186,13 @@ function detailFormatter(index, row) {
     });
 
   return '<strong><i class="fa fa-spinner fa-spin"></i> Loading...</strong>';
-}
+};
 
 (() => {
   'use strict';
 
   const metaData = $('#project-data').data();
   const getProjectVariationsUrl = metaData.getProjectVariationsUrl;
-  const projectActive = metaData.projectActive === 'True';
 
   $.ajax({
       url: getProjectVariationsUrl,
@@ -460,11 +464,13 @@ function detailFormatter(index, row) {
     });
   });
 
-  ReactDOM.render(
-    <ProjectPage
-      progress={false}
-      active={projectActive}
-    />,
+  const store = createStore(app);
+  render(
+    <Provider store={store}>
+      <ProjectPage
+        progress={false}
+      />
+    </Provider>,
     document.getElementById('content')
   );
 })();

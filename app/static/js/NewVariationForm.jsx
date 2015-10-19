@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
 import { updateTime, updateSubcontractor, updateInvoiceNumber, updateMarginAndAdminFee, updateDescription, addVariationItem, deleteVariationItem, editVariationItem } from './redux/actions'
+import { isTrue, isFalse, isNull } from './main.js';
 
 class TimePicker extends React.Component {
   componentDidMount() {
@@ -153,7 +154,6 @@ class Margin extends React.Component {
 
 class AdminFee extends React.Component {
   render() {
-    console.log('value: ' + this.props.value);
     const value = this.props.value;
     if (value === null) {
       return false;
@@ -324,6 +324,8 @@ class NewVariationForm extends React.Component {
       const $button = $('.newVariationConfirmation').find('.confirm');
       const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+
+      const newVariationUrl = $('#meta-data').data().newVariationUrl;
 
       console.log({
         url: newVariationUrl,

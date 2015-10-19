@@ -1,8 +1,116 @@
-const React = require('react');
-const ReactBootstrap = require('react-bootstrap');
-const Button = ReactBootstrap.Button;
-const Input = ReactBootstrap.Input;
-const Modal = ReactBootstrap.Modal;
+import React from 'react';
+import { connect } from 'react-redux';
+import { Button, Input, Modal } from 'react-bootstrap';
+import { editProjectName, editProjectRefNumber, editProjectMargin, editProjectAdminFee } from './redux/actions';
+
+class ProjectName extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange() {
+    this.props.dispatch(editProjectName(event.target.value));
+  }
+
+  render() {
+    return (
+      <Input
+        ref="name"
+        type="text"
+        label="Project Name"
+        labelClassName="col-sm-3"
+        wrapperClassName="col-sm-9"
+        placeholder="Name"
+        required
+        value={this.props.name}
+        onChange={this.handleChange}
+      />
+    );
+  }
+}
+
+class ReferenceNumber extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange() {
+    this.props.dispatch(editProjectName(event.target.value));
+  }
+
+  render() {
+    return (
+      <Input
+        ref="refNo"
+        type="text"
+        label="Reference Number"
+        labelClassName="col-sm-3"
+        wrapperClassName="col-sm-9"
+        placeholder="Reference Number"
+        required
+        value={this.props.reference_number}
+        onChange={this.handleChange}
+      />
+    );
+  }
+}
+
+class Margin extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange() {
+    this.props.dispatch(editProjectName(event.target.value));
+  }
+
+  render() {
+    return (
+      <Input
+        ref="margin"
+        type="text"
+        label="OH/Profit"
+        labelClassName="col-sm-3"
+        wrapperClassName="col-sm-9"
+        placeholder=""
+        required
+        value={this.props.margin}
+        data-parsley-type="number"
+        onChange={this.handleChange}
+      />
+    );
+  }
+}
+
+class AdminFee extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange() {
+    this.props.dispatch(editProjectName(event.target.value));
+  }
+
+  render() {
+    return (
+      <Input
+        ref="adminFee"
+        type="text"
+        label="Fixed Administration Fee"
+        labelClassName="col-sm-3"
+        wrapperClassName="col-sm-9"
+        placeholder="(optional)"
+        value={this.props.admin_fee}
+        data-parsley-type="number"
+        onChange={this.handleChange}
+      />
+    );
+  }
+}
 
 class EditProjectMetaForm extends React.Component {
   constructor() {
@@ -32,47 +140,25 @@ class EditProjectMetaForm extends React.Component {
             </Modal.Header>
             <div className="modal-body">
               <div className="container-fluid">
-                <form className="form-horizontal" ref="form">
-                  <Input
-                    ref="name"
-                    type="text"
-                    label="Project Name"
-                    labelClassName="col-sm-3"
-                    wrapperClassName="col-sm-9"
-                    placeholder="Name"
-                    required
-                    defaultValue={this.props.project.name}
+                <form
+                  className="form-horizontal"
+                  ref="form"
+                >
+                  <ProjectName
+                    dispatch={this.props.dispatch}
+                    name={this.props.name}
                   />
-                  <Input
-                    ref="refNo"
-                    type="text"
-                    label="Reference Number"
-                    labelClassName="col-sm-3"
-                    wrapperClassName="col-sm-9"
-                    placeholder="Reference Number"
-                    required
-                    defaultValue={this.props.project.reference_number}
+                  <ReferenceNumber
+                    dispatch={this.props.dispatch}
+                    reference_number={this.props.reference_number}
                   />
-                  <Input
-                    ref="margin"
-                    type="text"
-                    label="OH/Profit"
-                    labelClassName="col-sm-3"
-                    wrapperClassName="col-sm-9"
-                    placeholder=""
-                    required
-                    defaultValue={this.props.project.margin}
-                    data-parsley-type="number"
+                  <Margin
+                    dispatch={this.props.dispatch}
+                    margin={this.props.margin}
                   />
-                  <Input
-                    ref="adminFee"
-                    type="text"
-                    label="Fixed Administration Fee"
-                    labelClassName="col-sm-3"
-                    wrapperClassName="col-sm-9"
-                    placeholder="(optional)"
-                    defaultValue={this.props.project.admin_fee}
-                    data-parsley-type="number"
+                  <AdminFee
+                    dispatch={this.props.dispatch}
+                    admin_fee={this.props.admin_fee}
                   />
                 </form>
               </div>
@@ -96,11 +182,11 @@ class EditProjectMetaForm extends React.Component {
   }
 
   handleHideModal() {
-    $(this.refs.modal.getDOMNode()).modal('hide');
+    $(this.refs.modal).modal('hide');
   }
 
   onClick() {
-    const instance = $(this.refs.form.getDOMNode()).parsley();
+    const instance = $(this.refs.form).parsley();
     instance.validate();
     if (!instance.isValid()) {
       return;
@@ -138,6 +224,8 @@ class EditProjectMetaForm extends React.Component {
         new_admin_fee = null;
       }
 
+      const editProjectUrl = $('#project-data').data().editProjectUrl;
+
       console.log({
         url: editProjectUrl,
         type: 'PUT',
@@ -168,10 +256,22 @@ class EditProjectMetaForm extends React.Component {
           text: 'Save changes',
           type: 'success'
         }, () =>
-          $(this.refs.modal.getDOMNode()).modal('hide'))
+          $(this.refs.modal).modal('hide'))
       );
     });
   }
 }
 
-module.exports = EditProjectMetaForm;
+const selector = function(state) {
+  if (state.project === null) {
+    return {};
+  }
+  return {
+    project: state.project,
+    name: state.editName !== '' ? state.editName : state.project.name,
+    reference_number: state.editRefNum !== '' ? state.editRefNum : state.project.reference_number,
+    margin: state.editMargin !== '' ? state.editMargin : state.project.margin,
+    admin_fee: state.editAdminFee !== '' ? state.editAdminFee : state.project.admin_fee
+  };
+};
+export default connect(selector)(EditProjectMetaForm);
