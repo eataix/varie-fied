@@ -14,8 +14,10 @@ import app from './redux/reducers';
   const store = createStore(app);
   console.log(store.getState());
 
-  let unsubscribe = store.subscribe(() =>
-    console.log(store.getState())
+  let unsubscribe = store.subscribe(() => {
+      console.log('changed:');
+      console.log(store.getState());
+    }
   );
 
   render(

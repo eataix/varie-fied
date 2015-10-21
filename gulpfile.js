@@ -8,6 +8,7 @@
   const sourcemaps = require('gulp-sourcemaps');
   const uglify = require('gulp-uglify');
   const browserify = require('gulp-browserify');
+  const plumber = require('gulp-plumber');
 
   const paths = {
     external_scripts: [
@@ -60,6 +61,7 @@
 
   gulp.task('script', () =>
     gulp.src(paths.scripts)
+      .pipe(plumber())
       .pipe(babel({stage: 0}))
       //.pipe(sourcemaps.init())
       .pipe(browserify({

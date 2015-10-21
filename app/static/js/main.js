@@ -1,21 +1,18 @@
+'use strict';
+
 export const isNull = function(element) {
-  'use strict';
   return element === null;
 };
 
 export const isTrue = function(element) {
-  'use strict';
   return element === true;
 };
 
 export const isFalse = function(element) {
-  'use strict';
   return element === false;
 };
 
 (() => {
-  'use strict';
-
   $(document).on('ready', () => {
     $.material.init();
     $('body').addClass('loaded');

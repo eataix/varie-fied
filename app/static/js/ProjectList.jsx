@@ -1,3 +1,5 @@
+'use strict';
+
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -10,32 +12,51 @@ class ProjectItem extends React.Component {
     )
   }
 }
+ProjectItem.propTypes = {
+  id: React.PropTypes.number.isRequired,
+  name: React.PropTypes.string.isRequired
+};
 
 class ActiveProjectList extends React.Component {
   render() {
     return (
       <div>
         <ul>
-          { this.props.projects.filter(p => p.active) .map((p, i) => <ProjectItem key={i} id={p.id} name={p.name}/>) }
+          { this.props.projects.filter(p => p.active).map((p, i) => <ProjectItem key={i} id={p.id} name={p.name}/>) }
         </ul>
       </div>
     )
   }
 }
+ActiveProjectList.propTypes = {
+  projects: React.PropTypes.array.isRequired
+};
 
 class InactiveProjectList extends React.Component {
   render() {
     return (
       <div>
         <ul>
-          { this.props.projects.filter(p => !p.active) .map((p, i) => <ProjectItem key={i} id={p.id} name={p.name}/>) }
+          { this.props.projects.filter(p => !p.active).map((p, i) => <ProjectItem key={i} id={p.id} name={p.name}/>) }
         </ul>
       </div>
     )
   }
 }
+InactiveProjectList.propTypes = {
+  projects: React.PropTypes.array.isRequired
+};
 
-class ProjectList extends React.Component {
+const mapStateToProps = (state) => {
+  return {projects: state.projects};
+};
+
+const mapDispatchToProps = () => {
+  return {};
+};
+
+@connect(mapStateToProps, mapDispatchToProps)
+export default class ProjectList extends React.Component {
   render() {
     return (
       <div>
@@ -48,6 +69,3 @@ class ProjectList extends React.Component {
   }
 }
 
-export default connect(s=> {
-  return {projects: s.projects}
-})(ProjectList);

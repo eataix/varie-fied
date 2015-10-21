@@ -91,7 +91,20 @@ class OldProjectList extends React.Component {
   }
 }
 
-class Menu extends React.Component {
+const mapStateToProps = (state) => {
+  return {
+    projects: state.projects
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loadProjects: (projects) => dispatch(loadProjects(projects))
+  };
+};
+
+@connect(mapStateToProps, mapDispatchToProps)
+export default class Menu extends React.Component {
   constructor() {
     super();
     this.loadProjects = this.loadProjects.bind(this);
@@ -105,13 +118,11 @@ class Menu extends React.Component {
 
   loadProjects() {
     $.ajax({
-      url: project_url,
-      contentType: 'application/json; charset=utf-8'
-    }).done(function(data) {
-      this.props.loadProjects(data.projects);
-    }.bind(this)).fail(function(xhr, status, err) {
-      console.error(project_url, status, err.toString());
-    }.bind(this));
+        url: project_url,
+        contentType: 'application/json; charset=utf-8'
+      })
+      .done(((data) => this.props.loadProjects(data.projects)).bind(this))
+      .fail(((xhr, status, err) => console.error(project_url, status, err.toString())).bind(this));
   }
 
   render() {
@@ -163,15 +174,3 @@ class Menu extends React.Component {
   }
 }
 
-export default connect(
-  (state) => {
-    return {
-      projects: state.projects
-    };
-  },
-  (dispatch) => {
-    return {
-      loadProjects: (projects) => dispatch(loadProjects(projects))
-    };
-  }
-)(Menu);

@@ -135,10 +135,39 @@ AdminFee.propTypes = {
   admin_fee: React.PropTypes.number.isRequired
 };
 
-class EditProjectMetaForm extends React.Component {
+const mapStateToProps = (state) => {
+  return {
+    name: state.editName,
+    reference_number: state.editRefNum,
+    margin: state.editMargin,
+    admin_fee: state.editAdminFee
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    editProjectName: (value) => dispatch(editProjectName(value)),
+    editProjectRefNumber: (value) => dispatch(editProjectRefNumber(value)),
+    editProjectMargin: (value) => {
+      if (_.isString(value)) {
+        value = parseFloat(value);
+      }
+      dispatch(editProjectMargin(value));
+    },
+    editProjectAdminFee: (value) => {
+      if (_.isString(value)) {
+        value = parseFloat(value);
+      }
+      dispatch(editProjectAdminFee(value));
+    }
+  };
+};
+
+@connect(mapStateToProps, mapDispatchToProps)
+export default class EditProjectMetaForm extends React.Component {
   constructor() {
     super();
-    this.onClick = this.onClick.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     this.handleHideModal = this.handleHideModal.bind(this);
   }
 
@@ -191,7 +220,7 @@ class EditProjectMetaForm extends React.Component {
               </Button>
               <Button
                 className="btn btn-info btn-raised"
-                onClick={this.onClick}>
+                onClick={this.handleClick}>
                 Save
               </Button>
             </Modal.Footer>
@@ -205,7 +234,7 @@ class EditProjectMetaForm extends React.Component {
     $(this.refs.modal).modal('hide');
   }
 
-  onClick() {
+  handleClick() {
     const instance = $(this.refs.form).parsley();
     instance.validate();
     if (!instance.isValid()) {
@@ -270,34 +299,17 @@ class EditProjectMetaForm extends React.Component {
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
-      }).done(() =>
+      }).done(() => {
         swal({
           title: 'Nice!',
           text: 'Save changes',
           type: 'success'
-        }, () =>
-          $(this.refs.modal).modal('hide'))
-      );
+        }, () => {
+          this.handleHideModal();
+        });
+      });
     });
   }
 }
 
-const selector = function(state) {
-  return {
-    name: state.editName,
-    reference_number: state.editRefNum,
-    margin: state.editMargin,
-    admin_fee: state.editAdminFee
-  };
-};
 
-const selectorDispatcher = function(dispatch) {
-  return {
-    editProjectName: (value) => dispatch(editProjectName(value)),
-    editProjectRefNumber: (value) => dispatch(editProjectRefNumber(value)),
-    editProjectMargin: (value) => dispatch(editProjectMargin(value)),
-    editProjectAdminFee: (value) => dispatch(editProjectAdminFee(value))
-  };
-};
-
-export default connect(selector, selectorDispatcher)(EditProjectMetaForm);

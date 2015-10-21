@@ -58,29 +58,26 @@ class ProgressItem extends React.Component {
   }
 }
 
+const mapStateToProps = (state)=> {
+  return {
+    progressItems: state.progressItems
+  };
+};
+const mapDispatchToProps = (dispatch)=> {
+  return {
+    addRow: ()=> dispatch(addProgressItem('', '')),
+    deleteRow: (index)=> dispatch(deleteProgressItem(index)),
+    updateItem: (index, name, value)=> dispatch(editProgressItem(index, name, value === '' ? '' : parseFloat(value)))
+  }
+};
+
+@connect(mapStateToProps, mapDispatchToProps)
 export default class NewProgressItemsForm extends React.Component {
   constructor() {
     super();
     this.handleHideModal = this.handleHideModal.bind(this);
-    this.addRow = this.addRow.bind(this);
-    this.deleteRow = this.deleteRow.bind(this);
-    this.updateItem = this.updateItem.bind(this);
   }
 
-  addRow() {
-    this.props.dispatch(addProgressItem({
-      name: '',
-      value: ''
-    }));
-  }
-
-  deleteRow(index) {
-    this.props.dispatch(deleteProgressItem(index));
-  }
-
-  updateItem(index, name, value) {
-    this.props.dispatch(editProgressItem(index, name, value === '' ? '' : parseFloat(value)));
-  }
 
   handleHideModal() {
     $(this.refs.modal).modal('hide');
@@ -121,11 +118,11 @@ export default class NewProgressItemsForm extends React.Component {
                       {this.props.progressItems.map((r, index) =>
                       <ProgressItem
                         key={r+index}
-                        addRow={this.addRow.bind(this)}
-                        deleteRow={this.deleteRow.bind(this, index)}
+                        addRow={this.props.addRow}
+                        deleteRow={this.props.deleteRow.bind(null, index)}
                         name={r.name}
                         value={r.value}
-                        updateItem={this.updateItem.bind(this, index)}
+                        updateItem={this.props.updateItem.bind(null, index)}
                       />)}
                       </tbody>
                     </table>
@@ -236,8 +233,3 @@ export default class NewProgressItemsForm extends React.Component {
   }
 }
 
-export default connect(s=> {
-  return {
-    progressItems: s.progressItems
-  };
-})(NewProgressItemsForm);

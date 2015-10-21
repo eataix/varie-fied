@@ -1,16 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
-import { updateTime, updateSubcontractor, updateInvoiceNumber, updateMarginAndAdminFee, updateDescription, addVariationItem, deleteVariationItem, editVariationItem } from './redux/actions'
+import { updateTime, updateSubcontractor, updateInvoiceNumber, updateMarginAndAdminFee, updateDescription, addVariationItem, deleteVariationItem, editVariationItem } from './redux/actions';
 import { isTrue, isFalse, isNull } from './main.js';
 
 class TimePicker extends React.Component {
   componentDidMount() {
-    $(this.refs.picker).datetimepicker({
-      showTodayButton: true
-    }).on('dp.change', function(event) {
-      this.props.cb(event.target.value);
-    }.bind(this));
+    $(this.refs.picker)
+      .datetimepicker({showTodayButton: true})
+      .on('dp.change', ((e) => this.props.cb(e.date.utc().format())).bind(this));
   }
 
   render() {
@@ -19,11 +17,14 @@ class TimePicker extends React.Component {
         <label
           htmlFor="inputTime"
           className="col-sm-2 control-label"
-        >Time*</label>
+        >
+          Time*
+        </label>
         <div className="col-sm-10">
           <div
             className="input-group date"
-            ref="picker">
+            ref="picker"
+          >
             <input
               type="text"
               className="form-control"
@@ -38,6 +39,9 @@ class TimePicker extends React.Component {
     );
   }
 }
+TimePicker.propTypes = {
+  cb: React.PropTypes.func.isRequired
+};
 
 class Subcontractor extends React.Component {
   constructor() {
@@ -46,22 +50,28 @@ class Subcontractor extends React.Component {
   }
 
   handleChange() {
-    this.props.cb(event.target.value);
+    this.props.cb(this.refs.input.getValue());
   }
 
   render() {
     return (
       <Input
+        ref="input"
         type="text"
         label="Subcontractor*"
         labelClassName="col-sm-2"
         wrapperClassName="col-sm-10"
         required
         onChange={this.handleChange}
+        value={this.props.subcontractor}
       />
     );
   }
 }
+Subcontractor.propTypes = {
+  cb: React.PropTypes.func.isRequired,
+  subcontractor: React.PropTypes.string.isRequired
+};
 
 class InvoiceNo extends React.Component {
   constructor() {
@@ -70,27 +80,33 @@ class InvoiceNo extends React.Component {
   }
 
   handleChange() {
-    this.props.cb(event.target.value);
+    this.props.cb(this.refs.input.getValue());
   }
 
   render() {
     return (
       <Input
+        ref="input"
         type="text"
         label="Invoice Number"
         labelClassName="col-sm-2"
         wrapperClassName="col-sm-10"
         placeholder="Optional"
         onChange={this.handleChange}
+        value={this.props.invoiceNo}
       />
     );
   }
 }
+InvoiceNo.propTypes = {
+  cb: React.PropTypes.func.isRequired,
+  invoiceNo: React.PropTypes.string.isRequired
+};
 
 class ValueOfWork extends React.Component {
   render() {
     let value = 0.0;
-    this.props.items.forEach((item) => value += item.value.amount);
+    this.props.items.forEach((item) => value += item.value);
     return (
       <Input
         type="text"
@@ -104,6 +120,9 @@ class ValueOfWork extends React.Component {
     )
   }
 }
+ValueOfWork.propTypes = {
+  items: React.PropTypes.object.isRequired
+};
 
 class Project extends React.Component {
   constructor() {
@@ -113,7 +132,7 @@ class Project extends React.Component {
 
   handleChange(event) {
     const p = this.props.projects.find(e => e.id.toString() === event.target.value);
-    this.props.updateMarginAndAdminFee(p.id, p.margin, p.admin_fee);
+    this.props.cb(p.id, p.margin, p.admin_fee);
   }
 
   render() {
@@ -134,6 +153,10 @@ class Project extends React.Component {
     );
   }
 }
+Project.propTypes = {
+  projects: React.PropTypes.array.isRequired,
+  cb: React.PropTypes.func.isRequired
+};
 
 class Margin extends React.Component {
   render() {
@@ -151,11 +174,14 @@ class Margin extends React.Component {
     );
   }
 }
+Margin.propTypes = {
+  value: React.PropTypes.number.isRequired
+};
 
 class AdminFee extends React.Component {
   render() {
     const value = this.props.value;
-    if (value === null) {
+    if (value === '') {
       return false;
     }
     return (
@@ -171,12 +197,18 @@ class AdminFee extends React.Component {
     );
   }
 }
+AdminFee.propTypes = {
+  value: React.PropTypes.oneOfType([
+    React.PropTypes.number.isRequired,
+    React.PropTypes.string.isRequired
+  ])
+};
 
 class Subtotal extends React.Component {
   render() {
     let valueOfWork = 0.0;
     this.props.items.forEach((item) => {
-      valueOfWork += item.value.amount;
+      valueOfWork += item.value;
     });
     const subtotal = valueOfWork * (1.0 + this.props.margin) + (this.props.adminFee === null ? 0 : this.props.adminFee);
     return (
@@ -256,7 +288,7 @@ class Description extends React.Component {
   }
 
   handleChange() {
-    this.props.cb(event.target.value);
+    this.props.cb(this.refs.input.getValue());
   }
 
   render() {
@@ -265,6 +297,7 @@ class Description extends React.Component {
     }
     return (
       <Input
+        ref="input"
         type="textarea"
         label="Description"
         labelClassName="col-sm-2"
@@ -276,7 +309,98 @@ class Description extends React.Component {
   }
 }
 
-class NewVariationForm extends React.Component {
+class ItemTable extends React.Component {
+  render() {
+    return (
+      <div className="form-group">
+        <label htmlFor="inputDescription"
+               className="col-sm-2 control-label"
+        >
+          Items*
+        </label>
+        <div className="col-sm-10">
+          <table className="table table-bordered">
+            <thead>
+            <tr>
+              <th style={{textAlign: 'center'}}>Name</th>
+              <th style={{textAlign: 'center'}}>Amount</th>
+              <th style={{textAlign: 'center'}}>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {this.props.items.map((r, i) =>
+            <VariationItem
+              name={r.name}
+              value={r.value}
+              key={r + i}
+              addRow={this.props.addVariationItem}
+              deleteRow={this.props.deleteVariationItem.bind(null, i)}
+              updateItem={this.props.editVariationItem.bind(null, i)}
+            />)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  console.log({
+    id: state.id,
+    projects: state.projects,
+    margin: state.margin,
+    adminFee: state.adminFee,
+    time: state.time,
+    subcontractor: state.subcontractor,
+    invoiceNo: state.invoiceNumber,
+    description: state.description,
+    variations: state.variations
+  });
+  return {
+    id: state.id,
+    projects: state.projects,
+    margin: state.margin,
+    adminFee: state.adminFee,
+    time: state.time,
+    subcontractor: state.subcontractor,
+    invoiceNo: state.invoiceNumber,
+    description: state.description,
+    variations: state.variations
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateTime: (time) => {
+      dispatch(updateTime(time));
+    },
+    updateSubcontractor: (value) => {
+      dispatch(updateSubcontractor(value));
+    },
+    updateInvoiceNumber: (value) => {
+      dispatch(updateInvoiceNumber(value));
+    },
+    updateMarginAndAdminFee: (id, margin, admin_fee) => {
+      dispatch(updateMarginAndAdminFee(id, parseFloat(margin), admin_fee === null ? '' : parseFloat(admin_fee)));
+    },
+    updateDescription: (value) => {
+      dispatch(updateDescription(value));
+    },
+    addVariationItem: () => {
+      dispatch(addVariationItem('', ''));
+    },
+    deleteVariationItem: (index) => {
+      dispatch(deleteVariationItem(index));
+    },
+    editVariationItem: (index, name, value) => {
+      dispatch(editVariationItem(index, name, value === '' ? '' : parseFloat(value)));
+    }
+  };
+};
+
+@connect(mapStateToProps, mapDispatchToProps)
+export default class NewVariationForm extends React.Component {
   constructor() {
     super();
     this.handleHideModal = this.handleHideModal.bind(this);
@@ -284,26 +408,26 @@ class NewVariationForm extends React.Component {
   }
 
   handleClick() {
-    const instance = $(this.refs.form.getDOMNode()).parsley();
+    const instance = $(this.refs.form).parsley();
     instance.validate();
     if (!instance.isValid()) {
       return;
     }
 
-    const project_id = this.props.store.getId();
-    const timeUTC = this.props.store.getTime();
-    const subcontractor = this.props.store.getSubcontractor();
-    const invoice_no = this.props.store.getInvoiceNumber();
-    const variationItems = this.props.store.getList();
+    const project_id = this.props.id;
+    const timeUTC = this.props.time;
+    const subcontractor = this.props.subcontractor;
+    const invoice_no = this.props.invoiceNo;
+    const variationItems = this.props.variations;
     let input_amount = 0.0;
     variationItems.forEach(function(item) {
-      input_amount += item.value.amount;
+      input_amount += item.value;
     });
     let input_description = '';
     if (variationItems.length === 1) {
       input_description = variationItems[0].name;
     } else {
-      input_description = this.props.store.getDescription();
+      input_description = this.props.description;
     }
 
     swal({
@@ -380,7 +504,7 @@ class NewVariationForm extends React.Component {
             }
             const item = variationItems[offset];
             const desc = item.name;
-            const amount = item.value.amount;
+            const amount = item.value;
 
             $.ajax({
                 url: newItemUrl,
@@ -422,7 +546,7 @@ class NewVariationForm extends React.Component {
   }
 
   handleHideModal() {
-    $(this.refs.modal.getDOMNode()).modal('hide');
+    $(this.refs.modal).modal('hide');
   }
 
   render() {
@@ -446,15 +570,17 @@ class NewVariationForm extends React.Component {
                 <form className="form-horizontal" data-parsley-validate ref="form">
                   <Project
                     projects={this.props.projects}
-                    updateMarginAndAdminFee={this.props.updateMarginAndAdminFee}
+                    cb={this.props.updateMarginAndAdminFee}
                   />
                   <TimePicker
                     cb={this.props.updateTime}
                   />
                   <Subcontractor
+                    subcontractor={this.props.subcontractor}
                     cb={this.props.updateSubcontractor}
                   />
                   <InvoiceNo
+                    invoiceNo={this.props.invoiceNo}
                     cb={this.props.updateInvoiceNumber}
                   />
                   <ValueOfWork
@@ -506,61 +632,5 @@ class NewVariationForm extends React.Component {
   }
 }
 
-class ItemTable extends React.Component {
-  render() {
-    return (
-      <div className="form-group">
-        <label htmlFor="inputDescription"
-               className="col-sm-2 control-label"
-        >
-          Items*
-        </label>
-        <div className="col-sm-10">
-          <table className="table table-bordered">
-            <thead>
-            <tr>
-              <th style={{textAlign: 'center'}}>Name</th>
-              <th style={{textAlign: 'center'}}>Amount</th>
-              <th style={{textAlign: 'center'}}>Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            {this.props.items.map((r, i) =>
-            <VariationItem
-              name={r.name}
-              value={r.value.amount}
-              key={r + i}
-              addRow={this.props.addVariationItem}
-              deleteRow={this.props.deleteVariationItem.bind(null, i)}
-              updateItem={this.props.editVariationItem.bind(null, i)}
-            />)}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  }
-}
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    updateTime: (time) => dispatch(updateTime(time)),
-    updateSubcontractor: (value) => dispatch(updateSubcontractor(value)),
-    updateInvoiceNumber: (value) => dispatch(updateInvoiceNumber(value)),
-    updateMarginAndAdminFee: (id, margin, admin_fee) => dispatch(updateMarginAndAdminFee(id, margin, admin_fee)),
-    updateDescription: (value)=> dispatch(updateDescription(value)),
-    addVariationItem: ()=> dispatch(addVariationItem('', '')),
-    deleteVariationItem: (index) => dispatch(deleteVariationItem(index)),
-    editVariationItem: (index, name, value)=> dispatch(editVariationItem(index, name, value === '' ? '' : parseFloat(value)))
-  };
-};
 
-export default connect(s => {
-    return {
-      projects: s.projects,
-      margin: s.margin,
-      adminFee: s.adminFee,
-      variations: s.variations
-    };
-  },
-  mapDispatchToProps)(NewVariationForm);

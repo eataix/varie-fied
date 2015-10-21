@@ -1,3 +1,5 @@
+'use strict';
+
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -15,7 +17,20 @@ import NewProgressItemsForm from './NewProgressItemsForm';
 const metaData = $('#project-data').data();
 const editProjectUrl = metaData.editProjectUrl;
 
-class ProjectPage extends React.Component {
+const mapStateToProps = (state) => {
+  return {
+    project: state.project
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loadProject: (project) => dispatch(loadProject(project))
+  };
+};
+
+@connect(mapStateToProps, mapDispatchToProps)
+export default class ProjectPage extends React.Component {
   constructor() {
     super();
     this.loadProject = this.loadProject.bind(this);
@@ -98,8 +113,3 @@ class ProjectPage extends React.Component {
   }
 }
 
-export default connect(s=>s, function(dispatch) {
-  return {
-    loadProject: (project) => dispatch(loadProject(project))
-  };
-})(ProjectPage);

@@ -12,13 +12,14 @@ class ProjectName extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(event) {
-    this.props.cb(event.target.value);
+  handleChange() {
+    this.props.cb(this.refs.input.getValue());
   }
 
   render() {
     return (
       <Input
+        ref="input"
         type="text"
         label="Project Name*"
         labelClassName="col-sm-3"
@@ -30,6 +31,10 @@ class ProjectName extends React.Component {
     );
   }
 }
+ProjectName.propTypes = {
+  cb: React.PropTypes.func.isRequired,
+  value: React.PropTypes.string.isRequired
+};
 
 class ReferenceNo extends React.Component {
   constructor() {
@@ -37,13 +42,14 @@ class ReferenceNo extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(event) {
-    this.props.cb(event.target.value);
+  handleChange() {
+    this.props.cb(this.refs.input.getValue());
   }
 
   render() {
     return (
       <Input
+        ref="input"
         type="text"
         label="Reference Number*"
         labelClassName="col-sm-3"
@@ -55,6 +61,10 @@ class ReferenceNo extends React.Component {
     );
   }
 }
+ReferenceNo.propTypes = {
+  cb: React.PropTypes.func.isRequired,
+  value: React.PropTypes.string.isRequired
+};
 
 class Margin extends React.Component {
   constructor() {
@@ -62,13 +72,17 @@ class Margin extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(event) {
-    this.props.cb(event.target.value);
+  handleChange() {
+    const value = this.refs.input.getValue();
+    if (isFinite(value)) {
+      this.props.cb(value);
+    }
   }
 
   render() {
     return (
       <Input
+        ref="input"
         type="text"
         label="OH/Profit*"
         labelClassName="col-sm-3"
@@ -81,6 +95,10 @@ class Margin extends React.Component {
     );
   }
 }
+Margin.propTypes = {
+  cb: React.PropTypes.func.isRequired,
+  value: React.PropTypes.number.isRequired
+};
 
 class AdminFee extends React.Component {
   constructor() {
@@ -89,12 +107,19 @@ class AdminFee extends React.Component {
   }
 
   handleChange() {
-    this.props.cb(event.target.value);
+    const value = this.refs.input.getValue();
+    console.log(value);
+    if (isFinite(value)) {
+      this.props.cb(value);
+    } else {
+      console.log('noskldfjkl')
+    }
   }
 
   render() {
     return (
       <Input
+        ref="input"
         type="text"
         label="Admin Fee*"
         labelClassName="col-sm-3"
@@ -104,12 +129,20 @@ class AdminFee extends React.Component {
         onChange={this.handleChange}
         value={this.props.value}
       />
-    )
+    );
   }
 }
+AdminFee.propTypes = {
+  cb: React.PropTypes.func.isRequired,
+  value: React.PropTypes.oneOfType([
+    React.PropTypes.number.isRequired,
+    React.PropTypes.string.isRequired
+  ])
+};
 
 class ClientList extends React.Component {
   render() {
+    console.log(this.props.clients);
     return (
       <div className="form-group">
         <label className="col-sm-3 control-label">Clients</label>
@@ -143,6 +176,12 @@ class ClientList extends React.Component {
     );
   }
 }
+ClientList.propTypes = {
+  addClient: React.PropTypes.func.isRequired,
+  deleteClient: React.PropTypes.func.isRequired,
+  editClient: React.PropTypes.func.isRequired,
+  clients: React.PropTypes.object.isRequired
+};
 
 class Client extends React.Component {
   constructor() {
@@ -155,54 +194,90 @@ class Client extends React.Component {
   }
 
   render() {
-    return (<tr className="client">
-      <td>
-        <Input
-          standalone={true}
-          type="textarea"
-          required
-          ref="name"
-          value={this.props.name}
-          onChange={this.handleChange}/>
-      </td>
-      <td style={{verticalAlign: 'middle'}}>
-        <Input
-          standalone={true}
-          type="text"
-          required
-          onChange={this.handleChange}
-          ref="first"
-          value={this.props.first}/>
-      </td>
-      <td style={{verticalAlign: 'middle'}}>
-        <Input
-          standalone={true}
-          type="text"
-          required
-          onChange={this.handleChange}
-          ref="second"
-          value={this.props.second}/>
-      </td>
-      <td style={{width: 80, textAlign: 'center', verticalAlign: 'middle'}}>
-        <a
-          href="javascript:void(0)"
-          onClick={this.props.addRow}
-        >
-          <i className="fa fa-plus"></i>
-        </a>
-        /
-        <a
-          href="javascript:void(0)"
-          onClick={this.props.deleteRow}
-        >
-          <i className="fa fa-minus"></i>
-        </a>
-      </td>
-    </tr>);
+    return (
+      <tr className="client">
+        <td>
+          <Input
+            ref="name"
+            standalone={true}
+            type="textarea"
+            required
+            value={this.props.name}
+            onChange={this.handleChange}
+          />
+        </td>
+        <td style={{verticalAlign: 'middle'}}>
+          <Input
+            ref="first"
+            standalone={true}
+            type="text"
+            required
+            onChange={this.handleChange}
+            value={this.props.first}
+          />
+        </td>
+        <td style={{verticalAlign: 'middle'}}>
+          <Input
+            ref="second"
+            standalone={true}
+            type="text"
+            required
+            onChange={this.handleChange}
+            value={this.props.second}
+          />
+        </td>
+        <td style={{width: 80, textAlign: 'center', verticalAlign: 'middle'}}>
+          <a
+            href="javascript:void(0)"
+            onClick={this.props.addRow}
+          >
+            <i className="fa fa-plus"/>
+          </a>
+          /
+          <a
+            href="javascript:void(0)"
+            onClick={this.props.deleteRow}
+          >
+            <i className="fa fa-minus"/>
+          </a>
+        </td>
+      </tr>
+    );
   }
 }
+Client.propTypes = {
+  addRow: React.PropTypes.func.isRequired,
+  deleteRow: React.PropTypes.func.isRequired,
+  updateItem: React.PropTypes.func.isRequired,
+  name: React.PropTypes.string.isRequired,
+  first: React.PropTypes.string.isRequired,
+  second: React.PropTypes.string.isRequired
+};
 
-class NewProjectForm extends React.Component {
+const mapStateToProps = (state) => {
+  return {
+    name: state.newName,
+    refNum: state.newRefNum,
+    margin: state.newMargin,
+    adminFee: state.newAdminFee,
+    clients: state.clients
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addClient: () => dispatch(addClient('', '', '')),
+    deleteClient: (index) => dispatch(deleteClient(index)),
+    editClient: (index, name, first, second) => dispatch(editClient(index, name, first, second)),
+    newProjectName: (name) => dispatch(newProjectName(name)),
+    newProjectRefNumber: (name) => dispatch(newProjectRefNumber(name)),
+    newProjectMargin: (name) => dispatch(newProjectMargin(name)),
+    newProjectAdminFee: (name) => dispatch(newProjectAdminFee(name))
+  };
+};
+
+@connect(mapStateToProps, mapDispatchToProps)
+export default class NewProjectForm extends React.Component {
   constructor() {
     super();
     this.handleSave = this.handleSave.bind(this);
@@ -210,7 +285,7 @@ class NewProjectForm extends React.Component {
   }
 
   handleHideModal() {
-    $(this.refs.modal.getDOMNode()).modal('hide');
+    $(this.refs.modal).modal('hide');
   }
 
   render() {
@@ -278,7 +353,7 @@ class NewProjectForm extends React.Component {
   }
 
   handleSave() {
-    const instance = $(this.refs.form.getDOMNode()).parsley();
+    const instance = $(this.refs.form).parsley();
     instance.validate();
     if (!instance.isValid()) {
       return;
@@ -402,7 +477,7 @@ class NewProjectForm extends React.Component {
                 title: 'Nice!',
                 text: `You created a new project: ${data.name}`,
                 type: 'success'
-              }, () => $(this.refs.modal.getDOMNode()).modal('hide'));
+              }, () => this.handleHideModal());
             }
           })();
         });
@@ -410,29 +485,3 @@ class NewProjectForm extends React.Component {
   }
 }
 
-export default connect(
-  (state) => {
-    return {
-      name: state.newName,
-      refNum: state.newRefNum,
-      margin: state.newMargin,
-      adminFee: state.newAdminFee,
-      clients: state.clients
-    }
-  },
-  (dispatch) => {
-    return {
-      addClient: () => dispatch(addClient({
-        name: '',
-        first: '',
-        second: ''
-      })),
-      deleteClient: (index) => dispatch(deleteClient(index)),
-      editClient: (index, name, first, second) => dispatch(editClient(index, name, first, second)),
-      newProjectName: (name) => dispatch(newProjectName(name)),
-      newProjectRefNumber: (name) => dispatch(newProjectRefNumber(name)),
-      newProjectMargin: (name) => dispatch(newProjectMargin(name)),
-      newProjectAdminFee: (name) => dispatch(newProjectAdminFee(name))
-    };
-  }
-)(NewProjectForm);

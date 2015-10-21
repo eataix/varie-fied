@@ -1,17 +1,17 @@
 import React from 'react';
 
 import Menu from './Menu';
-import ProjectList from './ProjectList';
 import NewProjectForm from './NewProjectForm';
 import NewVariationForm from './NewVariationForm';
+import ProjectList from './ProjectList';
 
-class FrontPage extends React.Component {
+export default class FrontPage extends React.Component {
   render() {
     return (
       <div>
         <Menu/>
         <div className='container'>
-          <ProjectList />
+          <ProjectList/>
         </div>
         <NewProjectForm />
         <NewVariationForm />
@@ -20,4 +20,3 @@ class FrontPage extends React.Component {
   }
 }
 
-export default FrontPage;

@@ -15,10 +15,12 @@ export const UPDATE_TIME = 'UPDATE_TIME';
 export const UPDATE_SUBCONTRACTOR = 'UPDATE_SUBCONTRACTOR';
 export const UPDATE_INVOICE_NUMBER = 'UPDATE_INVOICE_NUMBER';
 export const UPDATE_DESCRIPTION = 'UPDATE_DESCRIPTION';
+
 export const NEW_PROJECT_NAME = 'NEW_PROJECT_NAME';
 export const NEW_PROJECT_REF_NUMBER = 'NEW_PROJECT_REF_NUMBER';
 export const NEW_PROJECT_MARGIN = 'NEW_PROJECT_MARGIN';
 export const NEW_PROJECT_ADMIN_FEE = 'NEW_PROJECT_ADMIN_FEE';
+
 export const LOAD_PROJECTS = 'LOAD_PROJECTS';
 export const LOAD_PROJECT = 'LOAD_PROJECT';
 
@@ -110,10 +112,11 @@ export function editProgressItem(index, name, value) {
   };
 }
 
-export function updateMarginAndAdminFee(margin, adminFee) {
+export function updateMarginAndAdminFee(id, margin, adminFee) {
   'use strict';
   return {
     type: UPDATE_MARGIN_AND_ADMIN_FEE,
+    id,
     margin,
     adminFee
   };

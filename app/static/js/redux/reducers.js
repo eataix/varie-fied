@@ -25,21 +25,22 @@ const initialState = {
     name: '',
     value: ''
   }]),
+  id: -1,
   margin: 0.0,
   adminFee: '',
   time: '',
-  subcontract: '',
+  subcontractor: '',
   invoiceNumber: '',
   description: '',
   newName: '',
   newRefNum: '',
-  newMargin: '',
+  newMargin: 0.0,
   newAdminFee: '',
   projects: [],
   project: null,
   editName: '',
   editRefNum: '',
-  editMargin: '',
+  editMargin: 0.0,
   editAdminFee: ''
 };
 
@@ -67,8 +68,9 @@ export default function app(state = initialState, action) {
     case ADD_CLIENT:
       return Object.assign({}, state, {
         clients: state.clients.push({
-          name: '',
-          value: ''
+          name: action.name,
+          first: action.first,
+          second: action.second
         })
       });
     case DELETE_CLIENT:
@@ -103,7 +105,9 @@ export default function app(state = initialState, action) {
       });
     case UPDATE_MARGIN_AND_ADMIN_FEE:
       return Object.assign({}, state, {
-        margin: action.margin
+        id: action.id,
+        margin: action.margin,
+        adminFee: action.adminFee
       });
     case UPDATE_TIME:
       return Object.assign({}, state, {
