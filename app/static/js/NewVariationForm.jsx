@@ -9,8 +9,8 @@ class TimePicker extends React.Component {
     $(this.refs.picker).datetimepicker({
       showTodayButton: true
     }).on('dp.change', function(event) {
-      this.props.dispatch(updateTime(event.date.utc().format()));
-    });
+      this.props.cb(event.target.value);
+    }.bind(this));
   }
 
   render() {
@@ -46,7 +46,7 @@ class Subcontractor extends React.Component {
   }
 
   handleChange() {
-    this.props.dispatch(updateSubcontractor(event.target.value));
+    this.props.cb(event.target.value);
   }
 
   render() {
@@ -70,7 +70,7 @@ class InvoiceNo extends React.Component {
   }
 
   handleChange() {
-    this.props.dispatch(updateInvoiceNumber(event.target.value));
+    this.props.cb(event.target.value);
   }
 
   render() {
@@ -113,7 +113,7 @@ class Project extends React.Component {
 
   handleChange(event) {
     const p = this.props.projects.find(e => e.id.toString() === event.target.value);
-    this.props.dispatch(updateMarginAndAdminFee(p.id, p.margin, p.admin_fee));
+    this.props.updateMarginAndAdminFee(p.id, p.margin, p.admin_fee);
   }
 
   render() {
@@ -250,8 +250,13 @@ class VariationItem extends React.Component {
 }
 
 class Description extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
   handleChange() {
-    this.props.dispatch(updateDescription(event.target.value));
+    this.props.cb(event.target.value);
   }
 
   render() {
@@ -441,37 +446,40 @@ class NewVariationForm extends React.Component {
                 <form className="form-horizontal" data-parsley-validate ref="form">
                   <Project
                     projects={this.props.projects}
-                    dispatch={this.props.dispatch}
+                    updateMarginAndAdminFee={this.props.updateMarginAndAdminFee}
                   />
-                  <TimePicker dispatch={this.props.dispatch}/>
-                  <Subcontractor dispatch={this.props.dispatch}
+                  <TimePicker
+                    cb={this.props.updateTime}
                   />
-                  <InvoiceNo dispatch={this.props.dispatch}/>
+                  <Subcontractor
+                    cb={this.props.updateSubcontractor}
+                  />
+                  <InvoiceNo
+                    cb={this.props.updateInvoiceNumber}
+                  />
                   <ValueOfWork
                     items={this.props.variations}
-                    dispatch={this.props.dispatch}
                   />
                   <Margin
                     value={this.props.margin}
-                    dispatch={this.props.dispatch}
                   />
                   <AdminFee
                     value={this.props.adminFee}
-                    dispatch={this.props.dispatch}
                   />
                   <Subtotal
                     items={this.props.variations}
                     margin={this.props.margin}
                     adminFee={this.props.adminFee}
-                    dispatch={this.props.dispatch}
                   />
                   <Description
                     items={this.props.variations}
-                    dispatch={this.props.dispatch}
+                    cb={this.props.updateDescription}
                   />
                   <ItemTable
                     items={this.props.variations}
-                    dispatch={this.props.dispatch}
+                    addVariationItem={this.props.addVariationItem}
+                    deleteVariationItem={this.props.deleteVariationItem}
+                    editVariationItem={this.props.editVariationItem}
                   />
                 </form>
               </div>
@@ -499,18 +507,6 @@ class NewVariationForm extends React.Component {
 }
 
 class ItemTable extends React.Component {
-  addRow() {
-    this.props.dispatch(addVariationItem('', ''));
-  }
-
-  deleteRow(index) {
-    this.props.dispatch(deleteVariationItem(index));
-  }
-
-  updateItem(index, name, value) {
-    this.props.dispatch(editVariationItem(index, name, value === '' ? '' : parseFloat(value)));
-  }
-
   render() {
     return (
       <div className="form-group">
@@ -534,9 +530,9 @@ class ItemTable extends React.Component {
               name={r.name}
               value={r.value.amount}
               key={r + i}
-              addRow={this.addRow}
-              deleteRow={this.deleteRow.bind(this, i)}
-              updateItem={this.updateItem.bind(this, i)}
+              addRow={this.props.addVariationItem}
+              deleteRow={this.props.deleteVariationItem.bind(null, i)}
+              updateItem={this.props.editVariationItem.bind(null, i)}
             />)}
             </tbody>
           </table>
@@ -546,12 +542,25 @@ class ItemTable extends React.Component {
   }
 }
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateTime: (time) => dispatch(updateTime(time)),
+    updateSubcontractor: (value) => dispatch(updateSubcontractor(value)),
+    updateInvoiceNumber: (value) => dispatch(updateInvoiceNumber(value)),
+    updateMarginAndAdminFee: (id, margin, admin_fee) => dispatch(updateMarginAndAdminFee(id, margin, admin_fee)),
+    updateDescription: (value)=> dispatch(updateDescription(value)),
+    addVariationItem: ()=> dispatch(addVariationItem('', '')),
+    deleteVariationItem: (index) => dispatch(deleteVariationItem(index)),
+    editVariationItem: (index, name, value)=> dispatch(editVariationItem(index, name, value === '' ? '' : parseFloat(value)))
+  };
+};
 
 export default connect(s => {
-  return {
-    projects: s.projects,
-    margin: s.margin,
-    adminFee: s.adminFee,
-    variations: s.variations
-  };
-})(NewVariationForm);
+    return {
+      projects: s.projects,
+      margin: s.margin,
+      adminFee: s.adminFee,
+      variations: s.variations
+    };
+  },
+  mapDispatchToProps)(NewVariationForm);

@@ -1,7 +1,8 @@
 import React from 'react';
-import { loadProjects } from './redux/actions';
 import { connect } from 'react-redux';
 import { NavItem } from 'react-bootstrap';
+
+import { loadProjects } from './redux/actions';
 
 const project_url = $('#meta-data').data().projectsUrl;
 
@@ -41,8 +42,12 @@ class ProjectItem extends React.Component {
           <i className={iClassName}/> {this.props.project.name}<span className="caret"/>
         </a>
         <ul className="dropdown-menu">
-          <li><a href={`/project/${this.props.project.id}/progress`}>Progress</a></li>
-          <li><a href={`/project/${this.props.project.id}/variation`}>Variations</a></li>
+          <li>
+            <a href={`/project/${this.props.project.id}/progress`}>Progress</a>
+          </li>
+          <li>
+            <a href={`/project/${this.props.project.id}/variation`}>Variations</a>
+          </li>
         </ul>
       </li>
     );
@@ -100,11 +105,13 @@ class Menu extends React.Component {
 
   loadProjects() {
     $.ajax({
-        url: project_url,
-        contentType: 'application/json; charset=utf-8'
-      })
-      .done(data=> this.props.dispatch(loadProjects(data.projects)))
-      .fail(((xhr, status, err) => console.error(project_url, status, err.toString())).bind(this));
+      url: project_url,
+      contentType: 'application/json; charset=utf-8'
+    }).done(function(data) {
+      this.props.loadProjects(data.projects);
+    }.bind(this)).fail(function(xhr, status, err) {
+      console.error(project_url, status, err.toString());
+    }.bind(this));
   }
 
   render() {
@@ -129,7 +136,7 @@ class Menu extends React.Component {
         <div className="navbar-collapse collapse navbar-responsive-collapse">
           <ul className="nav navbar-nav">
             <HomeBar />
-            { this.props.projects.map((p, i) => <ProjectItem key={i} project={p}/>) }
+            { this.props.projects.map((project, index) => <ProjectItem key={index} project={project}/>) }
             <OldProjectList projects={this.props.projects}/>
             <li>
               <a
@@ -156,6 +163,15 @@ class Menu extends React.Component {
   }
 }
 
-export default connect(s=> {
-  return {projects: s.projects}
-})(Menu);
+export default connect(
+  (state) => {
+    return {
+      projects: state.projects
+    };
+  },
+  (dispatch) => {
+    return {
+      loadProjects: (projects) => dispatch(loadProjects(projects))
+    };
+  }
+)(Menu);

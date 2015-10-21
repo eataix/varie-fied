@@ -2,9 +2,8 @@ import './main';
 
 import React from 'react';
 import { render } from 'react-dom';
-import { Provider } from 'react-redux';
-
 import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 
 import FrontPage from './FrontPage';
 import app from './redux/reducers';
@@ -15,7 +14,6 @@ import app from './redux/reducers';
   const store = createStore(app);
   console.log(store.getState());
 
-// Every time the state changes, log it
   let unsubscribe = store.subscribe(() =>
     console.log(store.getState())
   );

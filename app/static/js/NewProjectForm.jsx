@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import ReactBootstrap from 'react-bootstrap';
 import { Input, Button, Modal } from 'react-bootstrap';
+
 import { addClient, deleteClient, editClient, newProjectName, newProjectRefNumber, newProjectMargin, newProjectAdminFee } from './redux/actions';
 import { isTrue, isFalse, isNull } from './main.js';
 
@@ -12,7 +13,7 @@ class ProjectName extends React.Component {
   }
 
   handleChange(event) {
-    this.props.dispatch(newProjectName(event.target.value));
+    this.props.cb(event.target.value);
   }
 
   render() {
@@ -37,7 +38,7 @@ class ReferenceNo extends React.Component {
   }
 
   handleChange(event) {
-    this.props.dispatch(newProjectRefNumber(event.target.value));
+    this.props.cb(event.target.value);
   }
 
   render() {
@@ -62,7 +63,7 @@ class Margin extends React.Component {
   }
 
   handleChange(event) {
-    this.props.dispatch(newProjectMargin(event.target.value));
+    this.props.cb(event.target.value);
   }
 
   render() {
@@ -88,7 +89,7 @@ class AdminFee extends React.Component {
   }
 
   handleChange() {
-    this.props.dispatch(newProjectAdminFee(event.target.value));
+    this.props.cb(event.target.value);
   }
 
   render() {
@@ -108,29 +109,6 @@ class AdminFee extends React.Component {
 }
 
 class ClientList extends React.Component {
-  constructor() {
-    super();
-    this.addRow = this.addRow.bind(this);
-    this.deleteRow = this.deleteRow.bind(this);
-    this.updateItem = this.updateItem.bind(this);
-  }
-
-  addRow() {
-    this.props.dispatch(addClient({
-      name: '',
-      first: '',
-      second: ''
-    }))
-  }
-
-  deleteRow(index) {
-    this.props.dispatch(deleteClient(index));
-  }
-
-  updateItem(index, name, first, second) {
-    this.props.dispatch(editClient(index, name, first, second));
-  }
-
   render() {
     return (
       <div className="form-group">
@@ -150,13 +128,12 @@ class ClientList extends React.Component {
               this.props.clients.map((r, i) =>
               <Client
                 key={r + i}
-                addRow={this.addRow}
-                deleteRow={this.deleteRow.bind(this, i)}
-                updateItem={this.updateItem.bind(this, i)}
+                addRow={this.props.addClient}
+                deleteRow={this.props.deleteClient.bind(null, i)}
+                updateItem={this.props.editClient.bind(null, i)}
                 name={r.name}
                 first={r.first}
                 second={r.second}
-                dispatch={this.props.dispatch}
               />)
               }
             </tbody>
@@ -262,23 +239,25 @@ class NewProjectForm extends React.Component {
                 >
                   <ProjectName
                     value={this.props.name}
-                    dispatch={this.props.dispatch}
+                    cb={this.props.newProjectName}
                   />
                   <ReferenceNo
                     value={this.props.refNum}
-                    dispatch={this.props.dispatch}
+                    cb={this.props.newProjectRefNumber}
                   />
                   <Margin
                     value={this.props.margin}
-                    dispatch={this.props.dispatch}
+                    cb={this.props.newProjectMargin}
                   />
                   <AdminFee
                     value={this.props.adminFee}
-                    dispatch={this.props.dispatch}
+                    cb={this.props.newProjectAdminFee}
                   />
                   <ClientList
                     clients={this.props.clients}
-                    dispatch={this.props.dispatch}
+                    addClient={this.props.addClient}
+                    deleteClient={this.props.deleteClient}
+                    editClient={this.props.editClient}
                   />
                 </form>
               </div>
@@ -431,12 +410,29 @@ class NewProjectForm extends React.Component {
   }
 }
 
-export default connect(state => {
-  return {
-    name: state.newName,
-    refNum: state.newRefNum,
-    margin: state.newMargin,
-    adminFee: state.newAdminFee,
-    clients: state.clients
+export default connect(
+  (state) => {
+    return {
+      name: state.newName,
+      refNum: state.newRefNum,
+      margin: state.newMargin,
+      adminFee: state.newAdminFee,
+      clients: state.clients
+    }
+  },
+  (dispatch) => {
+    return {
+      addClient: () => dispatch(addClient({
+        name: '',
+        first: '',
+        second: ''
+      })),
+      deleteClient: (index) => dispatch(deleteClient(index)),
+      editClient: (index, name, first, second) => dispatch(editClient(index, name, first, second)),
+      newProjectName: (name) => dispatch(newProjectName(name)),
+      newProjectRefNumber: (name) => dispatch(newProjectRefNumber(name)),
+      newProjectMargin: (name) => dispatch(newProjectMargin(name)),
+      newProjectAdminFee: (name) => dispatch(newProjectAdminFee(name))
+    };
   }
-})(NewProjectForm);
+)(NewProjectForm);

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Button, Input, Modal } from 'react-bootstrap';
+
 import { editProjectName, editProjectRefNumber, editProjectMargin, editProjectAdminFee } from './redux/actions';
 
 class ProjectName extends React.Component {
@@ -10,7 +11,7 @@ class ProjectName extends React.Component {
   }
 
   handleChange() {
-    this.props.dispatch(editProjectName(event.target.value));
+    this.props.cb(this.refs.name.getValue());
   }
 
   render() {
@@ -29,6 +30,10 @@ class ProjectName extends React.Component {
     );
   }
 }
+ProjectName.propTypes = {
+  cb: React.PropTypes.func.isRequired,
+  name: React.PropTypes.string.isRequired
+};
 
 class ReferenceNumber extends React.Component {
   constructor() {
@@ -37,7 +42,7 @@ class ReferenceNumber extends React.Component {
   }
 
   handleChange() {
-    this.props.dispatch(editProjectName(event.target.value));
+    this.props.cb(this.refs.refNo.getValue());
   }
 
   render() {
@@ -56,6 +61,10 @@ class ReferenceNumber extends React.Component {
     );
   }
 }
+ReferenceNumber.propTypes = {
+  cb: React.PropTypes.func.isRequired,
+  reference_number: React.PropTypes.string.isRequired
+};
 
 class Margin extends React.Component {
   constructor() {
@@ -64,7 +73,10 @@ class Margin extends React.Component {
   }
 
   handleChange() {
-    this.props.dispatch(editProjectName(event.target.value));
+    const value = this.refs.margin.getValue();
+    if (isFinite(value)) {
+      this.props.cb(value);
+    }
   }
 
   render() {
@@ -84,6 +96,10 @@ class Margin extends React.Component {
     );
   }
 }
+Margin.propTypes = {
+  cb: React.PropTypes.func.isRequired,
+  margin: React.PropTypes.number.isRequired
+};
 
 class AdminFee extends React.Component {
   constructor() {
@@ -92,7 +108,10 @@ class AdminFee extends React.Component {
   }
 
   handleChange() {
-    this.props.dispatch(editProjectName(event.target.value));
+    const value = this.refs.adminFee.getValue();
+    if (isFinite(value)) {
+      this.props.cb(value);
+    }
   }
 
   render() {
@@ -111,6 +130,10 @@ class AdminFee extends React.Component {
     );
   }
 }
+AdminFee.propTypes = {
+  cb: React.PropTypes.func.isRequired,
+  admin_fee: React.PropTypes.number.isRequired
+};
 
 class EditProjectMetaForm extends React.Component {
   constructor() {
@@ -120,9 +143,6 @@ class EditProjectMetaForm extends React.Component {
   }
 
   render() {
-    if (this.props.project === null) {
-      return false;
-    }
     return (
       <div
         id="edit-dialog"
@@ -145,20 +165,20 @@ class EditProjectMetaForm extends React.Component {
                   ref="form"
                 >
                   <ProjectName
-                    dispatch={this.props.dispatch}
                     name={this.props.name}
+                    cb={this.props.editProjectName}
                   />
                   <ReferenceNumber
-                    dispatch={this.props.dispatch}
                     reference_number={this.props.reference_number}
+                    cb={this.props.editProjectRefNumber}
                   />
                   <Margin
-                    dispatch={this.props.dispatch}
                     margin={this.props.margin}
+                    cb={this.props.editProjectMargin}
                   />
                   <AdminFee
-                    dispatch={this.props.dispatch}
                     admin_fee={this.props.admin_fee}
+                    cb={this.props.editProjectAdminFee}
                   />
                 </form>
               </div>
@@ -216,10 +236,10 @@ class EditProjectMetaForm extends React.Component {
       const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
-      const new_name = this.refs.name.getValue();
-      const new_margin = this.refs.margin.getValue();
-      const new_reference_number = this.refs.refNo.getValue();
-      let new_admin_fee = this.refs.adminFee.getValue();
+      const new_name = this.props.name;
+      const new_margin = this.props.margin;
+      const new_reference_number = this.props.reference_number;
+      let new_admin_fee = this.props.admin_fee;
       if (new_admin_fee === '') {
         new_admin_fee = null;
       }
@@ -263,15 +283,21 @@ class EditProjectMetaForm extends React.Component {
 }
 
 const selector = function(state) {
-  if (state.project === null) {
-    return {};
-  }
   return {
-    project: state.project,
-    name: state.editName !== '' ? state.editName : state.project.name,
-    reference_number: state.editRefNum !== '' ? state.editRefNum : state.project.reference_number,
-    margin: state.editMargin !== '' ? state.editMargin : state.project.margin,
-    admin_fee: state.editAdminFee !== '' ? state.editAdminFee : state.project.admin_fee
+    name: state.editName,
+    reference_number: state.editRefNum,
+    margin: state.editMargin,
+    admin_fee: state.editAdminFee
   };
 };
-export default connect(selector)(EditProjectMetaForm);
+
+const selectorDispatcher = function(dispatch) {
+  return {
+    editProjectName: (value) => dispatch(editProjectName(value)),
+    editProjectRefNumber: (value) => dispatch(editProjectRefNumber(value)),
+    editProjectMargin: (value) => dispatch(editProjectMargin(value)),
+    editProjectAdminFee: (value) => dispatch(editProjectAdminFee(value))
+  };
+};
+
+export default connect(selector, selectorDispatcher)(EditProjectMetaForm);

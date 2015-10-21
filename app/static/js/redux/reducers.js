@@ -142,9 +142,21 @@ export default function app(state = initialState, action) {
         projects: action.projects
       });
     case LOAD_PROJECT:
-      return Object.assign({}, state, {
-        project: action.project
-      });
+      let newState;
+      if (state.project === null) {
+        newState = Object.assign({}, state, {
+          project: action.project,
+          editName: action.project.name,
+          editRefNum: action.project.reference_number,
+          editMargin: action.project.margin,
+          editAdminFee: action.project.admin_fee
+        });
+      } else {
+        newState = Object.assign({}, state, {
+          project: action.project
+        });
+      }
+      return newState;
     case EDIT_PROJECT_NAME:
       return Object.assign({}, state, {
         editName: action.name

@@ -1,18 +1,16 @@
 import React from 'react';
-import $ from 'jquery';
 import { connect } from 'react-redux';
+
+import { loadProject } from './redux/actions';
 
 import Menu from './Menu';
 import ProjectList from './ProjectList';
 import ProjectInfo from './ProjectInfo';
 import Toolbar from './Toolbar';
-
 import EditProjectMetaForm from './EditProjectMetaForm';
 import NewProjectForm from './NewProjectForm';
 import NewVariationForm from './NewVariationForm';
 import NewProgressItemsForm from './NewProgressItemsForm';
-
-import { loadProject } from './redux/actions';
 
 const metaData = $('#project-data').data();
 const editProjectUrl = metaData.editProjectUrl;
@@ -33,7 +31,7 @@ class ProjectPage extends React.Component {
         url: editProjectUrl,
         contentType: 'application/json; charset=utf-8'
       })
-      .done((data => this.props.dispatch(loadProject(data))).bind(this))
+      .done((data => this.props.loadProject(data)).bind(this))
       .fail(((xhr, status, err) => console.error(editProjectUrl, status, err.toString())).bind(this));
   }
 
@@ -100,4 +98,8 @@ class ProjectPage extends React.Component {
   }
 }
 
-export default connect(s=>s)(ProjectPage);
+export default connect(s=>s, function(dispatch) {
+  return {
+    loadProject: (project) => dispatch(loadProject(project))
+  };
+})(ProjectPage);
