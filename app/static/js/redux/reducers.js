@@ -45,7 +45,7 @@ const initialState = {
 };
 
 export default function app(state = initialState, action) {
-  'use strict';
+  console.log(action);
   switch (action.type) {
     case ADD_VARIATION_ITEM:
       return Object.assign({}, state, {

@@ -1,18 +1,6 @@
-'use strict';
-
-export const isNull = function(element) {
-  return element === null;
-};
-
-export const isTrue = function(element) {
-  return element === true;
-};
-
-export const isFalse = function(element) {
-  return element === false;
-};
-
 (() => {
+  'use strict';
+
   $(document).on('ready', () => {
     $.material.init();
     $('body').addClass('loaded');
@@ -32,4 +20,5 @@ export const isFalse = function(element) {
 
   ga('create', 'UA-67200722-1', 'auto');
   ga('send', 'pageview');
-})(); // invoke
+})();
+

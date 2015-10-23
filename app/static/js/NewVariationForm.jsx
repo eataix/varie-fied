@@ -2,13 +2,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
 import { updateTime, updateSubcontractor, updateInvoiceNumber, updateMarginAndAdminFee, updateDescription, addVariationItem, deleteVariationItem, editVariationItem } from './redux/actions';
-import { isTrue, isFalse, isNull } from './main.js';
+import { isTrue, isFalse, isNull, newVariationUrl, newItemUrl } from './defs';
 
 class TimePicker extends React.Component {
   componentDidMount() {
     $(this.refs.picker)
-      .datetimepicker({showTodayButton: true})
-      .on('dp.change', ((e) => this.props.cb(e.date.utc().format())).bind(this));
+      .datetimepicker({
+        showTodayButton: true
+      })
+      .on('dp.change', function(e) {
+        this.props.cb(e.date.utc().format());
+      }.bind(this));
   }
 
   render() {
@@ -225,6 +229,34 @@ class Subtotal extends React.Component {
   }
 }
 
+class Description extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange() {
+    this.props.cb(this.refs.input.getValue());
+  }
+
+  render() {
+    if (this.props.items.size === 1) {
+      return false;
+    }
+    return (
+      <Input
+        ref="input"
+        type="textarea"
+        label="Description"
+        labelClassName="col-sm-2"
+        wrapperClassName="col-sm-10"
+        rows={5}
+        onChange={this.handleChange}
+      />
+    );
+  }
+}
+
 class VariationItem extends React.Component {
   constructor() {
     super();
@@ -281,34 +313,6 @@ class VariationItem extends React.Component {
   }
 }
 
-class Description extends React.Component {
-  constructor() {
-    super();
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange() {
-    this.props.cb(this.refs.input.getValue());
-  }
-
-  render() {
-    if (this.props.items.size === 1) {
-      return false;
-    }
-    return (
-      <Input
-        ref="input"
-        type="textarea"
-        label="Description"
-        labelClassName="col-sm-2"
-        wrapperClassName="col-sm-10"
-        rows={5}
-        onChange={this.handleChange}
-      />
-    );
-  }
-}
-
 class ItemTable extends React.Component {
   render() {
     return (
@@ -346,17 +350,17 @@ class ItemTable extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log({
-    id: state.id,
-    projects: state.projects,
-    margin: state.margin,
-    adminFee: state.adminFee,
-    time: state.time,
-    subcontractor: state.subcontractor,
-    invoiceNo: state.invoiceNumber,
-    description: state.description,
-    variations: state.variations
-  });
+  //console.log({
+  //  id: state.id,
+  //  projects: state.projects,
+  //  margin: state.margin,
+  //  adminFee: state.adminFee,
+  //  time: state.time,
+  //  subcontractor: state.subcontractor,
+  //  invoiceNo: state.invoiceNumber,
+  //  description: state.description,
+  //  variations: state.variations
+  //});
   return {
     id: state.id,
     projects: state.projects,
@@ -425,7 +429,7 @@ export default class NewVariationForm extends React.Component {
     });
     let input_description = '';
     if (variationItems.length === 1) {
-      input_description = variationItems[0].name;
+      input_description = variationItems.get(0).name;
     } else {
       input_description = this.props.description;
     }
@@ -454,7 +458,6 @@ export default class NewVariationForm extends React.Component {
       const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
-      const newVariationUrl = $('#meta-data').data().newVariationUrl;
 
       console.log({
         url: newVariationUrl,
@@ -494,7 +497,7 @@ export default class NewVariationForm extends React.Component {
         })
         .done(data => {
           const vid = data.vid;
-          const variationItems = this.props.store.getList();
+          const variationItems = this.props.variations;
           console.log(variationItems);
           const statusArray = new Array(variationItems.length).fill(null);
 
@@ -502,7 +505,7 @@ export default class NewVariationForm extends React.Component {
             if (offset >= variationItems.length) {
               return;
             }
-            const item = variationItems[offset];
+            const item = variationItems.get(offset);
             const desc = item.name;
             const amount = item.value;
 

@@ -1,5 +1,3 @@
-'use strict';
-
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -14,8 +12,33 @@ import NewProjectForm from './NewProjectForm';
 import NewVariationForm from './NewVariationForm';
 import NewProgressItemsForm from './NewProgressItemsForm';
 
-const metaData = $('#project-data').data();
-const editProjectUrl = metaData.editProjectUrl;
+import { editProjectUrl } from './defs';
+import { initProgressTable, handleSaveProgress, handleDeleteProgress } from './progress_fn';
+import { initVariationTable, handleSaveVariation, handleDeleteVariation } from './variation_fn';
+
+class Table extends React.Component {
+  componentDidMount() {
+    if (this.props.progress) {
+      initProgressTable(this.refs.table);
+    } else {
+      initVariationTable(this.refs.table);
+    }
+  }
+
+  shouldComponentUpdate() {
+    return false;
+  }
+
+  render() {
+    return (
+      <table
+        ref='table'
+        id='table'
+        className='table table-condensed'
+      />
+    );
+  }
+}
 
 const mapStateToProps = (state) => {
   return {
@@ -34,11 +57,30 @@ export default class ProjectPage extends React.Component {
   constructor() {
     super();
     this.loadProject = this.loadProject.bind(this);
+    this.handleSave = this.handleSave.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   componentDidMount() {
     this.loadProject();
-    setInterval(this.loadProject, 2000);
+    setInterval(this.loadProject, 10000);
+
+  }
+
+  handleSave() {
+    if (this.props.progress) {
+      handleSaveProgress();
+    } else {
+      handleSaveVariation();
+    }
+  }
+
+  handleDelete() {
+    if (this.props.progress) {
+      handleDeleteProgress();
+    } else {
+      handleDeleteVariation();
+    }
   }
 
   loadProject() {
@@ -57,10 +99,10 @@ export default class ProjectPage extends React.Component {
 
     return (
       <div>
-        <Menu pollInterval={2000}/>
+        <Menu pollInterval={10000}/>
         <div className="container-fluid">
           <ProjectInfo
-            pollInterval={2000}
+            pollInterval={10000}
             prefix={prefix}
             alt_url={alt_url}
             alt_text={alt_text}
@@ -78,7 +120,7 @@ export default class ProjectPage extends React.Component {
                   id="btn-save"
                   type="button"
                   className="btn btn-info btn-raised"
-                  disabled
+                  onClick={this.handleSave}
                 >
                   Save
                 </button>
@@ -88,21 +130,18 @@ export default class ProjectPage extends React.Component {
                   id="btn-delete"
                   type="button"
                   className="btn btn-danger btn-raised"
-                  disabled
+                  onClick={this.handleDelete}
                 >
                   Delete
                 </button>
               </div>
             </div>
           </div>
-          <table
-            id="table"
-            className="table table-condensed"
-          />
+          <Table progress={this.props.progress}/>
         </div>
         <NewProjectForm />
         <NewVariationForm
-          pollInterval={2000}
+          pollInterval={10000}
         />
         <NewProgressItemsForm />
         <EditProjectMetaForm
@@ -112,4 +151,7 @@ export default class ProjectPage extends React.Component {
     )
   }
 }
+ProjectPage.propTypes = {
+  progress: React.PropTypes.bool.isRequired
+};
 

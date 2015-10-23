@@ -132,7 +132,10 @@ class AdminFee extends React.Component {
 }
 AdminFee.propTypes = {
   cb: React.PropTypes.func.isRequired,
-  admin_fee: React.PropTypes.number.isRequired
+  admin_fee: React.PropTypes.oneOfType([
+    React.PropTypes.string,
+    React.PropTypes.number
+  ]).isRequired
 };
 
 const mapStateToProps = (state) => {

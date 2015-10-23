@@ -4,7 +4,7 @@ import ReactBootstrap from 'react-bootstrap';
 import { Input, Button, Modal } from 'react-bootstrap';
 
 import { addClient, deleteClient, editClient, newProjectName, newProjectRefNumber, newProjectMargin, newProjectAdminFee } from './redux/actions';
-import { isTrue, isFalse, isNull } from './main.js';
+import { isTrue, isFalse, isNull, newProjectUrl, newClientUrl } from './defs';
 
 class ProjectName extends React.Component {
   constructor() {
@@ -108,11 +108,8 @@ class AdminFee extends React.Component {
 
   handleChange() {
     const value = this.refs.input.getValue();
-    console.log(value);
     if (isFinite(value)) {
-      this.props.cb(value);
-    } else {
-      console.log('noskldfjkl')
+      this.props.cb(parseFloat(value));
     }
   }
 
@@ -142,7 +139,6 @@ AdminFee.propTypes = {
 
 class ClientList extends React.Component {
   render() {
-    console.log(this.props.clients);
     return (
       <div className="form-group">
         <label className="col-sm-3 control-label">Clients</label>
@@ -360,8 +356,8 @@ export default class NewProjectForm extends React.Component {
     }
 
     const project_name = this.props.name;
-    const margin = this.props.refNum;
-    const reference_number = this.props.margin;
+    const margin = this.props.margin;
+    const reference_number = this.props.refNum;
     let admin_fee = this.props.adminFee;
     // in case admin_fee is unspecified
     if (admin_fee === '') {
@@ -392,10 +388,6 @@ export default class NewProjectForm extends React.Component {
       const $button = $('.newProjectConfirmation').find('.confirm');
       const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
-
-      const metaData = $('#meta-data').data();
-      const newProjectUrl = metaData.newProjectUrl;
-      const newClientUrl = metaData.newClientUrl;
 
       console.log({
         url: newProjectUrl,
@@ -438,7 +430,7 @@ export default class NewProjectForm extends React.Component {
             if (offset >= clients.length) {
               return;
             }
-            const client = clients[offset];
+            const client = clients.get(offset);
             const name = client.name;
             let first_line_address = client.first;
             if (first_line_address === '') {
@@ -465,11 +457,15 @@ export default class NewProjectForm extends React.Component {
                 createClient(offset + 1);
               })
               .fail(() => statusArray[offset] = false);
-          })(0); // IIFE
+          })(0);
 
           (function waiting() {
             if (statusArray.some(isFalse)) {
-              swal('Error', 'Cannot save the project... Please try again.', 'error');
+              swal({
+                title: 'Error',
+                text: 'Cannot save the project... Please try again.',
+                type: 'error'
+              });
             } else if (statusArray.some(isNull)) {
               setTimeout(waiting, 100);
             } else if (statusArray.every(isTrue)) {

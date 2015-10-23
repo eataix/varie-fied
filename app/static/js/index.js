@@ -1,12 +1,10 @@
-import './main';
-
 import React from 'react';
 import { render } from 'react-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-import FrontPage from './FrontPage';
 import app from './redux/reducers';
+import FrontPage from './FrontPage';
 
 (() => {
   'use strict';
@@ -14,8 +12,7 @@ import app from './redux/reducers';
   const store = createStore(app);
   console.log(store.getState());
 
-  let unsubscribe = store.subscribe(() => {
-      console.log('changed:');
+  store.subscribe(() => {
       console.log(store.getState());
     }
   );
@@ -27,3 +24,4 @@ import app from './redux/reducers';
     document.getElementById('content')
   );
 })();
+

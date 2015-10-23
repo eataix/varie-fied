@@ -41,7 +41,7 @@ export function addVariationItem(name, value) {
 export function deleteVariationItem(index) {
   'use strict';
   return {
-    type: ADD_VARIATION_ITEM,
+    type: DELETE_VARIATION_ITEM,
     index
   };
 }

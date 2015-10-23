@@ -1,9 +1,78 @@
-const React = require('react');
+import React from 'react';
 
-const deleteProjectUrl = $('#project-data').data().deleteProjectUrl;
+import { projectName, deleteProjectUrl } from './defs';
 
 export default class Toolbar extends React.Component {
+  constructor() {
+    super();
+    this.handleArchive = this.handleArchive.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+  }
+
+  render() {
+    'use strict';
+    if (this.props.project === null) {
+      return false;
+    }
+    let mid;
+    if (this.props.progress) {
+      mid = (
+        <button
+          className="btn btn-material-deep-purple btn-raised"
+          data-toggle="modal"
+          data-target="#new-progress-item-dialog"
+        >
+          <i className="fa fa-plus"/> New Items
+        </button>
+      );
+    } else {
+      mid = (
+        <button
+          className="btn btn-primary btn-raised"
+          data-toggle="modal"
+          data-target="#new-variation-dialog"
+        >
+          <i className="fa fa-plus"/> Add Variation
+        </button>
+      );
+    }
+
+    return (
+      <div
+        className="btn-toolbar"
+        role="toolbar"
+        aria-label="..."
+      >
+        <a
+          className="btn btn-info btn-raised"
+          href={`/export/${this.props.project.id}`}
+        >
+          <i className="fa fa-download"/> Export Project
+        </a>
+        {mid}
+        <button
+          id="archive_project"
+          type="button"
+          className="btn btn-info btn-raised"
+          onClick={this.handleArchive}
+        >
+          <i className="fa fa-check-square-o"/>{ this.props.project.active ? 'Archive Project' : 'Unarchive Project' }
+        </button>
+        <button
+          id="delete_project"
+          type="button"
+          className="btn btn-danger btn-raised"
+          onClick={this.handleDelete}
+        >
+          <i className="fa fa-trash"/> Delete Project
+        </button>
+      </div>
+    );
+  }
+
   handleDelete() {
+    'use strict';
+
     swal({
       title: 'Are you sure to delete this project?',
       text: `You are going to delete project ${projectName}`,
@@ -38,16 +107,19 @@ export default class Toolbar extends React.Component {
           title: 'Nice!',
           text: `You delete: ${projectName}`,
           type: 'success'
-        }, () => window.location.href = '/');
+        }, () => {
+          window.location.href = '/';
+        });
       });
     });
   }
 
   handleArchive() {
-    const action = projectActive ? 'archive' : 'unarchive';
+    'use strict';
+
+    const action = this.props.project.active ? 'archive' : 'unarchive';
     swal({
       title: `Are you sure to ${action} the project?`,
-      //text: 'You can recover this project later!',
       type: 'info',
       showCancelButton: true,
       confirmButtonColor: '#DD6B55',
@@ -70,11 +142,12 @@ export default class Toolbar extends React.Component {
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
       $button.off('click');
 
+      const editProjectUrl = $('#project-data').data().editProjectUrl;
       $.ajax({
           url: editProjectUrl,
           type: 'PUT',
           data: JSON.stringify({
-            active: !projectActive
+            active: !this.props.project.active
           }),
           contentType: 'application/json; charset=utf-8',
           dataType: 'json'
@@ -88,63 +161,8 @@ export default class Toolbar extends React.Component {
         });
     });
   }
-
-  render() {
-    'use strict';
-    if (this.props.project === null) {
-      return false;
-    }
-    let mid;
-    if (this.props.progress) {
-      mid = (
-        <button
-          className="btn btn-material-deep-purple btn-raised"
-          data-toggle="modal"
-          data-target="#new-progress-item-dialog"
-        >
-          <i className="fa fa-plus"/> New Items
-        </button>
-      );
-    } else {
-      mid = (
-        <button
-          className="btn btn-primary btn-raised"
-          data-toggle="modal"
-          data-target="#new-variation-dialog"
-        >
-          <i className="fa fa-plus"/> Add Variation
-        </button>
-      );
-    }
-    return (
-      <div
-        className="btn-toolbar"
-        role="toolbar"
-        aria-label="...">
-        <a
-          className="btn btn-info btn-raised"
-          href="/export/{{ current_project.pid }}"
-        >
-          <i className="fa fa-download"/> Export Project
-        </a>
-        {mid}
-        <button
-          id="archive_project"
-          type="button"
-          className="btn btn-info btn-raised"
-          onClick={this.handleArchive}
-        >
-          <i className="fa fa-check-square-o"/>{ this.props.project.active ? 'Archive Project' : 'Unarchive Project' }
-        </button>
-        <button
-          id="delete_project"
-          type="button"
-          className="btn btn-danger btn-raised"
-          onClick={this.handleDelete}
-        >
-          <i className="fa fa-trash"/> Delete Project
-        </button>
-      </div>
-    );
-  }
 }
+Toolbar.propTypes = {
+  progress: React.PropTypes.bool,
+  project: React.PropTypes.object
+};

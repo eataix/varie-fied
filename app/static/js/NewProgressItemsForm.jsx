@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
 import { addProgressItem, deleteProgressItem, editProgressItem } from './redux/actions';
-import { isTrue, isFalse, isNull } from './main.js';
+import { isTrue, isFalse, isNull, newProgressItemUrl } from './defs';
 
 class ProgressItem extends React.Component {
   constructor() {
@@ -57,6 +57,15 @@ class ProgressItem extends React.Component {
     );
   }
 }
+ProgressItem.propTypes = {
+  name: React.PropTypes.string.isRequired,
+  value: React.PropTypes.oneOfType([
+    React.PropTypes.string.isRequired,
+    React.PropTypes.number.isRequired
+  ]),
+  addRow: React.PropTypes.func.isRequired,
+  deleteRow: React.PropTypes.func.isRequired
+};
 
 const mapStateToProps = (state)=> {
   return {
@@ -77,7 +86,6 @@ export default class NewProgressItemsForm extends React.Component {
     super();
     this.handleHideModal = this.handleHideModal.bind(this);
   }
-
 
   handleHideModal() {
     $(this.refs.modal).modal('hide');
@@ -182,8 +190,6 @@ export default class NewProgressItemsForm extends React.Component {
       console.log(progressItems);
 
       const statusArray = new Array(progressItems.length).fill(null);
-
-      const newProgressItemUrl = $('#meta-data').data().newProgressItemUrl;
 
       (function createItem(offset) {
         if (offset >= progressItems.length) {
