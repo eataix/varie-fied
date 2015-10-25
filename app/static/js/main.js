@@ -1,9 +1,10 @@
 (() => {
   'use strict';
 
+  $.fn.editable.defaults.mode = 'inline';
+
   $(document).on('ready', () => {
     $.material.init();
-    $.fn.editable.defaults.mode = 'inline';
   });
 
   (function(i, s, o, g, r, a, m) {

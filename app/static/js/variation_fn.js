@@ -4,12 +4,12 @@ let $table = null;
 
 const exportFunctions = () => {
   'use strict';
+
   window.pendingClick = (cb) => {
     const $tr = $(cb).parents('tr');
     $tr.attr('class', 'info');
     $tr.find('.checkbox-approved').prop('checked', false);
     $tr.find('.checkbox-declined').prop('checked', false);
-    $('#btn-save').prop('disabled', false);
   };
 
   window.pendingFormatter = (value) => {
@@ -26,7 +26,6 @@ const exportFunctions = () => {
     $tr.attr('class', 'success');
     $tr.find('.checkbox-pending').prop('checked', false);
     $tr.find('.checkbox-declined').prop('checked', false);
-    $('#btn-save').prop('disabled', false);
   };
 
   window.approvedFormatter = (value) => {
@@ -43,7 +42,6 @@ const exportFunctions = () => {
     $tr.attr('class', 'danger');
     $tr.find('.checkbox-pending').prop('checked', false);
     $tr.find('.checkbox-approved').prop('checked', false);
-    $('#btn-save').prop('disabled', false);
   };
 
   window.declinedFormatter = (value) => {
@@ -56,7 +54,6 @@ const exportFunctions = () => {
   };
 
   window.completeClick = () => {
-    $('#btn-save').prop('disabled', false);
   };
 
   window.completeFormatter = (value) => {
@@ -93,9 +90,8 @@ const exportFunctions = () => {
   };
 
   window.moneyFormatter = (value) => {
-    return accounting.formatMoney(value);
+    return `<p>${accounting.formatMoney(value)}</p>`;
   };
-
 
   window.detailFormatter = (index, row) => {
     $.ajax({
@@ -104,7 +100,7 @@ const exportFunctions = () => {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
       })
-      .done(data => {
+      .done((data) => {
         const items = data.items;
         let html = [
           '<table class="table table-hover">',
@@ -119,13 +115,13 @@ const exportFunctions = () => {
         const descriptionClass = `new-editable-description-${index}`;
         const amountClass = `new-editable-amount-${index}`;
 
-        items.forEach(item => html += [
+        items.forEach((item) => html += [
           '    <tr class="item-detail">',
           '      <td>',
           `        <a href="javascript:void(0)" data-type="textarea" pk=${item.id} class="${descriptionClass}">${item.description}</a>`,
           '      </td>',
           '      <td style="text-align: right;width: 200px">',
-          `        <a href="javascript:void(0)" data-type="textarea" pk=${item.id} class="${amountClass}">${item.amount}</a>`,
+          `        <a href="javascript:void(0)" data-type="text" pk=${item.id} class="${amountClass}">${item.amount}</a>`,
           '      </td>',
           '    </tr>'
         ].join('\n'));
@@ -139,12 +135,10 @@ const exportFunctions = () => {
 
         const $description = $(`.${descriptionClass}`);
         $description.editable();
-        $description.on('save', () => $('#btn-save').prop('disabled', false));
 
         const $amount = $(`.${amountClass}`);
         $amount.editable();
         $amount.on('save', (e, params) => {
-          $('#btn-save').prop('disabled', false);
           let total = 0.0;
           $(`.${amountClass}`).each((i, o) => {
             if (o !== e.target) {
@@ -307,7 +301,7 @@ export const handleSaveVariation = () => {
     const statusArray = new Array(data.length).fill(null);
 
     (() => {
-      const updateVariations = (offse = 0) => {
+      const updateVariations = (offset = 0) => {
         if (offset >= data.length) {
           return;
         }
@@ -328,8 +322,12 @@ export const handleSaveVariation = () => {
             contentType: 'application/json; charset=utf-8',
             dataType: 'json'
           })
-          .done(() => statusArray[offset] = true)
-          .fail(() => statusArray[offset] = false);
+          .done(() => {
+            statusArray[offset] = true;
+          })
+          .fail(() => {
+            statusArray[offset] = false;
+          });
 
         updateVariations(offset + 1);
       };
@@ -361,8 +359,12 @@ export const handleSaveVariation = () => {
             contentType: 'application/json; charset=utf-8',
             dataType: 'json'
           })
-          .done(() => statusArray2[offset] = true)
-          .fail(() => statusArray2[offset] = false);
+          .done(() => {
+            statusArray2[offset] = true;
+          })
+          .fail(() => {
+            statusArray2[offset] = false;
+          });
 
         updateItemDetail(offset + 1);
       };

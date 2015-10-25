@@ -215,7 +215,7 @@ export default class NewProgressItemsForm extends React.Component {
           }
           const item = progressItems.get(offset);
           const name = item.name;
-          const contract_value = item.value;
+          const contract_value = parseFloat(item.value);
 
           $.ajax({
               url: newProgressItemUrl,

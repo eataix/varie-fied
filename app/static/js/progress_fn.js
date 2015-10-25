@@ -63,9 +63,7 @@ export const initProgressTable = (table) => {
           valign: 'center',
           width: '100px'
         }],
-        data: data.progress_items,
-        rowStyle: 'rowStyle',
-        toolbar: '#toolbar'
+        data: data.progress_items
       });
     });
 };
@@ -102,10 +100,11 @@ export const handleSaveProgress = () => {
           return;
         }
         const value = data[offset];
+
         const id = value.id;
         const name = value.name;
-        const contract_value = value.contract_value;
-        const completed_value = value.completed_value;
+        const contract_value = parseFloat(value.contract_value);
+        const completed_value = parseFloat(value.completed_value);
 
         $.ajax({
             url: `/api/v1.0/progress_items/${id}`,
@@ -118,8 +117,12 @@ export const handleSaveProgress = () => {
             contentType: 'application/json; charset=utf-8',
             dataType: 'json'
           })
-          .done(() => statusArray[offset] = true)
-          .fail(() => statusArray[offset] = false);
+          .done(() => {
+            statusArray[offset] = true;
+          })
+          .fail(() => {
+            statusArray[offset] = false;
+          });
 
         updateProgressItems(offset + 1);
       };
@@ -187,9 +190,11 @@ export const handleDeleteProgress = () => {
             contentType: 'application/json; charset=utf-8',
             dataType: 'json'
           })
-          .done(() => statusArray[offset] = true)
+          .done(() => {
+            statusArray[offset] = true;
+          })
           .fail(() => {
-            console.log(`Failed to delete progress item #${selected[offset].id}`);
+            //console.log(`Failed to delete progress item #${selected[offset].id}`);
             statusArray[offset] = false;
           });
         saveSelections(offset + 1);
@@ -212,7 +217,9 @@ export const handleDeleteProgress = () => {
             title: 'Nice!',
             text: 'Deleted selected items',
             type: 'success'
-          }, () => location.reload());
+          }, () => {
+            location.reload();
+          });
         }
       };
       waiting();

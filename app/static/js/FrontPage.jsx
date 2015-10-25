@@ -5,6 +5,8 @@ import NewProjectForm from './NewProjectForm';
 import NewVariationForm from './NewVariationForm';
 import ProjectList from './ProjectList';
 
+import './main';
+
 export default class FrontPage extends React.Component {
   render() {
     return (
