@@ -4,6 +4,6 @@
 
 {% block scripts %}
     {{ super() }}
-    <script data-cfasync="false" src="{{ url_for('static', filename='dist/js/index.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='dist/js/index.min.js') }}"></script>
 {% endblock %}
 

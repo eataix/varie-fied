@@ -24,18 +24,13 @@
     <script src="{{ url_for('static', filename='dist/js/packed.js') }}"></script>
 {% endblock %}
 
-{% block navbar %}
-    <div id="navbar-menu"></div>
-    <div id="new-variation-form-container"></div>
-    <div id="new-project-form-container"></div>
-{% endblock %}
-
 {% block content %}
     <div id="loader-wrapper">
         <div id="loader"></div>
         <div class="loader-section section-left"></div>
         <div class="loader-section section-right"></div>
     </div>
+
     <div id="content"></div>
 {% endblock %}
 
