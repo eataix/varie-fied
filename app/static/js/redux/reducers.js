@@ -169,8 +169,8 @@ const app = (state = initialState, action) => {
           project: action.project,
           editName: action.project.name,
           editRefNum: action.project.reference_number,
-          editMargin: action.project.margin,
-          editAdminFee: action.project.admin_fee
+          editMargin: action.project.margin.toString(),
+          editAdminFee: action.project.admin_fee === null ? '' : action.project.admin_fee.toString()
         });
       } else {
         newState = Object.assign({}, state, {

@@ -218,23 +218,21 @@ export default class NewProgressItemsForm extends React.Component {
           const contract_value = parseFloat(item.value);
 
           $.ajax({
-              url: newProgressItemUrl,
-              type: 'POST',
-              data: JSON.stringify({
-                name: name,
-                contract_value: contract_value,
-                project_id: projectId
-              }),
-              contentType: 'application/json; charset=utf-8',
-              dataType: 'json'
-            })
-            .done(() => {
-              statusArray[offset] = true;
-              createItem(offset + 1);
-            })
-            .fail(() => {
-              statusArray[offset] = false;
-            });
+            url: newProgressItemUrl,
+            type: 'POST',
+            data: JSON.stringify({
+              name: name,
+              contract_value: contract_value,
+              project_id: projectId
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          }).done(() => {
+            statusArray[offset] = true;
+            createItem(offset + 1);
+          }).fail(() => {
+            statusArray[offset] = false;
+          });
         };
         createItem(0);
       })();

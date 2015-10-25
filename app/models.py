@@ -29,7 +29,7 @@ class Project(db.Model):
 
     def to_json(self) -> Dict[str, Any]:
         json_project = {
-            "id": self.pid,
+            'id': self.pid,
             'name': self.name,
             'reference_number': self.reference_number,
             'active': self.active,

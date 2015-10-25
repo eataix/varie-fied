@@ -87,12 +87,12 @@ export default class ProjectPage extends React.Component {
         url: editProjectUrl,
         contentType: 'application/json; charset=utf-8'
       })
-      .done(((data) => {
+      .done((data) => {
         this.props.loadProject(data);
-      }).bind(this))
-      .fail(((xhr, status, err) => {
+      })
+      .fail((xhr, status, err) => {
         console.error(editProjectUrl, status, err.toString());
-      }).bind(this));
+      });
   }
 
   render() {

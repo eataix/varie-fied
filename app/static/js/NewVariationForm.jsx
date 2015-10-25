@@ -473,7 +473,7 @@ export default class NewVariationForm extends React.Component {
       closeOnConfirm: false,
       closeOnCancel: false,
       customClass: 'newVariationConfirmation'
-    }, isConfirm => {
+    }, (isConfirm) => {
       if (!isConfirm) {
         swal('Cancelled', 'The variation is not yet added :)', 'error');
         return;
@@ -499,88 +499,82 @@ export default class NewVariationForm extends React.Component {
       });
 
       $.ajax({
-          url: newVariationUrl,
-          type: 'POST',
-          data: JSON.stringify({
-            project_id: project_id,
-            date: timeUTC,
-            subcontractor: subcontractor,
-            invoice_no: invoice_no,
-            amount: input_amount,
-            description: input_description
-          }),
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .fail(() => {
-          swal({
-            title: 'Error',
-            text: 'Cannot save the variation... Please try again.',
-            type: 'error'
-          });
-        })
-        .done((data) => {
-          const vid = data.vid;
-          const variationItems = this.props.variations;
-          console.log(variationItems);
-          const statusArray = new Array(variationItems.size).fill(null);
-
-          (() => {
-            const createVariationItem = (offset = 0) => {
-              if (offset >= variationItems.size) {
-                return;
-              }
-              const item = variationItems.get(offset);
-              const desc = item.name;
-              const amount = parseFloat(item.value);
-
-              $.ajax({
-                  url: newItemUrl,
-                  type: 'POST',
-                  data: JSON.stringify({
-                    variation_id: vid,
-                    description: desc,
-                    amount: amount
-                  }),
-                  contentType: 'application/json; charset=utf-8',
-                  dataType: 'json'
-                })
-                .done(() => {
-                  statusArray[offset] = true;
-                  createVariationItem(offset + 1);
-                })
-                .fail(() => statusArray[offset] = false);
-            };
-            createVariationItem(0);
-          })();
-
-          (() => {
-            const waiting = () => {
-              if (statusArray.some(isFalse)) {
-                swal({
-                  title: 'Error',
-                  text: 'Cannot save the variation... Please try again.',
-                  type: 'error'
-                });
-              } else if (statusArray.some(isNull)) {
-                setTimeout(waiting, 100);
-              } else if (statusArray.every(isTrue)) {
-                swal({
-                  title: 'Nice!',
-                  text: 'You created a new variation',
-                  type: 'success'
-                }, () => {
-                  if (location.pathname !== '/' && location.pathname.split('/')[3] === 'variation') {
-                    location.reload();
-                  } else {
-                    this.handleHideModal();
-                  }
-                });
-              }
-            };
-            waiting();
-          })();
+        url: newVariationUrl,
+        type: 'POST',
+        data: JSON.stringify({
+          project_id: project_id,
+          date: timeUTC,
+          subcontractor: subcontractor,
+          invoice_no: invoice_no,
+          amount: input_amount,
+          description: input_description
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json'
+      }).fail(() => {
+        swal({
+          title: 'Error',
+          text: 'Cannot save the variation... Please try again.',
+          type: 'error'
         });
+      }).done((data) => {
+        const vid = data.vid;
+        const variationItems = this.props.variations;
+        console.log(variationItems);
+        const statusArray = new Array(variationItems.size).fill(null);
+
+        (() => {
+          const createVariationItem = (offset = 0) => {
+            if (offset >= variationItems.size) {
+              return;
+            }
+            const item = variationItems.get(offset);
+            const desc = item.name;
+            const amount = parseFloat(item.value);
+
+            $.ajax({
+                url: newItemUrl,
+                type: 'POST',
+                data: JSON.stringify({
+                  variation_id: vid,
+                  description: desc,
+                  amount: amount
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json'
+              })
+              .done(() => {
+                statusArray[offset] = true;
+                createVariationItem(offset + 1);
+              })
+              .fail(() => statusArray[offset] = false);
+          };
+          createVariationItem(0);
+        })();
+
+        (() => {
+          const waiting = () => {
+            if (statusArray.some(isFalse)) {
+              swal({
+                title: 'Error',
+                text: 'Cannot save the variation... Please try again.',
+                type: 'error'
+              });
+            } else if (statusArray.some(isNull)) {
+              setTimeout(waiting, 100);
+            } else if (statusArray.every(isTrue)) {
+              swal({
+                title: 'Nice!',
+                text: 'You created a new variation',
+                type: 'success'
+              }, () => {
+                location.pathname = `/project/${project_id}/variation`;
+              });
+            }
+          };
+          waiting();
+        })();
+      });
     });
   }
 

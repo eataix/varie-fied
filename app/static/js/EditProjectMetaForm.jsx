@@ -99,10 +99,7 @@ class Margin extends React.Component {
 }
 Margin.propTypes = {
   cb: React.PropTypes.func.isRequired,
-  margin: React.PropTypes.oneOfType([
-    React.PropTypes.number.isRequired,
-    React.PropTypes.string.isRequired
-  ])
+  margin: React.PropTypes.string.isRequired
 };
 
 class AdminFee extends React.Component {
@@ -136,10 +133,7 @@ class AdminFee extends React.Component {
 }
 AdminFee.propTypes = {
   cb: React.PropTypes.func.isRequired,
-  admin_fee: React.PropTypes.oneOfType([
-    React.PropTypes.number.isRequired,
-    React.PropTypes.string.isRequired
-  ])
+  admin_fee: React.PropTypes.string.isRequired
 };
 
 const mapStateToProps = (state) => {
@@ -257,7 +251,7 @@ export default class EditProjectMetaForm extends React.Component {
       closeOnConfirm: false,
       closeOnCancel: false,
       customClass: 'saveMetaConfirmation'
-    }, isConfirmed => {
+    }, (isConfirmed) => {
       if (!isConfirmed) {
         swal({
           title: 'Cancelled',
@@ -272,16 +266,8 @@ export default class EditProjectMetaForm extends React.Component {
 
       const new_name = this.props.name;
       const new_reference_number = this.props.reference_number;
-      let new_margin = this.props.margin;
-      if (_.isString(new_margin)) {
-        new_margin = parseFloat(new_margin);
-      }
-      let new_admin_fee = this.props.admin_fee;
-      if (new_admin_fee === '') {
-        new_admin_fee = null;
-      } else if (_.isString(new_admin_fee)) {
-        new_admin_fee = parseFloat(new_admin_fee);
-      }
+      const new_margin = parseFloat(this.props.margin);
+      const new_admin_fee = this.props.admin_fee === '' ? null : parseFloat(this.props.admin_fee);
 
       console.log({
         url: editProjectUrl,

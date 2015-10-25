@@ -10,7 +10,6 @@ export default class Toolbar extends React.Component {
   }
 
   render() {
-    'use strict';
     if (this.props.project === null) {
       return false;
     }
@@ -128,7 +127,7 @@ export default class Toolbar extends React.Component {
       closeOnConfirm: false,
       closeOnCancel: false,
       customClass: 'archiveConfirmation'
-    }, isConfirm => {
+    }, (isConfirm) => {
       if (!isConfirm) {
         swal({
           title: 'Cancelled',
@@ -143,21 +142,20 @@ export default class Toolbar extends React.Component {
       $button.off('click');
 
       $.ajax({
-          url: editProjectUrl,
-          type: 'PUT',
-          data: JSON.stringify({
-            active: !this.props.project.active
-          }),
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .done(() => {
-          swal({
-            title: 'Nice!',
-            text: `You ${action}d projectName`,
-            type: 'success'
-          }, () => location.reload());
-        });
+        url: editProjectUrl,
+        type: 'PUT',
+        data: JSON.stringify({
+          active: !this.props.project.active
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json'
+      }).done(() => {
+        swal({
+          title: 'Nice!',
+          text: `You ${action}d projectName`,
+          type: 'success'
+        }, () => location.reload());
+      });
     });
   }
 }

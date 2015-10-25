@@ -25,6 +25,5 @@ import FrontPage from './FrontPage';
     </Provider>,
     document.getElementById('content')
   );
-
 })();
 

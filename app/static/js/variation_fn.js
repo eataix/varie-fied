@@ -95,66 +95,65 @@ const exportFunctions = () => {
 
   window.detailFormatter = (index, row) => {
     $.ajax({
-        url: `/api/v1.0/variations/${row.vid}/items/`,
-        type: 'GET',
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json'
-      })
-      .done((data) => {
-        const items = data.items;
-        let html = [
-          '<table class="table table-hover">',
-          '  <thead>',
-          '    <tr>',
-          '      <th style="text-align: center">Name</th>',
-          '      <th style="text-align: center">Amount</th>',
-          '    </tr>',
-          '  </thead>',
-          '  <tbody>'
-        ].join('\n');
-        const descriptionClass = `new-editable-description-${index}`;
-        const amountClass = `new-editable-amount-${index}`;
+      url: `/api/v1.0/variations/${row.vid}/items/`,
+      type: 'GET',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json'
+    }).done((data) => {
+      const items = data.items;
+      let html = [
+        '<table class="table table-hover">',
+        '  <thead>',
+        '    <tr>',
+        '      <th style="text-align: center">Name</th>',
+        '      <th style="text-align: center">Amount</th>',
+        '    </tr>',
+        '  </thead>',
+        '  <tbody>'
+      ].join('\n');
+      const descriptionClass = `new-editable-description-${index}`;
+      const amountClass = `new-editable-amount-${index}`;
 
-        items.forEach((item) => html += [
-          '    <tr class="item-detail">',
-          '      <td>',
-          `        <a href="javascript:void(0)" data-type="textarea" pk=${item.id} class="${descriptionClass}">${item.description}</a>`,
-          '      </td>',
-          '      <td style="text-align: right;width: 200px">',
-          `        <a href="javascript:void(0)" data-type="text" pk=${item.id} class="${amountClass}">${item.amount}</a>`,
-          '      </td>',
-          '    </tr>'
-        ].join('\n'));
+      items.forEach((item) => html += [
+        '    <tr class="item-detail">',
+        '      <td>',
+        `        <a href="javascript:void(0)" data-type="textarea" pk=${item.id} class="${descriptionClass}">${item.description}</a>`,
+        '      </td>',
+        '      <td style="text-align: right;width: 200px">',
+        `        <a href="javascript:void(0)" data-type="text" pk=${item.id} class="${amountClass}">${item.amount}</a>`,
+        '      </td>',
+        '    </tr>'
+      ].join('\n'));
 
-        html += [
-          '  </tbody>',
-          '</table>'
-        ].join('\n');
+      html += [
+        '  </tbody>',
+        '</table>'
+      ].join('\n');
 
-        $($(`[data-index=${index}]`).next()).children().html(html);
+      $($(`[data-index=${index}]`).next()).children().html(html);
 
-        const $description = $(`.${descriptionClass}`);
-        $description.editable();
+      const $description = $(`.${descriptionClass}`);
+      $description.editable();
 
-        const $amount = $(`.${amountClass}`);
-        $amount.editable();
-        $amount.on('save', (e, params) => {
-          let total = 0.0;
-          $(`.${amountClass}`).each((i, o) => {
-            if (o !== e.target) {
-              const val = $(o).html();
-              if (val !== '' && $.isNumeric(val)) {
-                total += parseFloat(val);
-              }
-            } else {
-              total += parseFloat(params.newValue);
+      const $amount = $(`.${amountClass}`);
+      $amount.editable();
+      $amount.on('save', (e, params) => {
+        let total = 0.0;
+        $(`.${amountClass}`).each((i, o) => {
+          if (o !== e.target) {
+            const val = $(o).html();
+            if (val !== '' && $.isNumeric(val)) {
+              total += parseFloat(val);
             }
-          });
-          total *= 1.0 + projectMargin;
-          total += projectAdminFee;
-          $(e.target).closest('.detail-view').prev().children('.subtotal').html(`<b>${accounting.formatMoney(total)}</b>`);
+          } else {
+            total += parseFloat(params.newValue);
+          }
         });
+        total *= 1.0 + projectMargin;
+        total += projectAdminFee;
+        $(e.target).closest('.detail-view').prev().children('.subtotal').html(`<b>${accounting.formatMoney(total)}</b>`);
       });
+    });
 
     return '<strong><i class="fa fa-spinner fa-spin"></i> Loading...</strong>';
   };
@@ -169,105 +168,106 @@ export const initVariationTable = (table) => {
   }
 
   $.ajax({
-      url: getProjectVariationsUrl,
-      type: 'GET',
-      contentType: 'application/json; charset=utf-8'
-    })
-    .done((data) => {
-      $table.bootstrapTable({
-        columns: [{
-          checkbox: true
-        }, {
-          field: 'virtual_id',
-          title: '#',
-          halign: 'center',
-          sortable: true
-        }, {
-          field: 'description',
-          title: 'Description',
-          editable: {
-            type: 'textarea'
-          },
-          halign: 'center',
-          width: '600px'
-        }, {
-          field: 'date',
-          title: 'Date',
-          formatter: 'timeFormatter',
-          halign: 'center',
-          width: '300px'
-        }, {
-          field: 'subcontractor',
-          title: 'Subcontractor',
-          editable: {
-            type: 'text',
-            validate: (v) => {
-              if (v === null || v === '') {
-                return 'Cannot be empty!';
-              }
+    url: getProjectVariationsUrl,
+    type: 'GET',
+    contentType: 'application/json; charset=utf-8'
+  }).done((data) => {
+    $table.bootstrapTable({
+      columns: [{
+        checkbox: true
+      }, {
+        field: 'virtual_id',
+        title: '#',
+        halign: 'center',
+        sortable: true
+      }, {
+        field: 'description',
+        title: 'Description',
+        editable: {
+          type: 'textarea'
+        },
+        halign: 'center',
+        width: '600px'
+      }, {
+        field: 'date',
+        title: 'Date',
+        formatter: 'timeFormatter',
+        halign: 'center',
+        width: '300px'
+      }, {
+        field: 'subcontractor',
+        title: 'Subcontractor',
+        editable: {
+          type: 'text',
+          validate: (v) => {
+            if (v === null || v === '') {
+              return 'Cannot be empty!';
             }
-          },
-          halign: 'center',
-          sortable: true
-        }, {
-          field: 'amount',
-          title: 'Subtotal ($)',
-          halign: 'center',
-          sortable: true,
-          formatter: 'moneyFormatter',
-          'class': 'subtotal'
-        }, {
-          field: 'invoice_no',
-          title: 'Invoice #',
-          editable: true,
-          halign: 'center'
-        }, {
-          field: 'note',
-          title: 'Note',
-          editable: {
-            type: 'textarea'
-          },
-          halign: 'center'
-        }, {
-          field: 'pending',
-          title: 'Pending',
-          formatter: 'pendingFormatter',
-          halign: 'center',
-          valign: 'center',
-          sortable: true,
-          'class': 'pending'
-        }, {
-          field: 'approved',
-          title: 'Approved',
-          formatter: 'approvedFormatter',
-          halign: 'center',
-          valign: 'center',
-          sortable: true,
-          'class': 'approved'
-        }, {
-          field: 'declined',
-          title: 'Declined',
-          formatter: 'declinedFormatter',
-          halign: 'center',
-          valign: 'center',
-          sortable: true,
-          'class': 'declined'
-        }, {
-          field: 'completed',
-          title: 'Completed',
-          formatter: 'completeFormatter',
-          halign: 'center',
-          valign: 'center',
-          sortable: true,
-          'class': 'completed'
-        }],
-        data: data.variations,
-        rowStyle: 'rowStyle',
-        toolbar: '#toolbar',
-        detailView: true,
-        detailFormatter: 'detailFormatter'
-      });
+          }
+        },
+        halign: 'center',
+        sortable: true
+      }, {
+        field: 'amount',
+        title: 'Subtotal ($)',
+        halign: 'center',
+        sortable: true,
+        formatter: 'moneyFormatter',
+        'class': 'subtotal'
+      }, {
+        field: 'invoice_no',
+        title: 'Invoice #',
+        editable: true,
+        halign: 'center'
+      }, {
+        field: 'note',
+        title: 'Note',
+        editable: {
+          type: 'textarea'
+        },
+        halign: 'center'
+      }, {
+        field: 'pending',
+        title: 'Pending',
+        formatter: 'pendingFormatter',
+        halign: 'center',
+        valign: 'center',
+        sortable: true,
+        'class': 'pending'
+      }, {
+        field: 'approved',
+        title: 'Approved',
+        formatter: 'approvedFormatter',
+        halign: 'center',
+        valign: 'center',
+        sortable: true,
+        'class': 'approved'
+      }, {
+        field: 'declined',
+        title: 'Declined',
+        formatter: 'declinedFormatter',
+        halign: 'center',
+        valign: 'center',
+        sortable: true,
+        'class': 'declined'
+      }, {
+        field: 'completed',
+        title: 'Completed',
+        formatter: 'completeFormatter',
+        halign: 'center',
+        valign: 'center',
+        sortable: true,
+        'class': 'completed'
+      }],
+      data: data.variations,
+      rowStyle: 'rowStyle',
+      toolbar: '#toolbar',
+      detailView: true,
+      detailFormatter: 'detailFormatter'
     });
+  }).always(() => {
+    $('body').addClass('loaded');
+  });
 };
 
 export const handleSaveVariation = () => {
@@ -316,18 +316,16 @@ export const handleSaveVariation = () => {
         value.amount = accounting.parse(element.find('.subtotal').html());
 
         $.ajax({
-            url: `/api/v1.0/variations/${vid}`,
-            type: 'PUT',
-            data: JSON.stringify(value),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => {
-            statusArray[offset] = true;
-          })
-          .fail(() => {
-            statusArray[offset] = false;
-          });
+          url: `/api/v1.0/variations/${vid}`,
+          type: 'PUT',
+          data: JSON.stringify(value),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        }).done(() => {
+          statusArray[offset] = true;
+        }).fail(() => {
+          statusArray[offset] = false;
+        });
 
         updateVariations(offset + 1);
       };
@@ -350,21 +348,19 @@ export const handleSaveVariation = () => {
         const amount = parseFloat(amountObj.html());
 
         $.ajax({
-            url: `/api/v1.0/items/${id}`,
-            type: 'PUT',
-            data: JSON.stringify({
-              amount: amount,
-              description: description
-            }),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => {
-            statusArray2[offset] = true;
-          })
-          .fail(() => {
-            statusArray2[offset] = false;
-          });
+          url: `/api/v1.0/items/${id}`,
+          type: 'PUT',
+          data: JSON.stringify({
+            amount: amount,
+            description: description
+          }),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        }).done(() => {
+          statusArray2[offset] = true;
+        }).fail(() => {
+          statusArray2[offset] = false;
+        });
 
         updateItemDetail(offset + 1);
       };
@@ -433,17 +429,15 @@ export const handleDeleteVariation = () => {
           return;
         }
         $.ajax({
-            url: `/api/v1.0/variations/${selected[offset].vid}`,
-            type: 'DELETE',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => {
-            statusArray[offset] = true;
-          })
-          .fail(() => {
-            statusArray[offset] = false;
-          });
+          url: `/api/v1.0/variations/${selected[offset].vid}`,
+          type: 'DELETE',
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        }).done(() => {
+          statusArray[offset] = true;
+        }).fail(() => {
+          statusArray[offset] = false;
+        });
         deleteVariation(offset + 1);
       };
       deleteVariation(0);

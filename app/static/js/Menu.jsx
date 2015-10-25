@@ -112,16 +112,21 @@ export default class Menu extends React.Component {
   componentDidMount() {
     this.loadProjects();
     setInterval(this.loadProjects, 10000);
-    $('body').addClass('loaded');
   }
 
   loadProjects() {
     $.ajax({
-        url: projectsUrl,
-        contentType: 'application/json; charset=utf-8'
-      })
-      .done(((data) => this.props.loadProjects(data.projects)).bind(this))
-      .fail(((xhr, status, err) => console.error(projectsUrl, status, err.toString())).bind(this));
+      url: projectsUrl,
+      contentType: 'application/json; charset=utf-8'
+    }).done((data) => {
+      this.props.loadProjects(data.projects);
+    }).fail((xhr, status, err) => {
+      console.error(projectsUrl, status, err.toString());
+    }).always(() => {
+      if (location.pathname === '/') {
+        $('body').addClass('loaded');
+      }
+    });
   }
 
   render() {
