@@ -4,7 +4,6 @@
   $(document).on('ready', () => {
     $.material.init();
     $.fn.editable.defaults.mode = 'inline';
-    $('body').addClass('loaded');
   });
 
   (function(i, s, o, g, r, a, m) {
