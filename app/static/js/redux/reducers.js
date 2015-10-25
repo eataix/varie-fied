@@ -44,7 +44,7 @@ const initialState = {
   editAdminFee: ''
 };
 
-export default function app(state = initialState, action) {
+const app = (state = initialState, action) => {
   'use strict';
 
   console.log(action);
@@ -197,4 +197,6 @@ export default function app(state = initialState, action) {
     default:
       return state;
   }
-}
+};
+
+export default app;

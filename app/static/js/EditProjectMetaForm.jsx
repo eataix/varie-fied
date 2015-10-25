@@ -75,7 +75,7 @@ class Margin extends React.Component {
 
   handleChange() {
     const value = this.refs.margin.getValue();
-    if ($.isNumeric(value)) {
+    if (value === '' || $.isNumeric(value)) {
       this.props.cb(value);
     }
   }
@@ -113,7 +113,7 @@ class AdminFee extends React.Component {
 
   handleChange() {
     const value = this.refs.adminFee.getValue();
-    if ($.isNumeric(value)) {
+    if (value === '' || $.isNumeric(value)) {
       this.props.cb(value);
     }
   }

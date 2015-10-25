@@ -29,24 +29,24 @@ export const EDIT_PROJECT_REF_NUMBER = 'EDIT_PROJECT_REF_NUMBER';
 export const EDIT_PROJECT_MARGIN = 'EDIT_PROJECT_MARGIN';
 export const EDIT_PROJECT_ADMIN_FEE = 'EDIT_PROJECT_ADMIN_FEE';
 
-export function addVariationItem(name = '', value = '') {
+export const addVariationItem = (name = '', value = '') => {
   'use strict';
   return {
     type: ADD_VARIATION_ITEM,
     name,
     value
   };
-}
+};
 
-export function deleteVariationItem(index) {
+export const deleteVariationItem = (index) => {
   'use strict';
   return {
     type: DELETE_VARIATION_ITEM,
     index
   };
-}
+};
 
-export function editVariationItem(index, name, value) {
+export const editVariationItem = (index, name, value) => {
   'use strict';
   return {
     type: EDIT_VARIATION_ITEM,
@@ -54,9 +54,9 @@ export function editVariationItem(index, name, value) {
     name,
     value
   };
-}
+};
 
-export function addClient(name = '', first = '', second = '') {
+export const addClient = (name = '', first = '', second = '') => {
   'use strict';
   return {
     type: ADD_CLIENT,
@@ -64,17 +64,17 @@ export function addClient(name = '', first = '', second = '') {
     first,
     second
   };
-}
+};
 
-export function deleteClient(index) {
+export const deleteClient = (index) => {
   'use strict';
   return {
     type: DELETE_CLIENT,
     index
   };
-}
+};
 
-export function editClient(index, name, first, second) {
+export const editClient = (index, name, first, second) => {
   'use strict';
   return {
     type: EDIT_CLIENT,
@@ -83,26 +83,26 @@ export function editClient(index, name, first, second) {
     first,
     second
   };
-}
+};
 
-export function addProgressItem(name = '', value = '') {
+export const addProgressItem = (name = '', value = '') => {
   'use strict';
   return {
     type: ADD_PROGRESS_ITEM,
     name,
     value
   };
-}
+};
 
-export function deleteProgressItem(index) {
+export const deleteProgressItem = (index) => {
   'use strict';
   return {
     type: DELETE_PROGRESS_ITEM,
     index
   };
-}
+};
 
-export function editProgressItem(index, name, value) {
+export const editProgressItem = (index, name, value) => {
   'use strict';
   return {
     type: EDIT_PROGRESS_ITEM,
@@ -110,9 +110,9 @@ export function editProgressItem(index, name, value) {
     name,
     value
   };
-}
+};
 
-export function updateMarginAndAdminFee(id, margin, adminFee) {
+export const updateMarginAndAdminFee = (id, margin, adminFee) => {
   'use strict';
   return {
     type: UPDATE_MARGIN_AND_ADMIN_FEE,
@@ -120,113 +120,117 @@ export function updateMarginAndAdminFee(id, margin, adminFee) {
     margin,
     adminFee
   };
-}
+};
 
-export function updateTime(time) {
+export const updateTime = (time) => {
   'use strict';
   return {
     type: UPDATE_TIME,
     time
   };
-}
+};
 
-export function updateSubcontractor(subcontractor) {
+export const updateSubcontractor = (subcontractor) => {
   'use strict';
   return {
     type: UPDATE_SUBCONTRACTOR,
     subcontractor
   };
-}
+};
 
-export function updateInvoiceNumber(invoiceNumber) {
+export const updateInvoiceNumber = (invoiceNumber) => {
   'use strict';
   return {
     type: UPDATE_INVOICE_NUMBER,
     invoiceNumber
   };
-}
+};
 
-export function updateDescription(description) {
+export const updateDescription = (description) => {
   'use strict';
   return {
     type: UPDATE_DESCRIPTION,
     description
   };
-}
+};
 
-export function newProjectName(newName) {
+export const newProjectName = (newName) => {
   'use strict';
   return {
     type: NEW_PROJECT_NAME,
     newName
   };
-}
+};
 
-export function newProjectRefNumber(newRefNum) {
+export const newProjectRefNumber = (newRefNum) => {
   'use strict';
   return {
     type: NEW_PROJECT_REF_NUMBER,
     newRefNum
   };
-}
+};
 
-export function newProjectMargin(newMargin) {
+export const newProjectMargin = (newMargin) => {
   'use strict';
   return {
     type: NEW_PROJECT_MARGIN,
     newMargin
   };
-}
+};
 
-export function newProjectAdminFee(newAdminFee) {
+export const newProjectAdminFee = (newAdminFee) => {
   'use strict';
   return {
     type: NEW_PROJECT_ADMIN_FEE,
     newAdminFee
   };
-}
+};
 
-export function loadProjects(projects) {
+export const loadProjects = (projects) => {
   'use strict';
   return {
     type: LOAD_PROJECTS,
     projects
   };
-}
+};
 
-export function loadProject(project) {
+export const loadProject = (project) => {
   'use strict';
   return {
     type: LOAD_PROJECT,
     project
   };
-}
+};
 
-export function editProjectName(name) {
+export const editProjectName = (name) => {
   'use strict';
   return {
     type: EDIT_PROJECT_NAME,
     name
   };
-}
-export function editProjectRefNumber(refNumber) {
+};
+
+export const editProjectRefNumber = (refNumber) => {
   'use strict';
   return {
     type: EDIT_PROJECT_REF_NUMBER,
     refNumber
   };
-}
-export function editProjectMargin(margin) {
+};
+
+export const editProjectMargin = (margin) => {
   'use strict';
   return {
     type: EDIT_PROJECT_MARGIN,
     margin
   };
-}
-export function editProjectAdminFee(adminFee) {
+};
+
+export const editProjectAdminFee = (adminFee) => {
   'use strict';
   return {
     type: EDIT_PROJECT_ADMIN_FEE,
     adminFee
   };
-}
+};
+

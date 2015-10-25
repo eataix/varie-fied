@@ -20,7 +20,7 @@ class ProgressItem extends React.Component {
   handleValueChange() {
     const name = this.refs.name.getValue();
     const value = this.refs.value.getValue();
-    if ($.isNumeric(value)) {
+    if (value === '' || $.isNumeric(value)) {
       this.props.updateItem(name, value);
     }
   }
@@ -76,7 +76,7 @@ ProgressItem.propTypes = {
   updateItem: React.PropTypes.func.isRequired
 };
 
-const mapStateToProps = (state)=> {
+const mapStateToProps = (state) => {
   return {
     project: state.project,
     progressItems: state.progressItems
@@ -208,52 +208,58 @@ export default class NewProgressItemsForm extends React.Component {
 
       const statusArray = new Array(progressItems.size).fill(null);
 
-      (function createItem(offset) {
-        if (offset >= progressItems.size) {
-          return;
-        }
-        const item = progressItems.get(offset);
-        const name = item.name;
-        const contract_value = item.value;
+      (() => {
+        const createItem = (offset = 0) => {
+          if (offset >= progressItems.size) {
+            return;
+          }
+          const item = progressItems.get(offset);
+          const name = item.name;
+          const contract_value = item.value;
 
-        $.ajax({
-            url: newProgressItemUrl,
-            type: 'POST',
-            data: JSON.stringify({
-              name: name,
-              contract_value: contract_value,
-              project_id: projectId
-            }),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-          })
-          .done(() => {
-            statusArray[offset] = true;
-            createItem(offset + 1);
-          })
-          .fail(() => {
-            statusArray[offset] = false;
-          });
-      })(0);
+          $.ajax({
+              url: newProgressItemUrl,
+              type: 'POST',
+              data: JSON.stringify({
+                name: name,
+                contract_value: contract_value,
+                project_id: projectId
+              }),
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json'
+            })
+            .done(() => {
+              statusArray[offset] = true;
+              createItem(offset + 1);
+            })
+            .fail(() => {
+              statusArray[offset] = false;
+            });
+        };
+        createItem(0);
+      })();
 
-      (function waiting() {
-        if (statusArray.some(isFalse)) {
-          swal({
-            title: 'Error',
-            text: 'Failed to save some this.props.changes.',
-            type: 'error'
-          });
-        } else if (statusArray.some(isNull)) {
-          setTimeout(waiting, 100);
-        } else if (statusArray.every(isTrue)) {
-          swal({
-            title: 'Nice!',
-            text: 'You added all changes',
-            type: 'success'
-          }, () => {
-            location.reload();
-          });
-        }
+      (() => {
+        const waiting = () => {
+          if (statusArray.some(isFalse)) {
+            swal({
+              title: 'Error',
+              text: 'Failed to save some this.props.changes.',
+              type: 'error'
+            });
+          } else if (statusArray.some(isNull)) {
+            setTimeout(waiting, 100);
+          } else if (statusArray.every(isTrue)) {
+            swal({
+              title: 'Nice!',
+              text: 'You added all changes',
+              type: 'success'
+            }, () => {
+              location.reload();
+            });
+          }
+        };
+        waiting();
       })();
     });
   }

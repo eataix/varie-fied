@@ -2,15 +2,15 @@ import { isTrue, isFalse, isNull, getProjectProgressItemsUrl } from './defs';
 
 let $table = null;
 
-function exportFunctions() {
+const exportFunctions = () => {
   'use strict';
 
-  window.percentageFormatter = function(value) {
+  window.percentageFormatter = (value) => {
     return `${(value * 100).toFixed(2)}%`;
   };
-}
+};
 
-export function initProgressTable(table) {
+export const initProgressTable = (table) => {
   'use strict';
 
   if ($table === null) {
@@ -23,7 +23,7 @@ export function initProgressTable(table) {
       type: 'GET',
       contentType: 'application/json; charset=utf-8'
     })
-    .done(data => {
+    .done((data) => {
       $table.bootstrapTable({
         columns: [{
           checkbox: true
@@ -68,9 +68,9 @@ export function initProgressTable(table) {
         toolbar: '#toolbar'
       });
     });
-}
+};
 
-export function handleSaveProgress() {
+export const handleSaveProgress = () => {
   'use strict';
 
   swal({
@@ -83,7 +83,7 @@ export function handleSaveProgress() {
     closeOnConfirm: false,
     closeOnCancel: false,
     customClass: 'saveVariationsConfirmation'
-  }, isConfirm => {
+  }, (isConfirm) => {
     if (!isConfirm) {
       swal({
         title: 'Cancelled',
@@ -96,54 +96,60 @@ export function handleSaveProgress() {
     const data = $table.bootstrapTable('getData');
     const statusArray = new Array(data.length).fill(null);
 
-    (function updateProgressItems(offset) {
-      if (offset >= data.length) {
-        return;
-      }
-      const value = data[offset];
-      const id = value.id;
-      const name = value.name;
-      const contract_value = value.contract_value;
-      const completed_value = value.completed_value;
+    (() => {
+      const updateProgressItems = (offset = 0) => {
+        if (offset >= data.length) {
+          return;
+        }
+        const value = data[offset];
+        const id = value.id;
+        const name = value.name;
+        const contract_value = value.contract_value;
+        const completed_value = value.completed_value;
 
-      $.ajax({
-          url: `/api/v1.0/progress_items/${id}`,
-          type: 'PUT',
-          data: JSON.stringify({
-            name: name,
-            contract_value: contract_value,
-            completed_value: completed_value
-          }),
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .done(() => statusArray[offset] = true)
-        .fail(() => statusArray[offset] = false);
+        $.ajax({
+            url: `/api/v1.0/progress_items/${id}`,
+            type: 'PUT',
+            data: JSON.stringify({
+              name: name,
+              contract_value: contract_value,
+              completed_value: completed_value
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          })
+          .done(() => statusArray[offset] = true)
+          .fail(() => statusArray[offset] = false);
 
-      updateProgressItems(offset + 1);
-    })(0);
+        updateProgressItems(offset + 1);
+      };
+      updateProgressItems(0);
+    })();
 
-    (function waiting() {
-      if (statusArray.some(isFalse)) {
-        swal({
-          title: 'Error',
-          text: 'Cannot save the changes... Please try again.',
-          type: 'error'
-        });
-      } else if (statusArray.some(isNull)) {
-        setTimeout(waiting, 100);
-      } else if (statusArray.every(isTrue)) {
-        swal({
-          title: 'Nice!',
-          text: 'You saved all changes.',
-          type: 'success'
-        }, () => location.reload());
-      }
+    (() => {
+      const waiting = () => {
+        if (statusArray.some(isFalse)) {
+          swal({
+            title: 'Error',
+            text: 'Cannot save the changes... Please try again.',
+            type: 'error'
+          });
+        } else if (statusArray.some(isNull)) {
+          setTimeout(waiting, 100);
+        } else if (statusArray.every(isTrue)) {
+          swal({
+            title: 'Nice!',
+            text: 'You saved all changes.',
+            type: 'success'
+          }, () => location.reload());
+        }
+      };
+      waiting();
     })();
   });
-}
+};
 
-export function handleDeleteProgress() {
+export const handleDeleteProgress = () => {
   'use strict';
 
   swal({
@@ -157,7 +163,7 @@ export function handleDeleteProgress() {
     closeOnConfirm: false,
     closeOnCancel: false,
     customClass: 'deleteRowsConfirmation'
-  }, isConfirmed => {
+  }, (isConfirmed) => {
     if (!isConfirmed) {
       swal({
         title: 'Cancelled',
@@ -170,41 +176,47 @@ export function handleDeleteProgress() {
     const selected = $table.bootstrapTable('getSelections');
     const statusArray = new Array(selected.length).fill(null);
 
-    (function saveSelections(offset) {
-      if (offset >= selected.length) {
-        return;
-      }
-      $.ajax({
-          url: `/api/v1.0/progress_items/${selected[offset].id}`,
-          type: 'DELETE',
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .done(() => statusArray[offset] = true)
-        .fail(() => {
-          console.log(`Failed to delete progress item #${selected[offset].id}`);
-          statusArray[offset] = false;
-        });
-      saveSelections(offset + 1);
-    })(0);
+    (() => {
+      const saveSelections = (offset = 0) => {
+        if (offset >= selected.length) {
+          return;
+        }
+        $.ajax({
+            url: `/api/v1.0/progress_items/${selected[offset].id}`,
+            type: 'DELETE',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          })
+          .done(() => statusArray[offset] = true)
+          .fail(() => {
+            console.log(`Failed to delete progress item #${selected[offset].id}`);
+            statusArray[offset] = false;
+          });
+        saveSelections(offset + 1);
+      };
+      saveSelections(0);
+    })();
 
-    (function waiting() {
-      if (statusArray.some(isFalse)) {
-        swal({
-          title: 'Error',
-          text: 'Failed to delete some items.',
-          type: 'error'
-        });
-      } else if (statusArray.some(isNull)) {
-        setTimeout(waiting, 100);
-      } else if (statusArray.every(isTrue)) {
-        swal({
-          title: 'Nice!',
-          text: 'Deleted selected items',
-          type: 'success'
-        }, () => location.reload());
-      }
+    (() => {
+      const waiting = () => {
+        if (statusArray.some(isFalse)) {
+          swal({
+            title: 'Error',
+            text: 'Failed to delete some items.',
+            type: 'error'
+          });
+        } else if (statusArray.some(isNull)) {
+          setTimeout(waiting, 100);
+        } else if (statusArray.every(isTrue)) {
+          swal({
+            title: 'Nice!',
+            text: 'Deleted selected items',
+            type: 'success'
+          }, () => location.reload());
+        }
+      };
+      waiting();
     })();
   });
-}
+};
 

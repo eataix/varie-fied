@@ -2,9 +2,9 @@ import { isTrue, isFalse, isNull, getProjectVariationsUrl, projectMargin, projec
 
 let $table = null;
 
-function exportFunctions() {
+const exportFunctions = () => {
   'use strict';
-  window.pendingClick = function(cb) {
+  window.pendingClick = (cb) => {
     const $tr = $(cb).parents('tr');
     $tr.attr('class', 'info');
     $tr.find('.checkbox-approved').prop('checked', false);
@@ -12,7 +12,7 @@ function exportFunctions() {
     $('#btn-save').prop('disabled', false);
   };
 
-  window.pendingFormatter = function(value) {
+  window.pendingFormatter = (value) => {
     const mid = value ? 'checked=""' : '';
     return [
       '<label>',
@@ -21,7 +21,7 @@ function exportFunctions() {
     ].join('\n');
   };
 
-  window.approvedClick = function(cb) {
+  window.approvedClick = (cb) => {
     const $tr = $(cb).parents('tr');
     $tr.attr('class', 'success');
     $tr.find('.checkbox-pending').prop('checked', false);
@@ -29,7 +29,7 @@ function exportFunctions() {
     $('#btn-save').prop('disabled', false);
   };
 
-  window.approvedFormatter = function(value) {
+  window.approvedFormatter = (value) => {
     const mid = value ? 'checked=""' : '';
     return [
       '<label>',
@@ -38,7 +38,7 @@ function exportFunctions() {
     ].join('\n');
   };
 
-  window.declinedClick = function(cb) {
+  window.declinedClick = (cb) => {
     const $tr = $(cb).parents('tr');
     $tr.attr('class', 'danger');
     $tr.find('.checkbox-pending').prop('checked', false);
@@ -46,7 +46,7 @@ function exportFunctions() {
     $('#btn-save').prop('disabled', false);
   };
 
-  window.declinedFormatter = function(value) {
+  window.declinedFormatter = (value) => {
     const mid = value ? 'checked=""' : '';
     return [
       '<label>',
@@ -55,11 +55,11 @@ function exportFunctions() {
     ].join('\n');
   };
 
-  window.completeClick = function() {
+  window.completeClick = () => {
     $('#btn-save').prop('disabled', false);
   };
 
-  window.completeFormatter = function(value) {
+  window.completeFormatter = (value) => {
     const mid = value ? 'checked=""' : '';
     return [
       '<label>',
@@ -68,7 +68,7 @@ function exportFunctions() {
     ].join('\n');
   };
 
-  window.rowStyle = function(row) {
+  window.rowStyle = (row) => {
     if (row.pending) {
       return {
         classes: 'info'
@@ -88,7 +88,7 @@ function exportFunctions() {
     }
   };
 
-  window.timeFormatter = function(value) {
+  window.timeFormatter = (value) => {
     return `<p>${moment(value).toDate()}</p>`;
   };
 
@@ -164,9 +164,9 @@ function exportFunctions() {
 
     return '<strong><i class="fa fa-spinner fa-spin"></i> Loading...</strong>';
   };
-}
+};
 
-export function initVariationTable(table) {
+export const initVariationTable = (table) => {
   'use strict';
 
   if ($table === null) {
@@ -177,9 +177,9 @@ export function initVariationTable(table) {
   $.ajax({
       url: getProjectVariationsUrl,
       type: 'GET',
-      contentType: 'application/json; charset=utf-8',
+      contentType: 'application/json; charset=utf-8'
     })
-    .done(data => {
+    .done((data) => {
       $table.bootstrapTable({
         columns: [{
           checkbox: true
@@ -274,9 +274,9 @@ export function initVariationTable(table) {
         detailFormatter: 'detailFormatter'
       });
     });
-}
+};
 
-export function handleSaveVariation() {
+export const handleSaveVariation = () => {
   'use strict';
 
   swal({
@@ -289,7 +289,7 @@ export function handleSaveVariation() {
     closeOnConfirm: false,
     closeOnCancel: false,
     customClass: 'saveVariationsConfirmation'
-  }, isConfirm => {
+  }, (isConfirm) => {
     if (!isConfirm) {
       swal({
         title: 'Cancelled',
@@ -306,84 +306,93 @@ export function handleSaveVariation() {
     const data = $table.bootstrapTable('getData');
     const statusArray = new Array(data.length).fill(null);
 
-    (function updateVariations(offset) {
-      if (offset >= data.length) {
-        return;
-      }
-      const value = data[offset];
-      const vid = value.vid;
-      const selector = `[data-index=${offset}]`;
-      const element = $(selector);
-      value.pending = element.find('.pending').children().children().is(':checked');
-      value.approved = element.find('.approved').children().children().is(':checked');
-      value.declined = element.find('.declined').children().children().is(':checked');
-      value.completed = element.find('.completed').children().children().is(':checked');
-      value.amount = accounting.parse(element.find('.subtotal').html());
+    (() => {
+      const updateVariations = (offse = 0) => {
+        if (offset >= data.length) {
+          return;
+        }
+        const value = data[offset];
+        const vid = value.vid;
+        const selector = `[data-index=${offset}]`;
+        const element = $(selector);
+        value.pending = element.find('.pending').children().children().is(':checked');
+        value.approved = element.find('.approved').children().children().is(':checked');
+        value.declined = element.find('.declined').children().children().is(':checked');
+        value.completed = element.find('.completed').children().children().is(':checked');
+        value.amount = accounting.parse(element.find('.subtotal').html());
 
-      $.ajax({
-          url: `/api/v1.0/variations/${vid}`,
-          type: 'PUT',
-          data: JSON.stringify(value),
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .done(() => statusArray[offset] = true)
-        .fail(() => statusArray[offset] = false);
+        $.ajax({
+            url: `/api/v1.0/variations/${vid}`,
+            type: 'PUT',
+            data: JSON.stringify(value),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          })
+          .done(() => statusArray[offset] = true)
+          .fail(() => statusArray[offset] = false);
 
-      updateVariations(offset + 1);
-    })(0);
+        updateVariations(offset + 1);
+      };
+      updateVariations(0);
+    })();
 
     const $itemDetails = $('.item-detail');
     const statusArray2 = new Array($itemDetails.length).fill(null);
 
-    (function updateItemDetail(offset) {
-      if (offset >= $itemDetails.length) {
-        return;
-      }
-      const itemData = $($itemDetails[offset]).find('a');
-      const descriptionObj = $(itemData[0]);
-      const amountObj = $(itemData[1]);
-      const id = (descriptionObj.attr('pk'));
-      const description = descriptionObj.html();
-      const amount = parseFloat(amountObj.html());
+    (() => {
+      const updateItemDetail = (offset = 0) => {
+        if (offset >= $itemDetails.length) {
+          return;
+        }
+        const itemData = $($itemDetails[offset]).find('a');
+        const descriptionObj = $(itemData[0]);
+        const amountObj = $(itemData[1]);
+        const id = (descriptionObj.attr('pk'));
+        const description = descriptionObj.html();
+        const amount = parseFloat(amountObj.html());
 
-      $.ajax({
-          url: `/api/v1.0/items/${id}`,
-          type: 'PUT',
-          data: JSON.stringify({
-            amount: amount,
-            description: description
-          }),
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .done(() => statusArray2[offset] = true)
-        .fail(() => statusArray2[offset] = false);
+        $.ajax({
+            url: `/api/v1.0/items/${id}`,
+            type: 'PUT',
+            data: JSON.stringify({
+              amount: amount,
+              description: description
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          })
+          .done(() => statusArray2[offset] = true)
+          .fail(() => statusArray2[offset] = false);
 
-      updateItemDetail(offset + 1);
-    })(0);
+        updateItemDetail(offset + 1);
+      };
+      updateItemDetail(0);
+    })();
 
-    (function waiting() {
-      if (statusArray.some(isFalse) || statusArray2.some(isFalse)) {
-        swal({
-          title: 'Error',
-          text: 'Failed to save some changes.',
-          type: 'error'
-        });
-      } else if (statusArray.some(isNull) || statusArray2.some(isNull)) {
-        setTimeout(waiting, 100);
-      } else if (statusArray.every(isTrue) && statusArray2.every(isTrue)) {
-        swal({
-          title: 'Nice!',
-          text: 'You saved all changes.',
-          type: 'success'
-        }, () => location.reload());
-      }
+    (() => {
+      const waiting = () => {
+        if (statusArray.some(isFalse) || statusArray2.some(isFalse)) {
+          swal({
+            title: 'Error',
+            text: 'Failed to save some changes.',
+            type: 'error'
+          });
+        } else if (statusArray.some(isNull) || statusArray2.some(isNull)) {
+          setTimeout(waiting, 100);
+        } else if (statusArray.every(isTrue) && statusArray2.every(isTrue)) {
+          swal({
+            title: 'Nice!',
+            text: 'You saved all changes.',
+            type: 'success'
+          }, () => location.reload());
+        }
+      };
+      waiting();
     })();
   });
-}
+};
 
-export function handleDeleteVariation() {
+export const handleDeleteVariation = () => {
   'use strict';
 
   swal({
@@ -397,7 +406,7 @@ export function handleDeleteVariation() {
     closeOnConfirm: false,
     closeOnCancel: false,
     customClass: 'deleteRowsConfirmation'
-  }, isConfirmed => {
+  }, (isConfirmed) => {
     if (!isConfirmed) {
       swal({
         title: 'Cancelled',
@@ -414,38 +423,44 @@ export function handleDeleteVariation() {
     const selected = $table.bootstrapTable('getSelections');
     const statusArray = new Array(selected.length).fill(null);
 
-    (function deleteVariation(offset) {
-      if (offset >= selected.length) {
-        return;
-      }
-      $.ajax({
-          url: `/api/v1.0/variations/${selected[offset].vid}`,
-          type: 'DELETE',
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        })
-        .done(() => statusArray[offset] = true)
-        .fail(() => statusArray[offset] = false);
-      deleteVariation(offset + 1);
-    })(0);
+    (() => {
+      const deleteVariation = (offset = 0) => {
+        if (offset >= selected.length) {
+          return;
+        }
+        $.ajax({
+            url: `/api/v1.0/variations/${selected[offset].vid}`,
+            type: 'DELETE',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+          })
+          .done(() => statusArray[offset] = true)
+          .fail(() => statusArray[offset] = false);
+        deleteVariation(offset + 1);
+      };
+      deleteVariation(0);
+    })();
 
-    (function waiting() {
-      if (statusArray.some(isFalse)) {
-        swal({
-          title: 'Error',
-          text: 'Failed to delete some variations',
-          type: 'error'
-        });
-      } else if (statusArray.some(isNull)) {
-        setTimeout(waiting, 100);
-      } else if (statusArray.every(isTrue)) {
-        swal({
-          title: 'Done!',
-          text: 'Deleted variations',
-          type: 'success'
-        }, () => location.reload());
-      }
+    (() => {
+      const waiting = () => {
+        if (statusArray.some(isFalse)) {
+          swal({
+            title: 'Error',
+            text: 'Failed to delete some variations',
+            type: 'error'
+          });
+        } else if (statusArray.some(isNull)) {
+          setTimeout(waiting, 100);
+        } else if (statusArray.every(isTrue)) {
+          swal({
+            title: 'Done!',
+            text: 'Deleted variations',
+            type: 'success'
+          }, () => location.reload());
+        }
+      };
+      waiting();
     })();
   });
-}
+};
 

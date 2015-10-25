@@ -74,7 +74,7 @@ class Margin extends React.Component {
 
   handleChange() {
     const value = this.refs.input.getValue();
-    if ($.isNumeric(value)) {
+    if (value === '' || $.isNumeric(value)) {
       this.props.cb(value);
     }
   }
@@ -108,7 +108,7 @@ class AdminFee extends React.Component {
 
   handleChange() {
     const value = this.refs.input.getValue();
-    if ($.isNumeric(value)) {
+    if (value === '' || $.isNumeric(value)) {
       this.props.cb(value);
     }
   }
@@ -436,60 +436,68 @@ export default class NewProjectForm extends React.Component {
             type: 'error'
           });
         })
-        .done(data => {
+        .done((data) => {
           const clients = this.props.clients;
           console.log(clients);
           const statusArray = new Array(clients.size).fill(null);
 
-          (function createClient(offset) {
-            if (offset >= clients.size) {
-              return;
-            }
-            const client = clients.get(offset);
-            const name = client.name;
-            let first_line_address = client.first;
-            if (first_line_address === '') {
-              first_line_address = null;
-            }
-            let second_line_address = client.second;
-            if (second_line_address === '') {
-              second_line_address = null;
-            }
-            $.ajax({
-                url: newClientUrl,
-                type: 'POST',
-                data: JSON.stringify({
-                  name: name,
-                  first_line_address: first_line_address,
-                  second_line_address: second_line_address,
-                  project_id: data.id
-                }),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json'
-              })
-              .done(() => {
-                statusArray[offset] = true;
-                createClient(offset + 1);
-              })
-              .fail(() => statusArray[offset] = false);
-          })(0);
+          (() => {
+            const createClient = (offset = 0) => {
+              if (offset >= clients.size) {
+                return;
+              }
+              const client = clients.get(offset);
+              const name = client.name;
+              let first_line_address = client.first;
+              if (first_line_address === '') {
+                first_line_address = null;
+              }
+              let second_line_address = client.second;
+              if (second_line_address === '') {
+                second_line_address = null;
+              }
+              $.ajax({
+                  url: newClientUrl,
+                  type: 'POST',
+                  data: JSON.stringify({
+                    name: name,
+                    first_line_address: first_line_address,
+                    second_line_address: second_line_address,
+                    project_id: data.id
+                  }),
+                  contentType: 'application/json; charset=utf-8',
+                  dataType: 'json'
+                })
+                .done(() => {
+                  statusArray[offset] = true;
+                  createClient(offset + 1);
+                })
+                .fail(() => statusArray[offset] = false);
+            };
+            createClient(0);
+          })();
 
-          (function waiting() {
-            if (statusArray.some(isFalse)) {
-              swal({
-                title: 'Error',
-                text: 'Cannot save the project... Please try again.',
-                type: 'error'
-              });
-            } else if (statusArray.some(isNull)) {
-              setTimeout(waiting, 100);
-            } else if (statusArray.every(isTrue)) {
-              swal({
-                title: 'Nice!',
-                text: `You created a new project: ${data.name}`,
-                type: 'success'
-              }, () => this.handleHideModal());
-            }
+          (() => {
+            const waiting = () => {
+              if (statusArray.some(isFalse)) {
+                swal({
+                  title: 'Error',
+                  text: 'Cannot save the project... Please try again.',
+                  type: 'error'
+                });
+              } else if (statusArray.some(isNull)) {
+                setTimeout(waiting, 100);
+              } else if (statusArray.every(isTrue)) {
+                swal({
+                  title: 'Nice!',
+                  text: `You created a new project: ${data.name}`,
+                  type: 'success'
+                }, () => {
+                  $(this.refs.modal).modal('hide');
+                });
+              }
+            };
+            waiting();
           })();
         });
     });

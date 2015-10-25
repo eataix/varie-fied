@@ -19,17 +19,17 @@ export const getProjectVariationsUrl = _.isUndefined(projectData) ? null : proje
 export const editProjectUrl = _.isUndefined(projectData) ? null : projectData.editProjectUrl;
 export const deleteProjectUrl = _.isUndefined(projectData) ? null : projectData.deleteProjectUrl;
 
-export const isNull = function(e) {
+export const isNull = (e) => {
   'use strict';
   return e === null;
 };
 
-export const isTrue = function(e) {
+export const isTrue = (e) => {
   'use strict';
   return e === true;
 };
 
-export const isFalse = function(e) {
+export const isFalse = (e) => {
   'use strict';
   return e === false;
 };
