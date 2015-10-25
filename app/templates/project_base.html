@@ -17,8 +17,3 @@
           data-get-project-progress-items-url="{{ url_for('api.get_project_progress_items', project_id=current_project.pid) }}">
 {% endblock %}
 
-{% block scripts %}
-    {{ super() }}
-    <script src="{{ url_for('static', filename='dist/js/project_base.min.js') }}"></script>
-{% endblock %}
-

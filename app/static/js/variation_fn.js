@@ -434,8 +434,12 @@ export const handleDeleteVariation = () => {
             contentType: 'application/json; charset=utf-8',
             dataType: 'json'
           })
-          .done(() => statusArray[offset] = true)
-          .fail(() => statusArray[offset] = false);
+          .done(() => {
+            statusArray[offset] = true;
+          })
+          .fail(() => {
+            statusArray[offset] = false;
+          });
         deleteVariation(offset + 1);
       };
       deleteVariation(0);
@@ -456,7 +460,9 @@ export const handleDeleteVariation = () => {
             title: 'Done!',
             text: 'Deleted variations',
             type: 'success'
-          }, () => location.reload());
+          }, () => {
+            location.reload();
+          });
         }
       };
       waiting();

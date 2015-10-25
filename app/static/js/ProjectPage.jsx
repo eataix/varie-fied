@@ -64,7 +64,6 @@ export default class ProjectPage extends React.Component {
   componentDidMount() {
     this.loadProject();
     setInterval(this.loadProject, 10000);
-
   }
 
   handleSave() {
@@ -103,10 +102,9 @@ export default class ProjectPage extends React.Component {
 
     return (
       <div>
-        <Menu pollInterval={10000}/>
+        <Menu />
         <div className="container-fluid">
           <ProjectInfo
-            pollInterval={10000}
             prefix={prefix}
             alt_url={alt_url}
             alt_text={alt_text}
@@ -144,9 +142,7 @@ export default class ProjectPage extends React.Component {
           <Table progress={this.props.progress}/>
         </div>
         <NewProjectForm />
-        <NewVariationForm
-          pollInterval={10000}
-        />
+        <NewVariationForm />
         <NewProgressItemsForm />
         <EditProjectMetaForm
           project={this.props.project}

@@ -31,7 +31,6 @@
     scripts: [
       'app/static/js/index.js',
       'app/static/js/progress.js',
-      'app/static/js/project_base.js',
       'app/static/js/variation.js'
     ],
     js_output: 'app/static/dist/js',
@@ -63,20 +62,20 @@
     gulp.src(paths.scripts)
       .pipe(plumber())
       .pipe(babel({stage: 0}))
-      //.pipe(sourcemaps.init())
+      .pipe(sourcemaps.init({loadMaps: true}))
       .pipe(browserify({
         transform: ['babelify'],
         extensions: ['.jsx']
       }))
-      //.pipe(uglify({
-      //  compress: {
-      //    unused: false
-      //  }
-      //}))
+      .pipe(uglify({
+        compress: {
+          unused: false
+        }
+      }))
       .pipe(rename({
         extname: '.min.js'
       }))
-      //.pipe(sourcemaps.write('.'))
+      .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(paths.js_output))
   );
 
