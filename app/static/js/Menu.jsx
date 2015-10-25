@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import { NavItem } from 'react-bootstrap';
 
 import { loadProjects } from './redux/actions';
-
-const project_url = $('#meta-data').data().projectsUrl;
+import { projectsUrl } from './defs';
 
 class HomeBar extends React.Component {
   render() {
@@ -118,11 +117,11 @@ export default class Menu extends React.Component {
 
   loadProjects() {
     $.ajax({
-        url: project_url,
+        url: projectsUrl,
         contentType: 'application/json; charset=utf-8'
       })
       .done(((data) => this.props.loadProjects(data.projects)).bind(this))
-      .fail(((xhr, status, err) => console.error(project_url, status, err.toString())).bind(this));
+      .fail(((xhr, status, err) => console.error(projectsUrl, status, err.toString())).bind(this));
   }
 
   render() {

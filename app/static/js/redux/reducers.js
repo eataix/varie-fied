@@ -26,38 +26,45 @@ const initialState = {
     value: ''
   }]),
   id: -1,
-  margin: 0.0,
-  adminFee: '',
+  margin: '',
+  adminFee: null,
   time: '',
   subcontractor: '',
   invoiceNumber: '',
   description: '',
   newName: '',
   newRefNum: '',
-  newMargin: 0.0,
+  newMargin: '',
   newAdminFee: '',
   projects: [],
   project: null,
   editName: '',
   editRefNum: '',
-  editMargin: 0.0,
+  editMargin: '',
   editAdminFee: ''
 };
 
 export default function app(state = initialState, action) {
+  'use strict';
+
   console.log(action);
   switch (action.type) {
     case ADD_VARIATION_ITEM:
       return Object.assign({}, state, {
         variations: state.variations.push({
-          name: '',
-          value: ''
+          name: action.name,
+          value: action.value
         })
       });
     case DELETE_VARIATION_ITEM:
-      return Object.assign({}, state, {
-        variations: state.variations.delete(action.index)
-      });
+      if (state.variations.size === 1) {
+        return state;
+      } else {
+        return Object.assign({}, state, {
+          variations: state.variations.delete(action.index)
+        });
+      }
+      break;
     case EDIT_VARIATION_ITEM:
       return Object.assign({}, state, {
         variations: state.variations.set(action.index, {
@@ -74,9 +81,14 @@ export default function app(state = initialState, action) {
         })
       });
     case DELETE_CLIENT:
-      return Object.assign({}, state, {
-        clients: state.clients.delete(action.index)
-      });
+      if (state.clients.size === 1) {
+        return state;
+      } else {
+        return Object.assign({}, state, {
+          clients: state.clients.delete(action.index)
+        });
+      }
+      break;
     case EDIT_CLIENT:
       return Object.assign({}, state, {
         clients: state.clients.set(action.index, {
@@ -88,14 +100,19 @@ export default function app(state = initialState, action) {
     case ADD_PROGRESS_ITEM:
       return Object.assign({}, state, {
         progressItems: state.progressItems.push({
-          name: '',
-          value: ''
+          name: action.name,
+          value: action.value
         })
       });
     case DELETE_PROGRESS_ITEM:
-      return Object.assign({}, state, {
-        progressItems: state.progressItems.delete(action.index)
-      });
+      if (state.progressItems.size === 1) {
+        return state;
+      } else {
+        return Object.assign({}, state, {
+          progressItems: state.progressItems.delete(action.index)
+        });
+      }
+      break;
     case EDIT_PROGRESS_ITEM:
       return Object.assign({}, state, {
         progressItems: state.progressItems.set(action.index, {

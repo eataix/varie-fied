@@ -29,7 +29,7 @@ export const EDIT_PROJECT_REF_NUMBER = 'EDIT_PROJECT_REF_NUMBER';
 export const EDIT_PROJECT_MARGIN = 'EDIT_PROJECT_MARGIN';
 export const EDIT_PROJECT_ADMIN_FEE = 'EDIT_PROJECT_ADMIN_FEE';
 
-export function addVariationItem(name, value) {
+export function addVariationItem(name = '', value = '') {
   'use strict';
   return {
     type: ADD_VARIATION_ITEM,
@@ -56,7 +56,7 @@ export function editVariationItem(index, name, value) {
   };
 }
 
-export function addClient(name, first, second) {
+export function addClient(name = '', first = '', second = '') {
   'use strict';
   return {
     type: ADD_CLIENT,
@@ -85,7 +85,7 @@ export function editClient(index, name, first, second) {
   };
 }
 
-export function addProgressItem(name, value) {
+export function addProgressItem(name = '', value = '') {
   'use strict';
   return {
     type: ADD_PROGRESS_ITEM,

@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Button, Input, Modal } from 'react-bootstrap';
 
+import { editProjectUrl } from './defs';
 import { editProjectName, editProjectRefNumber, editProjectMargin, editProjectAdminFee } from './redux/actions';
 
 class ProjectName extends React.Component {
@@ -74,7 +75,7 @@ class Margin extends React.Component {
 
   handleChange() {
     const value = this.refs.margin.getValue();
-    if (isFinite(value)) {
+    if ($.isNumeric(value)) {
       this.props.cb(value);
     }
   }
@@ -98,7 +99,10 @@ class Margin extends React.Component {
 }
 Margin.propTypes = {
   cb: React.PropTypes.func.isRequired,
-  margin: React.PropTypes.number.isRequired
+  margin: React.PropTypes.oneOfType([
+    React.PropTypes.number.isRequired,
+    React.PropTypes.string.isRequired
+  ])
 };
 
 class AdminFee extends React.Component {
@@ -109,7 +113,7 @@ class AdminFee extends React.Component {
 
   handleChange() {
     const value = this.refs.adminFee.getValue();
-    if (isFinite(value)) {
+    if ($.isNumeric(value)) {
       this.props.cb(value);
     }
   }
@@ -133,9 +137,9 @@ class AdminFee extends React.Component {
 AdminFee.propTypes = {
   cb: React.PropTypes.func.isRequired,
   admin_fee: React.PropTypes.oneOfType([
-    React.PropTypes.string,
-    React.PropTypes.number
-  ]).isRequired
+    React.PropTypes.number.isRequired,
+    React.PropTypes.string.isRequired
+  ])
 };
 
 const mapStateToProps = (state) => {
@@ -149,18 +153,16 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    editProjectName: (value) => dispatch(editProjectName(value)),
-    editProjectRefNumber: (value) => dispatch(editProjectRefNumber(value)),
+    editProjectName: (value) => {
+      dispatch(editProjectName(value));
+    },
+    editProjectRefNumber: (value) => {
+      dispatch(editProjectRefNumber(value));
+    },
     editProjectMargin: (value) => {
-      if (_.isString(value)) {
-        value = parseFloat(value);
-      }
       dispatch(editProjectMargin(value));
     },
     editProjectAdminFee: (value) => {
-      if (_.isString(value)) {
-        value = parseFloat(value);
-      }
       dispatch(editProjectAdminFee(value));
     }
   };
@@ -269,14 +271,17 @@ export default class EditProjectMetaForm extends React.Component {
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
 
       const new_name = this.props.name;
-      const new_margin = this.props.margin;
       const new_reference_number = this.props.reference_number;
+      let new_margin = this.props.margin;
+      if (_.isString(new_margin)) {
+        new_margin = parseFloat(new_margin);
+      }
       let new_admin_fee = this.props.admin_fee;
       if (new_admin_fee === '') {
         new_admin_fee = null;
+      } else if (_.isString(new_admin_fee)) {
+        new_admin_fee = parseFloat(new_admin_fee);
       }
-
-      const editProjectUrl = $('#project-data').data().editProjectUrl;
 
       console.log({
         url: editProjectUrl,
@@ -314,5 +319,4 @@ export default class EditProjectMetaForm extends React.Component {
     });
   }
 }
-
 

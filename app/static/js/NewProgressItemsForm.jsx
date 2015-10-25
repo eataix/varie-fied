@@ -2,16 +2,27 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
 import { addProgressItem, deleteProgressItem, editProgressItem } from './redux/actions';
-import { isTrue, isFalse, isNull, newProgressItemUrl } from './defs';
+import { isTrue, isFalse, isNull, newProgressItemUrl, projectId } from './defs';
 
 class ProgressItem extends React.Component {
   constructor() {
     super();
-    this.handleChange = this.handleChange.bind(this);
+    this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleValueChange = this.handleValueChange.bind(this);
   }
 
-  handleChange() {
-    this.props.updateItem(this.refs.name.getValue(), this.refs.value.getValue());
+  handleNameChange() {
+    const name = this.refs.name.getValue();
+    const value = this.refs.value.getValue();
+    this.props.updateItem(name, value);
+  }
+
+  handleValueChange() {
+    const name = this.refs.name.getValue();
+    const value = this.refs.value.getValue();
+    if ($.isNumeric(value)) {
+      this.props.updateItem(name, value);
+    }
   }
 
   render() {
@@ -24,7 +35,7 @@ class ProgressItem extends React.Component {
             required
             ref="name"
             value={this.props.name}
-            onChange={this.handleChange}
+            onChange={this.handleNameChange}
           />
         </td>
         <td style={{verticalAlign: 'middle'}}>
@@ -35,7 +46,7 @@ class ProgressItem extends React.Component {
             data-parsley-type="number"
             ref="value"
             value={this.props.value}
-            onChange={this.handleChange}
+            onChange={this.handleValueChange}
           />
         </td>
         <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
@@ -59,24 +70,29 @@ class ProgressItem extends React.Component {
 }
 ProgressItem.propTypes = {
   name: React.PropTypes.string.isRequired,
-  value: React.PropTypes.oneOfType([
-    React.PropTypes.string.isRequired,
-    React.PropTypes.number.isRequired
-  ]),
+  value: React.PropTypes.string.isRequired,
   addRow: React.PropTypes.func.isRequired,
-  deleteRow: React.PropTypes.func.isRequired
+  deleteRow: React.PropTypes.func.isRequired,
+  updateItem: React.PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state)=> {
   return {
+    project: state.project,
     progressItems: state.progressItems
   };
 };
-const mapDispatchToProps = (dispatch)=> {
+const mapDispatchToProps = (dispatch) => {
   return {
-    addRow: ()=> dispatch(addProgressItem('', '')),
-    deleteRow: (index)=> dispatch(deleteProgressItem(index)),
-    updateItem: (index, name, value)=> dispatch(editProgressItem(index, name, value === '' ? '' : parseFloat(value)))
+    addRow: () => {
+      dispatch(addProgressItem('', ''));
+    },
+    deleteRow: (index) => {
+      dispatch(deleteProgressItem(index));
+    },
+    updateItem: (index, name, value) => {
+      dispatch(editProgressItem(index, name, value));
+    }
   }
 };
 
@@ -85,6 +101,7 @@ export default class NewProgressItemsForm extends React.Component {
   constructor() {
     super();
     this.handleHideModal = this.handleHideModal.bind(this);
+    this.submit = this.submit.bind(this);
   }
 
   handleHideModal() {
@@ -125,7 +142,7 @@ export default class NewProgressItemsForm extends React.Component {
                       <tbody>
                       {this.props.progressItems.map((r, index) =>
                       <ProgressItem
-                        key={r+index}
+                        key={index}
                         addRow={this.props.addRow}
                         deleteRow={this.props.deleteRow.bind(null, index)}
                         name={r.name}
@@ -189,15 +206,15 @@ export default class NewProgressItemsForm extends React.Component {
       const progressItems = this.props.progressItems;
       console.log(progressItems);
 
-      const statusArray = new Array(progressItems.length).fill(null);
+      const statusArray = new Array(progressItems.size).fill(null);
 
       (function createItem(offset) {
-        if (offset >= progressItems.length) {
+        if (offset >= progressItems.size) {
           return;
         }
-        const item = progressItems[offset];
+        const item = progressItems.get(offset);
         const name = item.name;
-        const contract_value = item.value.amount;
+        const contract_value = item.value;
 
         $.ajax({
             url: newProgressItemUrl,
@@ -214,7 +231,9 @@ export default class NewProgressItemsForm extends React.Component {
             statusArray[offset] = true;
             createItem(offset + 1);
           })
-          .fail(() => statusArray[offset] = false);
+          .fail(() => {
+            statusArray[offset] = false;
+          });
       })(0);
 
       (function waiting() {
@@ -224,7 +243,6 @@ export default class NewProgressItemsForm extends React.Component {
             text: 'Failed to save some this.props.changes.',
             type: 'error'
           });
-          console.log('error');
         } else if (statusArray.some(isNull)) {
           setTimeout(waiting, 100);
         } else if (statusArray.every(isTrue)) {
@@ -232,7 +250,9 @@ export default class NewProgressItemsForm extends React.Component {
             title: 'Nice!',
             text: 'You added all changes',
             type: 'success'
-          }, () => location.reload());
+          }, () => {
+            location.reload();
+          });
         }
       })();
     });

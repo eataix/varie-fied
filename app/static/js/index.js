@@ -1,3 +1,5 @@
+require('babel/register');
+
 import React from 'react';
 import { render } from 'react-dom';
 import { createStore } from 'redux';
@@ -23,5 +25,6 @@ import FrontPage from './FrontPage';
     </Provider>,
     document.getElementById('content')
   );
+  
 })();
 

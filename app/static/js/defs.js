@@ -4,6 +4,7 @@ export const newVariationUrl = metaData.newVariationUrl;
 export const newItemUrl = metaData.newItemUrl;
 export const newClientUrl = metaData.newClientUrl;
 export const newProgressItemUrl = metaData.newProgressItemUrl;
+export const projectsUrl = metaData.projectsUrl;
 
 const projectData = $('#project-data').data();
 export const projectId = _.isUndefined(projectData) ? null : projectData.projectId;

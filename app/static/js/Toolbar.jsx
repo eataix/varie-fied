@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { projectName, deleteProjectUrl } from './defs';
+import { projectName, deleteProjectUrl, editProjectUrl } from './defs';
 
 export default class Toolbar extends React.Component {
   constructor() {
@@ -142,7 +142,6 @@ export default class Toolbar extends React.Component {
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
       $button.off('click');
 
-      const editProjectUrl = $('#project-data').data().editProjectUrl;
       $.ajax({
           url: editProjectUrl,
           type: 'PUT',

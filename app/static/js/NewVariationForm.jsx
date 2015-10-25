@@ -109,15 +109,21 @@ InvoiceNo.propTypes = {
 
 class ValueOfWork extends React.Component {
   render() {
-    let value = 0.0;
-    this.props.items.forEach((item) => value += item.value);
+    let total = 0.0;
+    this.props.items.forEach((item) => {
+      let value = item.value;
+      if (_.isString(value)) {
+        value = parseFloat(value);
+      }
+      total += value;
+    });
     return (
       <Input
         type="text"
         label="Value of Work"
         labelClassName="col-sm-2"
         wrapperClassName="col-sm-10"
-        value={accounting.formatMoney(value)}
+        value={accounting.formatMoney(total)}
         placeholder={0.0}
         disabled
       />
@@ -185,7 +191,7 @@ Margin.propTypes = {
 class AdminFee extends React.Component {
   render() {
     const value = this.props.value;
-    if (value === '') {
+    if (_.isNull(value) || _.isString(value)) {
       return false;
     }
     return (
@@ -202,10 +208,7 @@ class AdminFee extends React.Component {
   }
 }
 AdminFee.propTypes = {
-  value: React.PropTypes.oneOfType([
-    React.PropTypes.number.isRequired,
-    React.PropTypes.string.isRequired
-  ])
+  value: React.PropTypes.number
 };
 
 class Subtotal extends React.Component {
@@ -228,6 +231,11 @@ class Subtotal extends React.Component {
     );
   }
 }
+Subtotal.propTypes = {
+  items: React.PropTypes.object.isRequired,
+  margin: React.PropTypes.number.isRequired,
+  adminFee: React.PropTypes.number
+};
 
 class Description extends React.Component {
   constructor() {
@@ -256,15 +264,30 @@ class Description extends React.Component {
     );
   }
 }
+Description.propTypes = {
+  items: React.PropTypes.object.isRequired,
+  cb: React.PropTypes.func.isRequired
+};
 
 class VariationItem extends React.Component {
   constructor() {
     super();
-    this.handleChange = this.handleChange.bind(this);
+    this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleValueChange = this.handleValueChange.bind(this);
   }
 
-  handleChange() {
-    this.props.updateItem(this.refs.name.getValue(), this.refs.value.getValue());
+  handleNameChange() {
+    const name = this.refs.name.getValue();
+    const value = this.refs.value.getValue();
+    this.props.updateItem(name, value);
+  }
+
+  handleValueChange() {
+    const name = this.refs.name.getValue();
+    const value = this.refs.value.getValue();
+    if ($.isNumeric(value)) {
+      this.props.updateItem(name, value);
+    }
   }
 
   render() {
@@ -277,7 +300,7 @@ class VariationItem extends React.Component {
             ref="name"
             required
             value={this.props.name}
-            onChange={this.handleChange}
+            onChange={this.handleNameChange}
           />
         </td>
         <td style={{verticalAlign: 'middle'}}>
@@ -287,7 +310,7 @@ class VariationItem extends React.Component {
             ref="value"
             required
             data-parsley-type="number"
-            onChange={this.handleChange}
+            onChange={this.handleValueChange}
             value={this.props.value}
           />
         </td>
@@ -312,6 +335,13 @@ class VariationItem extends React.Component {
     );
   }
 }
+VariationItem.propTypes = {
+  addRow: React.PropTypes.func.isRequired,
+  deleteRow: React.PropTypes.func.isRequired,
+  updateItem: React.PropTypes.func.isRequired,
+  name: React.PropTypes.string.isRequired,
+  value: React.PropTypes.string.isRequired
+};
 
 class ItemTable extends React.Component {
   render() {
@@ -348,23 +378,18 @@ class ItemTable extends React.Component {
     );
   }
 }
+ItemTable.propTypes = {
+  addVariationItem: React.PropTypes.func.isRequired,
+  deleteVariationItem: React.PropTypes.func.isRequired,
+  editVariationItem: React.PropTypes.func.isRequired,
+  items: React.PropTypes.object.isRequired
+};
 
 const mapStateToProps = (state) => {
-  //console.log({
-  //  id: state.id,
-  //  projects: state.projects,
-  //  margin: state.margin,
-  //  adminFee: state.adminFee,
-  //  time: state.time,
-  //  subcontractor: state.subcontractor,
-  //  invoiceNo: state.invoiceNumber,
-  //  description: state.description,
-  //  variations: state.variations
-  //});
   return {
     id: state.id,
     projects: state.projects,
-    margin: state.margin,
+    margin: parseFloat(state.margin),
     adminFee: state.adminFee,
     time: state.time,
     subcontractor: state.subcontractor,
@@ -386,7 +411,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(updateInvoiceNumber(value));
     },
     updateMarginAndAdminFee: (id, margin, admin_fee) => {
-      dispatch(updateMarginAndAdminFee(id, parseFloat(margin), admin_fee === null ? '' : parseFloat(admin_fee)));
+      dispatch(updateMarginAndAdminFee(id, parseFloat(margin), admin_fee));
     },
     updateDescription: (value) => {
       dispatch(updateDescription(value));
@@ -398,7 +423,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(deleteVariationItem(index));
     },
     editVariationItem: (index, name, value) => {
-      dispatch(editVariationItem(index, name, value === '' ? '' : parseFloat(value)));
+      dispatch(editVariationItem(index, name, value));
     }
   };
 };
@@ -428,7 +453,7 @@ export default class NewVariationForm extends React.Component {
       input_amount += item.value;
     });
     let input_description = '';
-    if (variationItems.length === 1) {
+    if (variationItems.size === 1) {
       input_description = variationItems.get(0).name;
     } else {
       input_description = this.props.description;
@@ -457,7 +482,6 @@ export default class NewVariationForm extends React.Component {
       const $button = $('.newVariationConfirmation').find('.confirm');
       const html = $button.html();
       $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
-
 
       console.log({
         url: newVariationUrl,
@@ -499,15 +523,15 @@ export default class NewVariationForm extends React.Component {
           const vid = data.vid;
           const variationItems = this.props.variations;
           console.log(variationItems);
-          const statusArray = new Array(variationItems.length).fill(null);
+          const statusArray = new Array(variationItems.size).fill(null);
 
           (function createVariationItem(offset) {
-            if (offset >= variationItems.length) {
+            if (offset >= variationItems.size) {
               return;
             }
             const item = variationItems.get(offset);
             const desc = item.name;
-            const amount = item.value;
+            const amount = parseFloat(item.value);
 
             $.ajax({
                 url: newItemUrl,

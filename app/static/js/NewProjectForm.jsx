@@ -74,7 +74,7 @@ class Margin extends React.Component {
 
   handleChange() {
     const value = this.refs.input.getValue();
-    if (isFinite(value)) {
+    if ($.isNumeric(value)) {
       this.props.cb(value);
     }
   }
@@ -97,7 +97,7 @@ class Margin extends React.Component {
 }
 Margin.propTypes = {
   cb: React.PropTypes.func.isRequired,
-  value: React.PropTypes.number.isRequired
+  value: React.PropTypes.string.isRequired
 };
 
 class AdminFee extends React.Component {
@@ -108,8 +108,8 @@ class AdminFee extends React.Component {
 
   handleChange() {
     const value = this.refs.input.getValue();
-    if (isFinite(value)) {
-      this.props.cb(parseFloat(value));
+    if ($.isNumeric(value)) {
+      this.props.cb(value);
     }
   }
 
@@ -131,10 +131,7 @@ class AdminFee extends React.Component {
 }
 AdminFee.propTypes = {
   cb: React.PropTypes.func.isRequired,
-  value: React.PropTypes.oneOfType([
-    React.PropTypes.number.isRequired,
-    React.PropTypes.string.isRequired
-  ])
+  value: React.PropTypes.string.isRequired
 };
 
 class ClientList extends React.Component {
@@ -262,13 +259,27 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    addClient: () => dispatch(addClient('', '', '')),
-    deleteClient: (index) => dispatch(deleteClient(index)),
-    editClient: (index, name, first, second) => dispatch(editClient(index, name, first, second)),
-    newProjectName: (name) => dispatch(newProjectName(name)),
-    newProjectRefNumber: (name) => dispatch(newProjectRefNumber(name)),
-    newProjectMargin: (name) => dispatch(newProjectMargin(name)),
-    newProjectAdminFee: (name) => dispatch(newProjectAdminFee(name))
+    addClient: () => {
+      dispatch(addClient('', '', ''));
+    },
+    deleteClient: (index) => {
+      dispatch(deleteClient(index));
+    },
+    editClient: (index, name, first, second) => {
+      dispatch(editClient(index, name, first, second));
+    },
+    newProjectName: (name) => {
+      dispatch(newProjectName(name));
+    },
+    newProjectRefNumber: (name) => {
+      dispatch(newProjectRefNumber(name));
+    },
+    newProjectMargin: (name) => {
+      dispatch(newProjectMargin(name));
+    },
+    newProjectAdminFee: (name) => {
+      dispatch(newProjectAdminFee(name));
+    }
   };
 };
 
@@ -356,12 +367,16 @@ export default class NewProjectForm extends React.Component {
     }
 
     const project_name = this.props.name;
-    const margin = this.props.margin;
     const reference_number = this.props.refNum;
+    let margin = this.props.margin;
+    if (_.isString(margin)) {
+      margin = parseFloat(margin);
+    }
     let admin_fee = this.props.adminFee;
-    // in case admin_fee is unspecified
     if (admin_fee === '') {
       admin_fee = null;
+    } else if (_.isString(admin_fee)) {
+      admin_fee = parseFloat(admin_fee);
     }
 
     swal({
@@ -424,10 +439,10 @@ export default class NewProjectForm extends React.Component {
         .done(data => {
           const clients = this.props.clients;
           console.log(clients);
-          const statusArray = new Array(clients.length).fill(null);
+          const statusArray = new Array(clients.size).fill(null);
 
           (function createClient(offset) {
-            if (offset >= clients.length) {
+            if (offset >= clients.size) {
               return;
             }
             const client = clients.get(offset);
