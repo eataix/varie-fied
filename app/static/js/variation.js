@@ -6,8 +6,6 @@ import { Provider } from 'react-redux';
 import ProjectPage from './ProjectPage';
 import app from './redux/reducers';
 
-
-
 (() => {
   'use strict';
 
@@ -27,3 +25,4 @@ import app from './redux/reducers';
     document.getElementById('content')
   );
 })();
+

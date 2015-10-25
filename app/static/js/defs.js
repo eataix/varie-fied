@@ -34,5 +34,3 @@ export const isFalse = (e) => {
   return e === false;
 };
 
-
-

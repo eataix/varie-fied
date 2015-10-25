@@ -4,7 +4,6 @@ import Menu from './Menu';
 import NewProjectForm from './NewProjectForm';
 import NewVariationForm from './NewVariationForm';
 import ProjectList from './ProjectList';
-import Spin from './Spin';
 
 export default class FrontPage extends React.Component {
   render() {

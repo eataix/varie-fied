@@ -384,7 +384,9 @@ export const handleSaveVariation = () => {
             title: 'Nice!',
             text: 'You saved all changes.',
             type: 'success'
-          }, () => location.reload());
+          }, () => {
+            location.reload();
+          });
         }
       };
       waiting();

@@ -165,3 +165,4 @@ Toolbar.propTypes = {
   progress: React.PropTypes.bool,
   project: React.PropTypes.object
 };
+
