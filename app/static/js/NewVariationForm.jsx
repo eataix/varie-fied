@@ -215,7 +215,7 @@ class Subtotal extends React.Component {
   render() {
     let valueOfWork = 0.0;
     this.props.items.forEach((item) => {
-      valueOfWork += item.value;
+      valueOfWork += parseFloat(item.value);
     });
     const subtotal = valueOfWork * (1.0 + this.props.margin) + (this.props.adminFee === null ? 0 : this.props.adminFee);
     return (
@@ -450,7 +450,7 @@ export default class NewVariationForm extends React.Component {
     const variationItems = this.props.variations;
     let input_amount = 0.0;
     variationItems.forEach((item) => {
-      input_amount += item.value;
+      input_amount += parseFloat(item.value);
     });
     let input_description = '';
     if (variationItems.size === 1) {

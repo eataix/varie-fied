@@ -118,7 +118,7 @@ class AdminFee extends React.Component {
       <Input
         ref="input"
         type="text"
-        label="Admin Fee*"
+        label="Admin Fee"
         labelClassName="col-sm-3"
         wrapperClassName="col-sm-9"
         data-parsley-type="number"
@@ -455,22 +455,22 @@ export default class NewProjectForm extends React.Component {
               second_line_address = null;
             }
             $.ajax({
-                url: newClientUrl,
-                type: 'POST',
-                data: JSON.stringify({
-                  name: name,
-                  first_line_address: first_line_address,
-                  second_line_address: second_line_address,
-                  project_id: data.id
-                }),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json'
-              })
-              .done(() => {
-                statusArray[offset] = true;
-                createClient(offset + 1);
-              })
-              .fail(() => statusArray[offset] = false);
+              url: newClientUrl,
+              type: 'POST',
+              data: JSON.stringify({
+                name: name,
+                first_line_address: first_line_address,
+                second_line_address: second_line_address,
+                project_id: data.id
+              }),
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json'
+            }).done(() => {
+              statusArray[offset] = true;
+              createClient(offset + 1);
+            }).fail(() => {
+              statusArray[offset] = false;
+            });
           };
           createClient(0);
         })();
