@@ -160,7 +160,7 @@ export default class Toolbar extends React.Component {
   }
 }
 Toolbar.propTypes = {
-  progress: React.PropTypes.bool,
-  project: React.PropTypes.object
+  project: React.PropTypes.object,
+  progress: React.PropTypes.bool
 };
 

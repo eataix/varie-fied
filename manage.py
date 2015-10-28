@@ -1,8 +1,6 @@
 import os
-
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script import Manager, Shell
-
 from app import create_app, db
 from app.models import Variation, Project, Item, ProgressItem, Client
 

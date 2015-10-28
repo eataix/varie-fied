@@ -52,6 +52,9 @@ class ProjectItem extends React.Component {
     );
   }
 }
+ProjectItem.propTypes = {
+  project: React.PropTypes.object.isRequired
+};
 
 class OldProject extends React.Component {
   render() {
@@ -62,6 +65,10 @@ class OldProject extends React.Component {
     );
   }
 }
+OldProject.propTypes = {
+  id: React.PropTypes.string.isRequired,
+  name: React.PropTypes.string.isRequired
+};
 
 class OldProjectList extends React.Component {
   render() {
@@ -89,6 +96,9 @@ class OldProjectList extends React.Component {
     );
   }
 }
+OldProjectList.propTypes = {
+  projects: React.PropTypes.array.isRequired
+};
 
 const mapStateToProps = (state) => {
   return {

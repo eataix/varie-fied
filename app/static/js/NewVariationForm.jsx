@@ -600,7 +600,11 @@ export default class NewVariationForm extends React.Component {
             </Modal.Header>
             <div className="modal-body">
               <div className="container-fluid">
-                <form className="form-horizontal" data-parsley-validate ref="form">
+                <form
+                  className="form-horizontal"
+                  data-parsley-validate
+                  ref="form"
+                >
                   <Project
                     projects={this.props.projects}
                     cb={this.props.updateMarginAndAdminFee}

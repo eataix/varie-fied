@@ -193,7 +193,6 @@ export const handleDeleteProgress = () => {
         }).done(() => {
           statusArray[offset] = true;
         }).fail(() => {
-          //console.log(`Failed to delete progress item #${selected[offset].id}`);
           statusArray[offset] = false;
         });
         saveSelections(offset + 1);

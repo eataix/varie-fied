@@ -116,7 +116,10 @@ export default class ProjectPage extends React.Component {
             project={this.props.project}
           />
           <div id="toolbar">
-            <div className="form-inline" role="form">
+            <div
+              className="form-inline"
+              role="form"
+            >
               <div className="form-group">
                 <button
                   id="btn-save"

@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+
   const gulp = require('gulp');
   const babel = require('gulp-babel');
   const concat = require('gulp-concat');
@@ -66,7 +67,7 @@
       //.pipe(sourcemaps.init({loadMaps: true}))
       .pipe(browserify({
         transform: ['babelify'],
-        extensions: ['.jsx']
+        extensions: ['', '.js', '.jsx']
       }))
       //.pipe(uglify({
       //  compress: {

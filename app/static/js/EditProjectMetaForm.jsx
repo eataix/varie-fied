@@ -242,7 +242,7 @@ export default class EditProjectMetaForm extends React.Component {
 
     swal({
       title: 'Are you sure to save the changes?',
-      text: 'You cannot recover them later!',
+      //text: 'You cannot recover them later!',
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: 'teal',
@@ -296,7 +296,7 @@ export default class EditProjectMetaForm extends React.Component {
       }).done(() => {
         swal({
           title: 'Nice!',
-          text: 'Save changes',
+          text: 'Saved changes',
           type: 'success'
         }, () => {
           this.handleHideModal();

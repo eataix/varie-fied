@@ -16,11 +16,10 @@ import app from './redux/reducers';
       console.log(store.getState());
     }
   );
+
   render(
     <Provider store={store}>
-      <ProjectPage
-        progress={false}
-      />
+      <ProjectPage progress={false}/>
     </Provider>,
     document.getElementById('content')
   );
