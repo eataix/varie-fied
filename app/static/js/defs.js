@@ -21,7 +21,7 @@ export const deleteProjectUrl = _.isUndefined(projectData) ? null : projectData.
 
 export const isNull = (e) => {
   'use strict';
-  return e === null;
+  return _.isNull(e);
 };
 
 export const isTrue = (e) => {

@@ -164,13 +164,13 @@ const app = (state = initialState, action) => {
       });
     case LOAD_PROJECT:
       let newState;
-      if (state.project === null) {
+      if (_.isNull(state.project)) {
         newState = Object.assign({}, state, {
           project: action.project,
           editName: action.project.name,
           editRefNum: action.project.reference_number,
           editMargin: action.project.margin.toString(),
-          editAdminFee: action.project.admin_fee === null ? '' : action.project.admin_fee.toString()
+          editAdminFee: _.isNull(action.project.admin_fee) ? '' : action.project.admin_fee.toString()
         });
       } else {
         newState = Object.assign({}, state, {

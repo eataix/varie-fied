@@ -10,7 +10,7 @@ export default class Toolbar extends React.Component {
   }
 
   render() {
-    if (this.props.project === null) {
+    if (_.isNull(this.props.project)) {
       return false;
     }
     let mid;

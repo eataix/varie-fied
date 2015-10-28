@@ -2,7 +2,7 @@ import React from 'react';
 
 export default class ProjectInfo extends React.Component {
   render() {
-    if (this.props.project === null) {
+    if (_.isNull(this.props.project)) {
       return false;
     }
     return (
@@ -12,7 +12,7 @@ export default class ProjectInfo extends React.Component {
           <a href={this.props.alt_url}>{this.props.alt_text}</a>;
           Reference number: {this.props.project.reference_number};
           OH/Profit: {this.props.project.margin * 100}%;
-          {this.props.project.admin_fee === null ? ' ' : ` Admin fee: ${this.props.project.admin_fee}; `}
+          { _.isNull(this.props.project.admin_fee) ? ' ' : ` Admin fee: ${this.props.project.admin_fee}; ` }
           <a
             href="javascript:void(0)"
             data-toggle="modal"

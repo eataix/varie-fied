@@ -84,15 +84,13 @@ export default class ProjectPage extends React.Component {
 
   loadProject() {
     $.ajax({
-        url: editProjectUrl,
-        contentType: 'application/json; charset=utf-8'
-      })
-      .done((data) => {
-        this.props.loadProject(data);
-      })
-      .fail((xhr, status, err) => {
-        console.error(editProjectUrl, status, err.toString());
-      });
+      url: editProjectUrl,
+      contentType: 'application/json; charset=utf-8'
+    }).done((data) => {
+      this.props.loadProject(data);
+    }).fail((xhr, status, err) => {
+      console.error(editProjectUrl, status, err.toString());
+    });
   }
 
   render() {

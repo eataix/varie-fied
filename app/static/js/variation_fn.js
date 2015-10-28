@@ -162,7 +162,7 @@ const exportFunctions = () => {
 export const initVariationTable = (table) => {
   'use strict';
 
-  if ($table === null) {
+  if (_.isNull($table)) {
     $table = $(table);
     exportFunctions();
   }
@@ -200,7 +200,7 @@ export const initVariationTable = (table) => {
         editable: {
           type: 'text',
           validate: (v) => {
-            if (v === null || v === '') {
+            if (_.isNull(v) || v === '') {
               return 'Cannot be empty!';
             }
           }

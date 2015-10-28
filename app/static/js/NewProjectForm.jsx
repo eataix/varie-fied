@@ -501,4 +501,3 @@ export default class NewProjectForm extends React.Component {
     });
   }
 }
-

@@ -13,7 +13,7 @@ const exportFunctions = () => {
 export const initProgressTable = (table) => {
   'use strict';
 
-  if ($table === null) {
+  if (_.isNull($table)) {
     $table = $(table);
     exportFunctions();
   }

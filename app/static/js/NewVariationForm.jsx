@@ -217,7 +217,7 @@ class Subtotal extends React.Component {
     this.props.items.forEach((item) => {
       valueOfWork += parseFloat(item.value);
     });
-    const subtotal = valueOfWork * (1.0 + this.props.margin) + (this.props.adminFee === null ? 0 : this.props.adminFee);
+    const subtotal = valueOfWork * (1.0 + this.props.margin) + (_.isNull(this.props.adminFee) ? 0 : this.props.adminFee);
     return (
       <Input
         type="text"
@@ -533,21 +533,21 @@ export default class NewVariationForm extends React.Component {
             const amount = parseFloat(item.value);
 
             $.ajax({
-                url: newItemUrl,
-                type: 'POST',
-                data: JSON.stringify({
-                  variation_id: vid,
-                  description: desc,
-                  amount: amount
-                }),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json'
-              })
-              .done(() => {
-                statusArray[offset] = true;
-                createVariationItem(offset + 1);
-              })
-              .fail(() => statusArray[offset] = false);
+              url: newItemUrl,
+              type: 'POST',
+              data: JSON.stringify({
+                variation_id: vid,
+                description: desc,
+                amount: amount
+              }),
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json'
+            }).done(() => {
+              statusArray[offset] = true;
+              createVariationItem(offset + 1);
+            }).fail(() => {
+              statusArray[offset] = false;
+            });
           };
           createVariationItem(0);
         })();
