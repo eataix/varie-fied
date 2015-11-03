@@ -1,6 +1,9 @@
+__pycache__/
+*.py[cod]
 venv
-*.pyc
 .idea
 *.sqlite
-__pycache__
 node_modules/
+
+pip-log.txt
+*.log
