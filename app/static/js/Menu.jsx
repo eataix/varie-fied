@@ -66,7 +66,10 @@ class OldProject extends React.Component {
   }
 }
 OldProject.propTypes = {
-  id: React.PropTypes.string.isRequired,
+  id: React.PropTypes.oneOfType([
+    React.PropTypes.number.isRequired,
+    React.PropTypes.string.isRequired
+  ]),
   name: React.PropTypes.string.isRequired
 };
 
