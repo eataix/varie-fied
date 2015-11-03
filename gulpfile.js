@@ -69,11 +69,12 @@
         transform: ['babelify'],
         extensions: ['', '.js', '.jsx']
       }))
-      //.pipe(uglify({
-      //  compress: {
-      //    unused: false
-      //  }
-      //}))
+      .pipe(uglify({
+        compress: {
+          unused: false
+        },
+        preserveComments: false
+      }))
       .pipe(rename({
         extname: '.min.js'
       }))
@@ -95,12 +96,12 @@
 
   gulp.task('minify-css', () =>
     gulp.src(paths.css)
-      .pipe(sourcemaps.init())
+      //.pipe(sourcemaps.init())
       .pipe(minifyCss())
       .pipe(rename({
         extname: '.min.css'
       }))
-      .pipe(sourcemaps.write('.'))
+      //.pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(paths.css_output))
   );
 
