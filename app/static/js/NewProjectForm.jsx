@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import ReactBootstrap from 'react-bootstrap';
 import { Input, Button, Modal } from 'react-bootstrap';
 
 import { addClient, deleteClient, editClient, newProjectName, newProjectRefNumber, newProjectMargin, newProjectAdminFee } from './redux/actions';
@@ -402,7 +401,7 @@ export default class NewProjectForm extends React.Component {
 
       const $button = $('.newProjectConfirmation').find('.confirm');
       const html = $button.html();
-      $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+      $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
 
       console.log({
         url: newProjectUrl,
@@ -491,7 +490,7 @@ export default class NewProjectForm extends React.Component {
                 text: `You created a new project: ${data.name}`,
                 type: 'success'
               }, () => {
-                location.pathname = `/project/${data.id}/progress`
+                location.pathname = `/project/${data.id}/progress`;
               });
             }
           };

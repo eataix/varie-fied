@@ -15,6 +15,7 @@ export const UPDATE_TIME = 'UPDATE_TIME';
 export const UPDATE_SUBCONTRACTOR = 'UPDATE_SUBCONTRACTOR';
 export const UPDATE_INVOICE_NUMBER = 'UPDATE_INVOICE_NUMBER';
 export const UPDATE_DESCRIPTION = 'UPDATE_DESCRIPTION';
+export const UPDATE_PREPARED_FOR = 'UPDATE_PREPARED_FOR';
 
 export const NEW_PROJECT_NAME = 'NEW_PROJECT_NAME';
 export const NEW_PROJECT_REF_NUMBER = 'NEW_PROJECT_REF_NUMBER';
@@ -30,7 +31,6 @@ export const EDIT_PROJECT_MARGIN = 'EDIT_PROJECT_MARGIN';
 export const EDIT_PROJECT_ADMIN_FEE = 'EDIT_PROJECT_ADMIN_FEE';
 
 export const addVariationItem = (name = '', value = '') => {
-  'use strict';
   return {
     type: ADD_VARIATION_ITEM,
     name,
@@ -39,7 +39,6 @@ export const addVariationItem = (name = '', value = '') => {
 };
 
 export const deleteVariationItem = (index) => {
-  'use strict';
   return {
     type: DELETE_VARIATION_ITEM,
     index
@@ -47,7 +46,6 @@ export const deleteVariationItem = (index) => {
 };
 
 export const editVariationItem = (index, name, value) => {
-  'use strict';
   return {
     type: EDIT_VARIATION_ITEM,
     index,
@@ -57,7 +55,6 @@ export const editVariationItem = (index, name, value) => {
 };
 
 export const addClient = (name = '', first = '', second = '') => {
-  'use strict';
   return {
     type: ADD_CLIENT,
     name,
@@ -67,7 +64,6 @@ export const addClient = (name = '', first = '', second = '') => {
 };
 
 export const deleteClient = (index) => {
-  'use strict';
   return {
     type: DELETE_CLIENT,
     index
@@ -75,7 +71,6 @@ export const deleteClient = (index) => {
 };
 
 export const editClient = (index, name, first, second) => {
-  'use strict';
   return {
     type: EDIT_CLIENT,
     index,
@@ -86,7 +81,6 @@ export const editClient = (index, name, first, second) => {
 };
 
 export const addProgressItem = (name = '', value = '') => {
-  'use strict';
   return {
     type: ADD_PROGRESS_ITEM,
     name,
@@ -95,7 +89,6 @@ export const addProgressItem = (name = '', value = '') => {
 };
 
 export const deleteProgressItem = (index) => {
-  'use strict';
   return {
     type: DELETE_PROGRESS_ITEM,
     index
@@ -103,7 +96,6 @@ export const deleteProgressItem = (index) => {
 };
 
 export const editProgressItem = (index, name, value) => {
-  'use strict';
   return {
     type: EDIT_PROGRESS_ITEM,
     index,
@@ -113,7 +105,6 @@ export const editProgressItem = (index, name, value) => {
 };
 
 export const updateMarginAndAdminFee = (id, margin, adminFee) => {
-  'use strict';
   return {
     type: UPDATE_MARGIN_AND_ADMIN_FEE,
     id,
@@ -123,7 +114,6 @@ export const updateMarginAndAdminFee = (id, margin, adminFee) => {
 };
 
 export const updateTime = (time) => {
-  'use strict';
   return {
     type: UPDATE_TIME,
     time
@@ -131,7 +121,6 @@ export const updateTime = (time) => {
 };
 
 export const updateSubcontractor = (subcontractor) => {
-  'use strict';
   return {
     type: UPDATE_SUBCONTRACTOR,
     subcontractor
@@ -139,7 +128,6 @@ export const updateSubcontractor = (subcontractor) => {
 };
 
 export const updateInvoiceNumber = (invoiceNumber) => {
-  'use strict';
   return {
     type: UPDATE_INVOICE_NUMBER,
     invoiceNumber
@@ -147,15 +135,20 @@ export const updateInvoiceNumber = (invoiceNumber) => {
 };
 
 export const updateDescription = (description) => {
-  'use strict';
   return {
     type: UPDATE_DESCRIPTION,
     description
   };
 };
 
+export const updatePreparedFor = (preparedFor)  => {
+  return {
+    type: UPDATE_PREPARED_FOR,
+    preparedFor
+  };
+};
+
 export const newProjectName = (newName) => {
-  'use strict';
   return {
     type: NEW_PROJECT_NAME,
     newName
@@ -163,7 +156,6 @@ export const newProjectName = (newName) => {
 };
 
 export const newProjectRefNumber = (newRefNum) => {
-  'use strict';
   return {
     type: NEW_PROJECT_REF_NUMBER,
     newRefNum
@@ -171,7 +163,6 @@ export const newProjectRefNumber = (newRefNum) => {
 };
 
 export const newProjectMargin = (newMargin) => {
-  'use strict';
   return {
     type: NEW_PROJECT_MARGIN,
     newMargin
@@ -179,7 +170,6 @@ export const newProjectMargin = (newMargin) => {
 };
 
 export const newProjectAdminFee = (newAdminFee) => {
-  'use strict';
   return {
     type: NEW_PROJECT_ADMIN_FEE,
     newAdminFee
@@ -187,7 +177,6 @@ export const newProjectAdminFee = (newAdminFee) => {
 };
 
 export const loadProjects = (projects) => {
-  'use strict';
   return {
     type: LOAD_PROJECTS,
     projects
@@ -195,7 +184,6 @@ export const loadProjects = (projects) => {
 };
 
 export const loadProject = (project) => {
-  'use strict';
   return {
     type: LOAD_PROJECT,
     project
@@ -203,7 +191,6 @@ export const loadProject = (project) => {
 };
 
 export const editProjectName = (name) => {
-  'use strict';
   return {
     type: EDIT_PROJECT_NAME,
     name
@@ -211,7 +198,6 @@ export const editProjectName = (name) => {
 };
 
 export const editProjectRefNumber = (refNumber) => {
-  'use strict';
   return {
     type: EDIT_PROJECT_REF_NUMBER,
     refNumber
@@ -219,7 +205,6 @@ export const editProjectRefNumber = (refNumber) => {
 };
 
 export const editProjectMargin = (margin) => {
-  'use strict';
   return {
     type: EDIT_PROJECT_MARGIN,
     margin
@@ -227,7 +212,6 @@ export const editProjectMargin = (margin) => {
 };
 
 export const editProjectAdminFee = (adminFee) => {
-  'use strict';
   return {
     type: EDIT_PROJECT_ADMIN_FEE,
     adminFee

@@ -25,8 +25,8 @@ class ProjectItem extends React.Component {
       return false;
     }
     const active = window.location.pathname.split('/')[2] === this.props.project.id.toString();
-    const className = active ? "dropdown active" : "dropdown";
-    const iClassName = active ? "fa fa-folder-open" : "fa fa-folder";
+    const className = active ? 'dropdown active' : 'dropdown';
+    const iClassName = active ? 'fa fa-folder-open' : 'fa fa-folder';
     return (
       <li className={className}>
         <a
@@ -72,13 +72,13 @@ OldProject.propTypes = {
 
 class OldProjectList extends React.Component {
   render() {
-    let p = undefined;
+    let p;
     if (window.location.pathname !== '/') {
       const id = window.location.pathname.split('/')[2];
       p = this.props.projects.find((e) => e.active && e.id.toString() === id);
     }
     const active = window.location.pathname !== '/' && p === undefined;
-    const className = active ? "dropdown active" : "dropdown";
+    const className = active ? 'dropdown active' : 'dropdown';
     return (
       <li className={className}>
         <a
@@ -90,7 +90,7 @@ class OldProjectList extends React.Component {
           Archived Projects <span className="caret"/>
         </a>
         <ul className="dropdown-menu">
-          { this.props.projects.filter(e => !e.active).map((p, i) => <OldProject key={i} id={p.id} name={p.name}/>) }
+          { this.props.projects.filter((e) => !e.active).map((project, i) => <OldProject key={i} id={project.id} name={project.name}/>) }
         </ul>
       </li>
     );
@@ -187,4 +187,3 @@ export default class Menu extends React.Component {
     );
   }
 }
-

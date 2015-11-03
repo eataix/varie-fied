@@ -93,7 +93,7 @@ const mapDispatchToProps = (dispatch) => {
     updateItem: (index, name, value) => {
       dispatch(editProgressItem(index, name, value));
     }
-  }
+  };
 };
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -193,7 +193,7 @@ export default class NewProgressItemsForm extends React.Component {
       closeOnConfirm: false,
       closeOnCancel: false,
       customClass: 'deleteRowsConfirmation'
-    }, isConfirmed => {
+    }, (isConfirmed) => {
       if (!isConfirmed) {
         swal({
           title: 'Cancelled',

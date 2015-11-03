@@ -9,7 +9,7 @@ class ProjectItem extends React.Component {
           {this.props.name}
         </a>
       </li>
-    )
+    );
   }
 }
 ProjectItem.propTypes = {
@@ -22,10 +22,10 @@ class ActiveProjectList extends React.Component {
     return (
       <div>
         <ul>
-          { this.props.projects.filter(p => p.active).map((p, i) => <ProjectItem key={i} id={p.id} name={p.name}/>) }
+          { this.props.projects.filter((p) => p.active).map((p, i) => <ProjectItem key={i} id={p.id} name={p.name}/>) }
         </ul>
       </div>
-    )
+    );
   }
 }
 ActiveProjectList.propTypes = {
@@ -37,10 +37,10 @@ class InactiveProjectList extends React.Component {
     return (
       <div>
         <ul>
-          { this.props.projects.filter(p => !p.active).map((p, i) => <ProjectItem key={i} id={p.id} name={p.name}/>) }
+          { this.props.projects.filter((p) => !p.active).map((p, i) => <ProjectItem key={i} id={p.id} name={p.name}/>) }
         </ul>
       </div>
-    )
+    );
   }
 }
 InactiveProjectList.propTypes = {

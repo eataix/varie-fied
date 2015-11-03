@@ -1,17 +1,18 @@
 (() => {
-  'use strict';
-
   $.fn.editable.defaults.mode = 'inline';
 
   $(document).on('ready', () => {
     $.material.init();
   });
 
-  (function (i, s, o, g, r, a, m) {
+  /* eslint-disable */
+  (function(i, s, o, g, r, a, m) {
     i['GoogleAnalyticsObject'] = r;
-    i[r] = i[r] || function () {
+    //noinspection CommaExpressionJS
+    i[r] = i[r] || function() {
         (i[r].q = i[r].q || []).push(arguments)
       }, i[r].l = 1 * new Date();
+    //noinspection CommaExpressionJS
     a = s.createElement(o),
       m = s.getElementsByTagName(o)[0];
     a.async = 1;
@@ -21,5 +22,6 @@
 
   ga('create', 'UA-67200722-1', 'auto');
   ga('send', 'pageview');
+  /* eslint-enable */
 })();
 

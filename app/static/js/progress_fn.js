@@ -3,16 +3,12 @@ import { isTrue, isFalse, isNull, getProjectProgressItemsUrl } from './defs';
 let $table = null;
 
 const exportFunctions = () => {
-  'use strict';
-
   window.percentageFormatter = (value) => {
     return `${(value * 100).toFixed(2)}%`;
   };
 };
 
 export const initProgressTable = (table) => {
-  'use strict';
-
   if (_.isNull($table)) {
     $table = $(table);
     exportFunctions();
@@ -70,8 +66,6 @@ export const initProgressTable = (table) => {
 };
 
 export const handleSaveProgress = () => {
-  'use strict';
-
   swal({
     title: 'Are you sure to save all the changes?',
     type: 'info',
@@ -154,8 +148,6 @@ export const handleSaveProgress = () => {
 };
 
 export const handleDeleteProgress = () => {
-  'use strict';
-
   swal({
     title: 'Are you sure to delete selected rows?',
     text: 'You cannot recover them later!',

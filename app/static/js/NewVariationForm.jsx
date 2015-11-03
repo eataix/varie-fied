@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
-import { updateTime, updateSubcontractor, updateInvoiceNumber, updateMarginAndAdminFee, updateDescription, addVariationItem, deleteVariationItem, editVariationItem } from './redux/actions';
+import { updateTime, updateSubcontractor, updateInvoiceNumber, updateMarginAndAdminFee, updateDescription, updatePreparedFor, addVariationItem, deleteVariationItem, editVariationItem } from './redux/actions';
 import { isTrue, isFalse, isNull, newVariationUrl, newItemUrl } from './defs';
 
 class TimePicker extends React.Component {
@@ -127,7 +127,7 @@ class ValueOfWork extends React.Component {
         placeholder={0.0}
         disabled
       />
-    )
+    );
   }
 }
 ValueOfWork.propTypes = {
@@ -141,7 +141,7 @@ class Project extends React.Component {
   }
 
   handleChange(event) {
-    const p = this.props.projects.find(e => e.id.toString() === event.target.value);
+    const p = this.props.projects.find((e) => e.id.toString() === event.target.value);
     this.props.cb(p.id, p.margin, p.admin_fee);
   }
 
@@ -156,7 +156,7 @@ class Project extends React.Component {
             ref="select"
           >
             <option value="-1">Select a project</option>
-            {this.props.projects.map(v=> <option key={v.id} value={v.id}>{v.name}</option>)}
+            {this.props.projects.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
           </select>
         </div>
       </div>
@@ -266,6 +266,36 @@ class Description extends React.Component {
 }
 Description.propTypes = {
   items: React.PropTypes.object.isRequired,
+  cb: React.PropTypes.func.isRequired
+};
+
+class PreparedFor extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange() {
+    this.props.cb(this.refs.input.getValue());
+  }
+
+  render() {
+    return (
+      <Input
+        ref="input"
+        type="text"
+        label="Prepared for"
+        labelClassName="col-sm-2"
+        wrapperClassName="col-sm-10"
+        rows={5}
+        onChange={this.handleChange}
+        value={this.props.preparedFor}
+      />
+    );
+  }
+}
+PreparedFor.propTypes = {
+  preparedFor: React.PropTypes.string.isRequired,
   cb: React.PropTypes.func.isRequired
 };
 
@@ -395,7 +425,8 @@ const mapStateToProps = (state) => {
     subcontractor: state.subcontractor,
     invoiceNo: state.invoiceNumber,
     description: state.description,
-    variations: state.variations
+    variations: state.variations,
+    preparedFor: state.preparedFor
   };
 };
 
@@ -415,6 +446,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     updateDescription: (value) => {
       dispatch(updateDescription(value));
+    },
+    updatePreparedFor: (value) => {
+      dispatch(updatePreparedFor(value));
     },
     addVariationItem: () => {
       dispatch(addVariationItem('', ''));
@@ -458,6 +492,7 @@ export default class NewVariationForm extends React.Component {
     } else {
       input_description = this.props.description;
     }
+    const prepared_for = this.props.preparedFor;
 
     swal({
       title: 'Are you sure to add a variation?',
@@ -481,7 +516,7 @@ export default class NewVariationForm extends React.Component {
 
       const $button = $('.newVariationConfirmation').find('.confirm');
       const html = $button.html();
-      $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+      $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}$`);
 
       console.log({
         url: newVariationUrl,
@@ -492,7 +527,8 @@ export default class NewVariationForm extends React.Component {
           subcontractor: subcontractor,
           invoice_no: invoice_no,
           amount: input_amount,
-          description: input_description
+          description: input_description,
+          prepared_for: prepared_for
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
@@ -507,7 +543,8 @@ export default class NewVariationForm extends React.Component {
           subcontractor: subcontractor,
           invoice_no: invoice_no,
           amount: input_amount,
-          description: input_description
+          description: input_description,
+          prepared_for: prepared_for
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
@@ -519,7 +556,6 @@ export default class NewVariationForm extends React.Component {
         });
       }).done((data) => {
         const vid = data.vid;
-        const variationItems = this.props.variations;
         console.log(variationItems);
         const statusArray = new Array(variationItems.size).fill(null);
 
@@ -633,6 +669,10 @@ export default class NewVariationForm extends React.Component {
                     items={this.props.variations}
                     margin={this.props.margin}
                     adminFee={this.props.adminFee}
+                  />
+                  <PreparedFor
+                    preparedFor={this.props.preparedFor}
+                    cb={this.props.updatePreparedFor}
                   />
                   <Description
                     items={this.props.variations}

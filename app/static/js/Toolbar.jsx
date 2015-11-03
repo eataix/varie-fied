@@ -70,8 +70,6 @@ export default class Toolbar extends React.Component {
   }
 
   handleDelete() {
-    'use strict';
-
     swal({
       title: 'Are you sure to delete this project?',
       text: `You are going to delete project ${projectName}`,
@@ -83,7 +81,7 @@ export default class Toolbar extends React.Component {
       closeOnConfirm: false,
       closeOnCancel: false,
       customClass: 'deleteConfirmation'
-    }, isConfirm => {
+    }, (isConfirm) => {
       if (!isConfirm) {
         swal({
           title: 'Cancelled',
@@ -94,7 +92,7 @@ export default class Toolbar extends React.Component {
       }
       const $button = $('.deleteConfirmation').find('.confirm');
       const html = $button.html();
-      $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+      $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
 
       $.ajax({
         url: deleteProjectUrl,
@@ -114,8 +112,6 @@ export default class Toolbar extends React.Component {
   }
 
   handleArchive() {
-    'use strict';
-
     const action = this.props.project.active ? 'archive' : 'unarchive';
     swal({
       title: `Are you sure to ${action} the project?`,
@@ -138,8 +134,7 @@ export default class Toolbar extends React.Component {
       }
       const $button = $('.archiveConfirmation').find('.confirm');
       const html = $button.html();
-      $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
-      $button.off('click');
+      $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
 
       $.ajax({
         url: editProjectUrl,

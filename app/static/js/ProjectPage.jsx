@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { loadProject } from './redux/actions';
 
 import Menu from './Menu';
-import ProjectList from './ProjectList';
 import ProjectInfo from './ProjectInfo';
 import Toolbar from './Toolbar';
 import EditProjectMetaForm from './EditProjectMetaForm';
@@ -149,7 +148,7 @@ export default class ProjectPage extends React.Component {
           project={this.props.project}
         />
       </div>
-    )
+    );
   }
 }
 ProjectPage.propTypes = {

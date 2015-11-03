@@ -1,8 +1,10 @@
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 import arrow
 from flask import url_for
+from openpyxl import Workbook, worksheet
+from openpyxl.styles import Alignment, Border, Color, Font, Side, PatternFill
 
 from app import db
 from app.exceptions import ValidationError
@@ -55,9 +57,6 @@ class Project(db.Model):
     def export(self) -> str:
         def cm_to_inch(cm: float) -> float:
             return cm * 0.393701
-
-        from openpyxl import Workbook, worksheet
-        from openpyxl.styles import Alignment, Border, Color, Font, Side, PatternFill
 
         def prepare(worksheet: worksheet.Worksheet) -> None:
             worksheet.header_footer.setHeader(
@@ -344,18 +343,17 @@ class Project(db.Model):
             ws['A' + str(row)].value = row - 5
             ws['B' + str(row)].value = variation.description
 
-            column = None
-            if variation.pending:
-                column = 'C'
-            elif variation.approved:
-                column = 'D'
-            elif variation.declined:
-                column = 'C'
-            assert column is not None
-            ws[column + str(row)].value = variation.amount
-
-            if variation.completed:
+            if variation.pending or variation.approved:
+                if variation.pending:
+                    column = 'C'
+                else:
+                    column = 'D'
                 ws[column + str(row)].value = variation.amount
+                if variation.completed:
+                    ws['E' + str(row)].value = variation.amount
+            elif variation.declined:
+                ws['B' + str(row)].value = variation.description + ' (declined ' + str(variation.amount) + ')'
+                ws['C' + str(row)].value = 0.0
 
             row += 1
 
@@ -549,11 +547,16 @@ class Project(db.Model):
 
             row += 5
             new_ws['B{}'.format(row)].value = 'FOR'
-            new_ws['B{}'.format(row + 1)].value = 'Total Project Construction Pty Ltd'
-            new_ws['G{}'.format(row)].value = 'FOR'
             new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11)
+
+            new_ws['B{}'.format(row + 1)].value = 'Total Project Construction Pty Ltd'
             new_ws['B{}'.format(row + 1)].font = Font(name='Lao UI', size=11)
+
+            new_ws['G{}'.format(row)].value = 'FOR'
             new_ws['G{}'.format(row)].font = Font(name='Lao UI', size=11)
+
+            new_ws['G{}'.format(row + 1)].value = variation.prepared_for
+            new_ws['G{}'.format(row + 1)].font = Font(name='Lao UI', size=11)
 
             row += 3
             new_ws['B{}'.format(row)].value = 'Date:'
@@ -591,6 +594,7 @@ class Variation(db.Model):
     declined = db.Column(db.Boolean, default=False)  # type: bool
     completed = db.Column(db.Boolean, default=False)  # type: bool
     note = db.Column(db.Text, nullable=True)  # type: str
+    prepared_for = db.Column(db.Text, default='')  # type: str
     project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'))  # type: int
     items = db.relationship('Item', backref='variation', cascade="all, delete-orphan",
                             lazy='select')  # type: List[Item]
@@ -613,8 +617,9 @@ class Variation(db.Model):
             'declined': self.declined,
             'completed': self.completed,
             'note': self.note,
+            'prepared_for': self.prepared_for,
             'project_id': url_for('api.get_project', project_id=self.project_id, _external=True),
-            'items': url_for('api.get_variation_items', variation_id=self.vid, _external=True),
+            'items': url_for('api.get_variation_items', variation_id=self.vid, _external=True)
         }
         return json_variation
 
@@ -629,12 +634,13 @@ class Variation(db.Model):
         approved = json_variation.get('approved', False)
         declined = json_variation.get('declined', False)
         completed = json_variation.get('completed', False)
-        note = json_variation.get('note', "")
+        note = json_variation.get('note', '')
+        prepared_for = json_variation.get('prepared_for', '')
         project = Project.query.get_or_404(int(json_variation.get('project_id')))
 
         return Variation(date=date, subcontractor=subcontractor, invoice_no=invoice_no, description=description,
                          amount=amount, pending=pending, approved=approved, declined=declined, completed=completed,
-                         note=note, project=project)
+                         note=note, project=project, prepared_for=prepared_for)
 
 
 class Item(db.Model):

@@ -3,8 +3,6 @@ import { isTrue, isFalse, isNull, getProjectVariationsUrl, projectMargin, projec
 let $table = null;
 
 const exportFunctions = () => {
-  'use strict';
-
   window.pendingClick = (cb) => {
     const $tr = $(cb).parents('tr');
     $tr.attr('class', 'info');
@@ -160,8 +158,6 @@ const exportFunctions = () => {
 };
 
 export const initVariationTable = (table) => {
-  'use strict';
-
   if (_.isNull($table)) {
     $table = $(table);
     exportFunctions();
@@ -271,8 +267,6 @@ export const initVariationTable = (table) => {
 };
 
 export const handleSaveVariation = () => {
-  'use strict';
-
   swal({
     title: 'Are you sure to save all the changes?',
     type: 'info',
@@ -295,7 +289,7 @@ export const handleSaveVariation = () => {
 
     const $button = $('.saveVariationsConfirmation').find('.confirm');
     const html = $button.html();
-    $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+    $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
 
     const data = $table.bootstrapTable('getData');
     const statusArray = new Array(data.length).fill(null);
@@ -393,8 +387,6 @@ export const handleSaveVariation = () => {
 };
 
 export const handleDeleteVariation = () => {
-  'use strict';
-
   swal({
     title: 'Are you sure to delete selected rows?',
     text: 'You cannot recover them later!',
@@ -417,7 +409,7 @@ export const handleDeleteVariation = () => {
     }
     const $button = $('.deleteRowsConfirmation').find('.confirm');
     const html = $button.html();
-    $button.html('<i class="fa fa-spinner fa-spin"></i> ' + html);
+    $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
     $button.off('click');
 
     const selected = $table.bootstrapTable('getSelections');

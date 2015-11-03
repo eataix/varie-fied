@@ -4,11 +4,11 @@ import {
   ADD_VARIATION_ITEM, DELETE_VARIATION_ITEM, EDIT_VARIATION_ITEM,
   ADD_CLIENT, DELETE_CLIENT, EDIT_CLIENT,
   ADD_PROGRESS_ITEM, DELETE_PROGRESS_ITEM, EDIT_PROGRESS_ITEM,
-  UPDATE_MARGIN_AND_ADMIN_FEE, UPDATE_TIME, UPDATE_SUBCONTRACTOR, UPDATE_INVOICE_NUMBER, UPDATE_DESCRIPTION,
+  UPDATE_MARGIN_AND_ADMIN_FEE, UPDATE_TIME, UPDATE_SUBCONTRACTOR, UPDATE_INVOICE_NUMBER, UPDATE_DESCRIPTION, UPDATE_PREPARED_FOR,
   NEW_PROJECT_NAME, NEW_PROJECT_REF_NUMBER, NEW_PROJECT_MARGIN, NEW_PROJECT_ADMIN_FEE,
   EDIT_PROJECT_NAME, EDIT_PROJECT_REF_NUMBER, EDIT_PROJECT_MARGIN, EDIT_PROJECT_ADMIN_FEE,
   LOAD_PROJECTS,
-  LOAD_PROJECT,
+  LOAD_PROJECT
 } from './actions';
 
 const initialState = {
@@ -32,6 +32,7 @@ const initialState = {
   subcontractor: '',
   invoiceNumber: '',
   description: '',
+  preparedFor: '',
   newName: '',
   newRefNum: '',
   newMargin: '',
@@ -45,8 +46,6 @@ const initialState = {
 };
 
 const app = (state = initialState, action) => {
-  'use strict';
-
   console.log(action);
   switch (action.type) {
     case ADD_VARIATION_ITEM:
@@ -141,6 +140,10 @@ const app = (state = initialState, action) => {
     case UPDATE_DESCRIPTION:
       return Object.assign({}, state, {
         description: action.description
+      });
+    case UPDATE_PREPARED_FOR:
+      return Object.assign({}, state, {
+        preparedFor: action.preparedFor
       });
     case NEW_PROJECT_NAME:
       return Object.assign({}, state, {
