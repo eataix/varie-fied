@@ -4,6 +4,7 @@ import { NavItem } from 'react-bootstrap';
 
 import { loadProjects } from './redux/actions';
 import { projectsUrl } from './defs';
+import { pollInterval } from './config';
 
 class HomeBar extends React.Component {
   render() {
@@ -124,7 +125,7 @@ export default class Menu extends React.Component {
 
   componentDidMount() {
     this.loadProjects();
-    setInterval(this.loadProjects, 10000);
+    setInterval(this.loadProjects, pollInterval);
   }
 
   loadProjects() {

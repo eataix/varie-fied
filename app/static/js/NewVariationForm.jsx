@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
 import { updateTime, updateSubcontractor, updateInvoiceNumber, updateMarginAndAdminFee, updateDescription, updatePreparedFor, addVariationItem, deleteVariationItem, editVariationItem } from './redux/actions';
 import { isTrue, isFalse, isNull, newVariationUrl, newItemUrl } from './defs';
+import { spinInterval } from './config';
 
 class TimePicker extends React.Component {
   componentDidMount() {
@@ -516,7 +517,7 @@ export default class NewVariationForm extends React.Component {
       const html = $button.html();
       $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}$`);
 
-      console.log({
+      console.log({ // eslint-disable-line no-console
         url: newVariationUrl,
         type: 'POST',
         data: JSON.stringify({
@@ -554,7 +555,7 @@ export default class NewVariationForm extends React.Component {
         });
       }).done((data) => {
         const vid = data.vid;
-        console.log(variationItems);
+        console.log(variationItems); // eslint-disable-line no-console
         const statusArray = new Array(variationItems.size).fill(null);
 
         (() => {
@@ -595,7 +596,7 @@ export default class NewVariationForm extends React.Component {
                 type: 'error'
               });
             } else if (statusArray.some(isNull)) {
-              setTimeout(waiting, 100);
+              setTimeout(waiting, spinInterval);
             } else if (statusArray.every(isTrue)) {
               swal({
                 title: 'Nice!',

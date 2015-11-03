@@ -4,6 +4,7 @@ import { Input, Button, Modal } from 'react-bootstrap';
 
 import { addClient, deleteClient, editClient, newProjectName, newProjectRefNumber, newProjectMargin, newProjectAdminFee } from './redux/actions';
 import { isTrue, isFalse, isNull, newProjectUrl, newClientUrl } from './defs';
+import { spinInterval } from './config';
 
 class ProjectName extends React.Component {
   constructor() {
@@ -435,7 +436,7 @@ export default class NewProjectForm extends React.Component {
         });
       }).done((data) => {
         const clients = this.props.clients;
-        console.log(clients);
+        console.log(clients); // eslint-disable-line no-console
         const statusArray = new Array(clients.size).fill(null);
 
         (() => {
@@ -483,7 +484,7 @@ export default class NewProjectForm extends React.Component {
                 type: 'error'
               });
             } else if (statusArray.some(isNull)) {
-              setTimeout(waiting, 100);
+              setTimeout(waiting, spinInterval);
             } else if (statusArray.every(isTrue)) {
               swal({
                 title: 'Nice!',

@@ -141,7 +141,7 @@ export const updateDescription = (description) => {
   };
 };
 
-export const updatePreparedFor = (preparedFor)  => {
+export const updatePreparedFor = (preparedFor) => {
   return {
     type: UPDATE_PREPARED_FOR,
     preparedFor

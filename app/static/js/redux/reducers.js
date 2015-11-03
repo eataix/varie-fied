@@ -46,7 +46,7 @@ const initialState = {
 };
 
 const app = (state = initialState, action) => {
-  console.log(action);
+  console.log(action); // eslint-disable-line no-console
   switch (action.type) {
     case ADD_VARIATION_ITEM:
       return Object.assign({}, state, {

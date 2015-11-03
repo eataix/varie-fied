@@ -11,6 +11,7 @@ import NewProjectForm from './NewProjectForm';
 import NewVariationForm from './NewVariationForm';
 import NewProgressItemsForm from './NewProgressItemsForm';
 
+import { pollInterval } from './config';
 import { editProjectUrl } from './defs';
 import { initProgressTable, handleSaveProgress, handleDeleteProgress } from './progress_fn';
 import { initVariationTable, handleSaveVariation, handleDeleteVariation } from './variation_fn';
@@ -62,7 +63,7 @@ export default class ProjectPage extends React.Component {
 
   componentDidMount() {
     this.loadProject();
-    setInterval(this.loadProject, 10000);
+    setInterval(this.loadProject, pollInterval);
   }
 
   handleSave() {
@@ -88,7 +89,7 @@ export default class ProjectPage extends React.Component {
     }).done((data) => {
       this.props.loadProject(data);
     }).fail((xhr, status, err) => {
-      console.error(editProjectUrl, status, err.toString());
+      console.error(editProjectUrl, status, err.toString()); // eslint-disable-line no-console
     });
   }
 

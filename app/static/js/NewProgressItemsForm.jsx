@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
 import { addProgressItem, deleteProgressItem, editProgressItem } from './redux/actions';
 import { isTrue, isFalse, isNull, newProgressItemUrl, projectId } from './defs';
+import { spinInterval } from './config';
 
 class ProgressItem extends React.Component {
   constructor() {
@@ -246,7 +247,7 @@ export default class NewProgressItemsForm extends React.Component {
               type: 'error'
             });
           } else if (statusArray.some(isNull)) {
-            setTimeout(waiting, 100);
+            setTimeout(waiting, spinInterval);
           } else if (statusArray.every(isTrue)) {
             swal({
               title: 'Nice!',

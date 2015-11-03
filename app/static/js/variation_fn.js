@@ -1,4 +1,5 @@
 import { isTrue, isFalse, isNull, getProjectVariationsUrl, projectMargin, projectAdminFee } from './defs';
+import { spinInterval } from './config';
 
 let $table = null;
 
@@ -370,7 +371,7 @@ export const handleSaveVariation = () => {
             type: 'error'
           });
         } else if (statusArray.some(isNull) || statusArray2.some(isNull)) {
-          setTimeout(waiting, 100);
+          setTimeout(waiting, spinInterval);
         } else if (statusArray.every(isTrue) && statusArray2.every(isTrue)) {
           swal({
             title: 'Nice!',
