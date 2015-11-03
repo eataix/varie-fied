@@ -138,13 +138,13 @@ const exportFunctions = () => {
       $amount.on('save', (e, params) => {
         let total = 0.0;
         $(`.${amountClass}`).each((i, o) => {
-          if (o !== e.target) {
+          if (o === e.target) {
+            total += parseFloat(params.newValue);
+          } else {
             const val = $(o).html();
             if (val !== '' && $.isNumeric(val)) {
               total += parseFloat(val);
             }
-          } else {
-            total += parseFloat(params.newValue);
           }
         });
         total *= 1.0 + projectMargin;
@@ -209,7 +209,7 @@ export const initVariationTable = (table) => {
         halign: 'center',
         sortable: true,
         formatter: 'moneyFormatter',
-        'class': 'subtotal'
+        class: 'subtotal'
       }, {
         field: 'invoice_no',
         title: 'Invoice #',
@@ -229,7 +229,7 @@ export const initVariationTable = (table) => {
         halign: 'center',
         valign: 'center',
         sortable: true,
-        'class': 'pending'
+        class: 'pending'
       }, {
         field: 'approved',
         title: 'Approved',
@@ -237,7 +237,7 @@ export const initVariationTable = (table) => {
         halign: 'center',
         valign: 'center',
         sortable: true,
-        'class': 'approved'
+        class: 'approved'
       }, {
         field: 'declined',
         title: 'Declined',
@@ -245,7 +245,7 @@ export const initVariationTable = (table) => {
         halign: 'center',
         valign: 'center',
         sortable: true,
-        'class': 'declined'
+        class: 'declined'
       }, {
         field: 'completed',
         title: 'Completed',
@@ -253,7 +253,7 @@ export const initVariationTable = (table) => {
         halign: 'center',
         valign: 'center',
         sortable: true,
-        'class': 'completed'
+        class: 'completed'
       }],
       data: data.variations,
       rowStyle: 'rowStyle',
@@ -345,8 +345,8 @@ export const handleSaveVariation = () => {
           url: `/api/v1.0/items/${id}`,
           type: 'PUT',
           data: JSON.stringify({
-            amount: amount,
-            description: description
+            amount,
+            description
           }),
           contentType: 'application/json; charset=utf-8',
           dataType: 'json'

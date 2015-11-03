@@ -242,7 +242,7 @@ export default class EditProjectMetaForm extends React.Component {
 
     swal({
       title: 'Are you sure to save the changes?',
-      //text: 'You cannot recover them later!',
+      // text: 'You cannot recover them later!',
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: 'teal',
@@ -269,7 +269,7 @@ export default class EditProjectMetaForm extends React.Component {
       const new_margin = parseFloat(this.props.margin);
       const new_admin_fee = this.props.admin_fee === '' ? null : parseFloat(this.props.admin_fee);
 
-      console.log({
+      console.log({ // eslint-disable-line no-console
         url: editProjectUrl,
         type: 'PUT',
         data: JSON.stringify({
@@ -280,7 +280,7 @@ export default class EditProjectMetaForm extends React.Component {
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
-      });
+      }); // eslint-disable-line no-console
 
       $.ajax({
         url: editProjectUrl,

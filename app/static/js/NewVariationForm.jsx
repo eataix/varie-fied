@@ -6,13 +6,11 @@ import { isTrue, isFalse, isNull, newVariationUrl, newItemUrl } from './defs';
 
 class TimePicker extends React.Component {
   componentDidMount() {
-    $(this.refs.picker)
-      .datetimepicker({
-        showTodayButton: true
-      })
-      .on('dp.change', (e) => {
-        this.props.cb(e.date.utc().format());
-      });
+    $(this.refs.picker).datetimepicker({
+      showTodayButton: true
+    }).on('dp.change', (e) => {
+      this.props.cb(e.date.utc().format());
+    });
   }
 
   render() {
@@ -258,7 +256,7 @@ class Description extends React.Component {
         label="Description"
         labelClassName="col-sm-2"
         wrapperClassName="col-sm-10"
-        rows={5}
+        rows={ 5 }
         onChange={this.handleChange}
       />
     );
@@ -287,7 +285,7 @@ class PreparedFor extends React.Component {
         label="Prepared for"
         labelClassName="col-sm-2"
         wrapperClassName="col-sm-10"
-        rows={5}
+        rows={ 5 }
         onChange={this.handleChange}
         value={this.props.preparedFor}
       />
@@ -333,7 +331,7 @@ class VariationItem extends React.Component {
             onChange={this.handleNameChange}
           />
         </td>
-        <td style={{verticalAlign: 'middle'}}>
+        <td style={{ verticalAlign: 'middle' }}>
           <Input
             standalone={true}
             type="text"
@@ -344,7 +342,7 @@ class VariationItem extends React.Component {
             value={this.props.value}
           />
         </td>
-        <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
+        <td style={{ width: 150, textAlign: 'center', verticalAlign: 'middle' }}>
           <a
             href="javascript:void(0)"
             className="add-row"
@@ -386,9 +384,9 @@ class ItemTable extends React.Component {
           <table className="table table-bordered">
             <thead>
             <tr>
-              <th style={{textAlign: 'center'}}>Name</th>
-              <th style={{textAlign: 'center'}}>Amount</th>
-              <th style={{textAlign: 'center'}}>Action</th>
+              <th style={{ textAlign: 'center' }}>Name</th>
+              <th style={{ textAlign: 'center' }}>Amount</th>
+              <th style={{ textAlign: 'center' }}>Action</th>
             </tr>
             </thead>
             <tbody>
@@ -522,13 +520,13 @@ export default class NewVariationForm extends React.Component {
         url: newVariationUrl,
         type: 'POST',
         data: JSON.stringify({
-          project_id: project_id,
+          project_id,
           date: timeUTC,
-          subcontractor: subcontractor,
-          invoice_no: invoice_no,
+          subcontractor,
+          invoice_no,
           amount: input_amount,
           description: input_description,
-          prepared_for: prepared_for
+          prepared_for
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
@@ -538,13 +536,13 @@ export default class NewVariationForm extends React.Component {
         url: newVariationUrl,
         type: 'POST',
         data: JSON.stringify({
-          project_id: project_id,
+          project_id,
           date: timeUTC,
-          subcontractor: subcontractor,
-          invoice_no: invoice_no,
+          subcontractor,
+          invoice_no,
           amount: input_amount,
           description: input_description,
-          prepared_for: prepared_for
+          prepared_for
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
@@ -574,7 +572,7 @@ export default class NewVariationForm extends React.Component {
               data: JSON.stringify({
                 variation_id: vid,
                 description: desc,
-                amount: amount
+                amount
               }),
               contentType: 'application/json; charset=utf-8',
               dataType: 'json'
@@ -624,7 +622,7 @@ export default class NewVariationForm extends React.Component {
         id="new-variation-dialog"
         ref="modal"
         className="modal fade"
-        tabIndex={-1}
+        tabIndex={ -1 }
       >
         <div className="modal-dialog modal-lg">
           <div className="modal-content">

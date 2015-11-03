@@ -75,12 +75,12 @@ OldProject.propTypes = {
 
 class OldProjectList extends React.Component {
   render() {
-    let p;
+    let p; // eslint-disable-line init-declarations
     if (window.location.pathname !== '/') {
       const id = window.location.pathname.split('/')[2];
       p = this.props.projects.find((e) => e.active && e.id.toString() === id);
     }
-    const active = window.location.pathname !== '/' && p === undefined;
+    const active = window.location.pathname !== '/' && _.isUndefined(p);
     const className = active ? 'dropdown active' : 'dropdown';
     return (
       <li className={className}>
@@ -134,7 +134,7 @@ export default class Menu extends React.Component {
     }).done((data) => {
       this.props.loadProjects(data.projects);
     }).fail((xhr, status, err) => {
-      console.error(projectsUrl, status, err.toString());
+      console.error(projectsUrl, status, err.toString()); // eslint-disable-line no-console
     }).always(() => {
       if (location.pathname === '/') {
         $('body').addClass('loaded');

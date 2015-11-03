@@ -5,7 +5,7 @@ class ProjectItem extends React.Component {
   render() {
     return (
       <li>
-        <a href={`project/${this.props.id}/progress`} style={{fontSize: '1.3em'}}>
+        <a href={`project/${this.props.id}/progress`} style={{ fontSize: '1.3em' }}>
           {this.props.name}
         </a>
       </li>
@@ -48,7 +48,9 @@ InactiveProjectList.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-  return {projects: state.projects};
+  return {
+    projects: state.projects
+  };
 };
 
 const mapDispatchToProps = () => {

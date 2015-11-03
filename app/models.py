@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 import arrow
 from flask import url_for
@@ -349,11 +349,12 @@ class Project(db.Model):
                 else:
                     column = 'D'
                 ws[column + str(row)].value = variation.amount
-                if variation.completed:
-                    ws['E' + str(row)].value = variation.amount
             elif variation.declined:
-                ws['B' + str(row)].value = variation.description + ' (declined ' + str(variation.amount) + ')'
+                ws['B' + str(row)].value = "{} (declined {})".format(variation.description, variation.amount)
                 ws['C' + str(row)].value = 0.0
+
+            if variation.completed:
+                ws['E' + str(row)].value = variation.amount
 
             row += 1
 

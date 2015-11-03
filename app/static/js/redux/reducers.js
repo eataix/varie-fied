@@ -166,9 +166,8 @@ const app = (state = initialState, action) => {
         projects: action.projects
       });
     case LOAD_PROJECT:
-      let newState;
       if (_.isNull(state.project)) {
-        newState = Object.assign({}, state, {
+        return Object.assign({}, state, {
           project: action.project,
           editName: action.project.name,
           editRefNum: action.project.reference_number,
@@ -176,11 +175,11 @@ const app = (state = initialState, action) => {
           editAdminFee: _.isNull(action.project.admin_fee) ? '' : action.project.admin_fee.toString()
         });
       } else {
-        newState = Object.assign({}, state, {
+        return Object.assign({}, state, {
           project: action.project
         });
       }
-      return newState;
+      break;
     case EDIT_PROJECT_NAME:
       return Object.assign({}, state, {
         editName: action.name

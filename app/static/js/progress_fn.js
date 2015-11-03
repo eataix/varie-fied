@@ -105,9 +105,9 @@ export const handleSaveProgress = () => {
           url: `/api/v1.0/progress_items/${id}`,
           type: 'PUT',
           data: JSON.stringify({
-            name: name,
-            contract_value: contract_value,
-            completed_value: completed_value
+            name,
+            contract_value,
+            completed_value
           }),
           contentType: 'application/json; charset=utf-8',
           dataType: 'json'

@@ -142,10 +142,10 @@ class ClientList extends React.Component {
           <table className="table table-bordered">
             <thead>
             <tr>
-              <th style={{textAlign: 'center'}}>Client Name</th>
-              <th style={{textAlign: 'center'}}>Address First Line</th>
-              <th style={{textAlign: 'center'}}>Address Second Line</th>
-              <th style={{textAlign: 'center'}}/>
+              <th style={{ textAlign: 'center' }}>Client Name</th>
+              <th style={{ textAlign: 'center' }}>Address First Line</th>
+              <th style={{ textAlign: 'center' }}>Address Second Line</th>
+              <th style={{ textAlign: 'center' }}/>
             </tr>
             </thead>
             <tbody>
@@ -198,7 +198,7 @@ class Client extends React.Component {
             onChange={this.handleChange}
           />
         </td>
-        <td style={{verticalAlign: 'middle'}}>
+        <td style={{ verticalAlign: 'middle' }}>
           <Input
             ref="first"
             standalone={true}
@@ -208,7 +208,7 @@ class Client extends React.Component {
             value={this.props.first}
           />
         </td>
-        <td style={{verticalAlign: 'middle'}}>
+        <td style={{ verticalAlign: 'middle' }}>
           <Input
             ref="second"
             standalone={true}
@@ -218,7 +218,7 @@ class Client extends React.Component {
             value={this.props.second}
           />
         </td>
-        <td style={{width: 80, textAlign: 'center', verticalAlign: 'middle'}}>
+        <td style={{ width: 80, textAlign: 'center', verticalAlign: 'middle' }}>
           <a
             href="javascript:void(0)"
             onClick={this.props.addRow}
@@ -300,7 +300,7 @@ export default class NewProjectForm extends React.Component {
         id="new-project-dialog"
         ref="modal"
         className="modal fade"
-        tabIndex={-1}
+        tabIndex={ -1 }
       >
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
@@ -403,14 +403,14 @@ export default class NewProjectForm extends React.Component {
       const html = $button.html();
       $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
 
-      console.log({
+      console.log({ // eslint-disable-line no-console
         url: newProjectUrl,
         type: 'POST',
         data: JSON.stringify({
           name: project_name,
-          margin: margin,
-          reference_number: reference_number,
-          admin_fee: admin_fee
+          margin,
+          reference_number,
+          admin_fee
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
@@ -421,9 +421,9 @@ export default class NewProjectForm extends React.Component {
         type: 'POST',
         data: JSON.stringify({
           name: project_name,
-          margin: margin,
-          reference_number: reference_number,
-          admin_fee: admin_fee
+          margin,
+          reference_number,
+          admin_fee
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
@@ -457,9 +457,9 @@ export default class NewProjectForm extends React.Component {
               url: newClientUrl,
               type: 'POST',
               data: JSON.stringify({
-                name: name,
-                first_line_address: first_line_address,
-                second_line_address: second_line_address,
+                name,
+                first_line_address,
+                second_line_address,
                 project_id: data.id
               }),
               contentType: 'application/json; charset=utf-8',

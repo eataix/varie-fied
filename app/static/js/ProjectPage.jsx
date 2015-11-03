@@ -31,9 +31,9 @@ class Table extends React.Component {
   render() {
     return (
       <table
-        ref='table'
-        id='table'
-        className='table table-condensed'
+        ref="table"
+        id="table"
+        className="table table-condensed"
       />
     );
   }

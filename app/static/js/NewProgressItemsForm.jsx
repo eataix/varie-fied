@@ -38,7 +38,7 @@ class ProgressItem extends React.Component {
             onChange={this.handleNameChange}
           />
         </td>
-        <td style={{verticalAlign: 'middle'}}>
+        <td style={{ verticalAlign: 'middle' }}>
           <Input
             standalone={true}
             type="text"
@@ -49,7 +49,7 @@ class ProgressItem extends React.Component {
             onChange={this.handleValueChange}
           />
         </td>
-        <td style={{width: 150, textAlign: 'center', verticalAlign: 'middle'}}>
+        <td style={{ width: 150, textAlign: 'center', verticalAlign: 'middle' }}>
           <a
             href="javascript:void(0)"
             onClick={this.props.addRow}
@@ -113,7 +113,7 @@ export default class NewProgressItemsForm extends React.Component {
       <div
         className="modal fade"
         ref="modal"
-        tabIndex={-1}
+        tabIndex={ -1 }
         id="new-progress-item-dialog"
       >
         <div className="modal-dialog modal-lg">
@@ -134,9 +134,9 @@ export default class NewProgressItemsForm extends React.Component {
                     <table className="table table-bordered">
                       <thead>
                       <tr>
-                        <th style={{textAlign: 'center'}}>Name</th>
-                        <th style={{textAlign: 'center'}}>Contract Value</th>
-                        <th style={{textAlign: 'center'}}/>
+                        <th style={{ textAlign: 'center' }}>Name</th>
+                        <th style={{ textAlign: 'center' }}>Contract Value</th>
+                        <th style={{ textAlign: 'center' }}/>
                       </tr>
                       </thead>
                       <tbody>
@@ -204,7 +204,7 @@ export default class NewProgressItemsForm extends React.Component {
       }
 
       const progressItems = this.props.progressItems;
-      console.log(progressItems);
+      console.log(progressItems); // eslint-disable-line no-console
 
       const statusArray = new Array(progressItems.size).fill(null);
 
@@ -221,8 +221,8 @@ export default class NewProgressItemsForm extends React.Component {
             url: newProgressItemUrl,
             type: 'POST',
             data: JSON.stringify({
-              name: name,
-              contract_value: contract_value,
+              name,
+              contract_value,
               project_id: projectId
             }),
             contentType: 'application/json; charset=utf-8',

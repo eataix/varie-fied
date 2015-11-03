@@ -13,7 +13,7 @@ export default class Toolbar extends React.Component {
     if (_.isNull(this.props.project)) {
       return false;
     }
-    let mid;
+    let mid; // eslint-disable-line
     if (this.props.progress) {
       mid = (
         <button

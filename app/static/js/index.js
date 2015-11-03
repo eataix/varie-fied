@@ -8,10 +8,11 @@ import FrontPage from './FrontPage';
 
 (() => {
   const store = createStore(app);
-  console.log(store.getState());
+
+  console.log(store.getState()); // eslint-disable-line no-console
 
   store.subscribe(() => {
-    console.log(store.getState());
+    console.log(store.getState()); // eslint-disable-line no-console
   });
 
   render(

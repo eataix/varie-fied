@@ -10,7 +10,7 @@ export default class FrontPage extends React.Component {
     return (
       <div>
         <Menu />
-        <div className='container'>
+        <div className="container">
           <ProjectList />
         </div>
         <NewProjectForm />
