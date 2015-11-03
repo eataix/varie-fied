@@ -647,6 +647,10 @@ export default class NewVariationForm extends React.Component {
                   <TimePicker
                     cb={this.props.updateTime}
                   />
+                  <PreparedFor
+                    preparedFor={this.props.preparedFor}
+                    cb={this.props.updatePreparedFor}
+                  />
                   <Subcontractor
                     subcontractor={this.props.subcontractor}
                     cb={this.props.updateSubcontractor}
@@ -668,10 +672,6 @@ export default class NewVariationForm extends React.Component {
                     items={this.props.variations}
                     margin={this.props.margin}
                     adminFee={this.props.adminFee}
-                  />
-                  <PreparedFor
-                    preparedFor={this.props.preparedFor}
-                    cb={this.props.updatePreparedFor}
                   />
                   <Description
                     items={this.props.variations}
