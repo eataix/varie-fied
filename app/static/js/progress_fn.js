@@ -64,6 +64,12 @@ export const initProgressTable = (table) => {
   }).always(() => {
     $('body').addClass('loaded');
   });
+
+  $table.on('editable-save.bs.table', () => {
+    window.onbeforeunload = () => {
+      return 'You have unsaved changes.';
+    };
+  });
 };
 
 export const handleSaveProgress = () => {
@@ -139,6 +145,7 @@ export const handleSaveProgress = () => {
             text: 'You saved all changes.',
             type: 'success'
           }, () => {
+            window.onbeforeunload = null;
             location.reload();
           });
         }

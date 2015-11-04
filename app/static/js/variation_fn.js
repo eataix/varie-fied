@@ -265,6 +265,12 @@ export const initVariationTable = (table) => {
   }).always(() => {
     $('body').addClass('loaded');
   });
+
+  $table.on('editable-save.bs.table', () => {
+    window.onbeforeunload = () => {
+      return 'You have unsaved changes.';
+    };
+  });
 };
 
 export const handleSaveVariation = () => {
@@ -378,6 +384,7 @@ export const handleSaveVariation = () => {
             text: 'You saved all changes.',
             type: 'success'
           }, () => {
+            window.onbeforeunload = null;
             location.reload();
           });
         }
