@@ -11,7 +11,7 @@ export default class ProjectInfo extends React.Component {
           (
           <a href={this.props.alt_url}>{this.props.alt_text}</a>;
           Reference number: {this.props.project.reference_number};
-          OH/Profit: {this.props.project.margin * 100}%;
+          OH/Profit: {this.props.project.margin * 100.0}%;
           { _.isNull(this.props.project.admin_fee) ? ' ' : ` Admin fee: ${this.props.project.admin_fee}; ` }
           <a
             href="javascript:void(0)"

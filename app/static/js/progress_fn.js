@@ -5,7 +5,7 @@ let $table = null;
 
 const exportFunctions = () => {
   window.percentageFormatter = (value) => {
-    return `${(value * 100).toFixed(2)}%`;
+    return `${(value * 100.0).toFixed(2)}%`;
   };
 };
 

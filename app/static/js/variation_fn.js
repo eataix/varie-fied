@@ -445,7 +445,7 @@ export const handleDeleteVariation = () => {
             type: 'error'
           });
         } else if (statusArray.some(isNull)) {
-          setTimeout(waiting, 100);
+          setTimeout(waiting, spinInterval);
         } else if (statusArray.every(isTrue)) {
           swal({
             title: 'Done!',
