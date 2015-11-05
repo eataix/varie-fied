@@ -3,16 +3,32 @@ import { spinInterval } from './config';
 
 let $table = null;
 
+const setCallback = () => {
+  window.onbeforeunload = () => {
+    return 'You have unsaved changes.';
+  };
+};
+
+const removeCallback = () => {
+  window.onbeforeunload = null;
+};
+
 const exportFunctions = () => {
   window.pendingClick = (cb) => {
+    $(cb).attr('disabled', true);
+    setCallback();
     const $tr = $(cb).parents('tr');
     $tr.attr('class', 'info');
-    $tr.find('.checkbox-approved').prop('checked', false);
-    $tr.find('.checkbox-declined').prop('checked', false);
+    const $approved = $tr.find('.checkbox-approved');
+    $approved.prop('checked', false);
+    $approved.attr('disabled', false);
+    const $declined = $tr.find('.checkbox-declined');
+    $declined.prop('checked', false);
+    $declined.attr('disabled', false);
   };
 
   window.pendingFormatter = (value) => {
-    const mid = value ? 'checked=""' : '';
+    const mid = value ? 'checked="" disabled' : '';
     return [
       '<label>',
       `  <input class="checkbox checkbox-pending" type="checkbox" ${mid} onclick="pendingClick(this);">`,
@@ -21,14 +37,20 @@ const exportFunctions = () => {
   };
 
   window.approvedClick = (cb) => {
+    $(cb).attr('disabled', true);
+    setCallback();
     const $tr = $(cb).parents('tr');
     $tr.attr('class', 'success');
-    $tr.find('.checkbox-pending').prop('checked', false);
-    $tr.find('.checkbox-declined').prop('checked', false);
+    const $pending = $tr.find('.checkbox-pending');
+    $pending.prop('checked', false);
+    $pending.attr('disabled', false);
+    const $declined = $tr.find('.checkbox-declined');
+    $declined.prop('checked', false);
+    $declined.attr('disabled', false);
   };
 
   window.approvedFormatter = (value) => {
-    const mid = value ? 'checked=""' : '';
+    const mid = value ? 'checked="" disabled' : '';
     return [
       '<label>',
       `  <input class="checkbox checkbox-approved" type="checkbox" ${mid} onclick="approvedClick(this);">`,
@@ -37,14 +59,20 @@ const exportFunctions = () => {
   };
 
   window.declinedClick = (cb) => {
+    $(cb).attr('disabled', true);
+    setCallback();
     const $tr = $(cb).parents('tr');
     $tr.attr('class', 'danger');
-    $tr.find('.checkbox-pending').prop('checked', false);
-    $tr.find('.checkbox-approved').prop('checked', false);
+    const $pending = $tr.find('.checkbox-pending');
+    $pending.prop('checked', false);
+    $pending.attr('disabled', false);
+    const $approved = $tr.find('.checkbox-approved');
+    $approved.prop('checked', false);
+    $approved.attr('disabled', false);
   };
 
   window.declinedFormatter = (value) => {
-    const mid = value ? 'checked=""' : '';
+    const mid = value ? 'checked="" disabled' : '';
     return [
       '<label>',
       `  <input class="checkbox checkbox-declined" type="checkbox" ${mid} onclick="declinedClick(this);">`,
@@ -53,6 +81,7 @@ const exportFunctions = () => {
   };
 
   window.completeClick = () => {
+    setCallback();
   };
 
   window.completeFormatter = (value) => {
@@ -267,9 +296,7 @@ export const initVariationTable = (table) => {
   });
 
   $table.on('editable-save.bs.table', () => {
-    window.onbeforeunload = () => {
-      return 'You have unsaved changes.';
-    };
+    setCallback();
   });
 };
 
@@ -384,7 +411,7 @@ export const handleSaveVariation = () => {
             text: 'You saved all changes.',
             type: 'success'
           }, () => {
-            window.onbeforeunload = null;
+            removeCallback();
             location.reload();
           });
         }

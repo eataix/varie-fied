@@ -3,6 +3,18 @@ import { spinInterval } from './config';
 
 let $table = null;
 
+const setCallback = () => {
+  $table.on('editable-save.bs.table', () => {
+    window.onbeforeunload = () => {
+      return 'You have unsaved changes.';
+    };
+  });
+};
+
+const removeCallback = () => {
+  window.onbeforeunload = null;
+};
+
 const exportFunctions = () => {
   window.percentageFormatter = (value) => {
     return `${(value * 100.0).toFixed(2)}%`;
@@ -65,11 +77,7 @@ export const initProgressTable = (table) => {
     $('body').addClass('loaded');
   });
 
-  $table.on('editable-save.bs.table', () => {
-    window.onbeforeunload = () => {
-      return 'You have unsaved changes.';
-    };
-  });
+  setCallback();
 };
 
 export const handleSaveProgress = () => {
@@ -145,7 +153,7 @@ export const handleSaveProgress = () => {
             text: 'You saved all changes.',
             type: 'success'
           }, () => {
-            window.onbeforeunload = null;
+            removeCallback();
             location.reload();
           });
         }
