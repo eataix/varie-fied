@@ -163,7 +163,7 @@
     transition: all 0.3s 1s ease-out;
 }
 
-div .checkbox {
+.checkbox {
     text-align: center;
 }
 

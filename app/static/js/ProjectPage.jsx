@@ -114,29 +114,26 @@ class ProjectPage extends React.Component {
           />
           <div id="toolbar">
             <div
-              className="form-inline"
-              role="form"
+              className="btn-toolbar"
+              role="toolbar"
+              aria-label="..."
             >
-              <div className="form-group">
-                <button
-                  id="btn-save"
-                  type="button"
-                  className="btn btn-info btn-raised"
-                  onClick={this.handleSave}
-                >
-                  Save
-                </button>
-              </div>
-              <div className="form-group">
-                <button
-                  id="btn-delete"
-                  type="button"
-                  className="btn btn-danger btn-raised"
-                  onClick={this.handleDelete}
-                >
-                  Delete
-                </button>
-              </div>
+              <button
+                id="btn-save"
+                type="button"
+                className="btn btn-info btn-raised"
+                onClick={this.handleSave}
+              >
+                Save
+              </button>
+              <button
+                id="btn-delete"
+                type="button"
+                className="btn btn-danger btn-raised"
+                onClick={this.handleDelete}
+              >
+                Delete
+              </button>
             </div>
           </div>
           <Table progress={this.props.progress}/>
