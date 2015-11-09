@@ -116,8 +116,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-@connect(mapStateToProps, mapDispatchToProps)
-export default class Menu extends React.Component {
+class Menu extends React.Component {
   constructor() {
     super();
     this.loadProjects = this.loadProjects.bind(this);
@@ -191,3 +190,5 @@ export default class Menu extends React.Component {
     );
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Menu);

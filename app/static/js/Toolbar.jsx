@@ -2,7 +2,7 @@ import React from 'react';
 
 import { projectName, deleteProjectUrl, editProjectUrl } from './defs';
 
-export default class Toolbar extends React.Component {
+class Toolbar extends React.Component {
   constructor() {
     super();
     this.handleArchive = this.handleArchive.bind(this);
@@ -159,3 +159,4 @@ Toolbar.propTypes = {
   progress: React.PropTypes.bool
 };
 
+export default Toolbar;

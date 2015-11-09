@@ -162,8 +162,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-@connect(mapStateToProps, mapDispatchToProps)
-export default class EditProjectMetaForm extends React.Component {
+class EditProjectMetaForm extends React.Component {
   constructor() {
     super();
     this.handleClick = this.handleClick.bind(this);
@@ -306,3 +305,4 @@ export default class EditProjectMetaForm extends React.Component {
   }
 }
 
+export default connect(mapStateToProps, mapDispatchToProps)(EditProjectMetaForm);

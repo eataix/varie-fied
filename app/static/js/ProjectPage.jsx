@@ -52,8 +52,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-@connect(mapStateToProps, mapDispatchToProps)
-export default class ProjectPage extends React.Component {
+class ProjectPage extends React.Component {
   constructor() {
     super();
     this.loadProject = this.loadProject.bind(this);
@@ -152,7 +151,9 @@ export default class ProjectPage extends React.Component {
     );
   }
 }
+
 ProjectPage.propTypes = {
   progress: React.PropTypes.bool.isRequired
 };
 
+export default connect(mapStateToProps, mapDispatchToProps)(ProjectPage);

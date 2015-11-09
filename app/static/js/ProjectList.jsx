@@ -57,8 +57,7 @@ const mapDispatchToProps = () => {
   return {};
 };
 
-@connect(mapStateToProps, mapDispatchToProps)
-export default class ProjectList extends React.Component {
+class ProjectList extends React.Component {
   render() {
     return (
       <div>
@@ -71,3 +70,4 @@ export default class ProjectList extends React.Component {
   }
 }
 
+export default connect(mapStateToProps, mapDispatchToProps)(ProjectList);

@@ -283,8 +283,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-@connect(mapStateToProps, mapDispatchToProps)
-export default class NewProjectForm extends React.Component {
+class NewProjectForm extends React.Component {
   constructor() {
     super();
     this.handleSave = this.handleSave.bind(this);
@@ -501,3 +500,5 @@ export default class NewProjectForm extends React.Component {
     });
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewProjectForm);

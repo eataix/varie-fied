@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class ProjectInfo extends React.Component {
+class ProjectInfo extends React.Component {
   render() {
     if (_.isNull(this.props.project)) {
       return false;
@@ -26,9 +26,12 @@ export default class ProjectInfo extends React.Component {
     );
   }
 }
+
 ProjectInfo.propTypes = {
   project: React.PropTypes.object,
   prefix: React.PropTypes.string.isRequired,
   alt_url: React.PropTypes.string.isRequired,
   alt_text: React.PropTypes.string.isRequired
 };
+
+export default ProjectInfo;

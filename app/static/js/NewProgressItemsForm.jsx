@@ -97,8 +97,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-@connect(mapStateToProps, mapDispatchToProps)
-export default class NewProgressItemsForm extends React.Component {
+class NewProgressItemsForm extends React.Component {
   constructor() {
     super();
     this.handleHideModal = this.handleHideModal.bind(this);
@@ -264,3 +263,4 @@ export default class NewProgressItemsForm extends React.Component {
   }
 }
 
+export default connect(mapStateToProps, mapDispatchToProps)(NewProgressItemsForm);

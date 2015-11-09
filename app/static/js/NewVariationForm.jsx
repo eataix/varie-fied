@@ -461,8 +461,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-@connect(mapStateToProps, mapDispatchToProps)
-export default class NewVariationForm extends React.Component {
+class NewVariationForm extends React.Component {
   constructor() {
     super();
     this.handleHideModal = this.handleHideModal.bind(this);
@@ -708,3 +707,4 @@ export default class NewVariationForm extends React.Component {
   }
 }
 
+export default connect(mapStateToProps, mapDispatchToProps)(NewVariationForm);

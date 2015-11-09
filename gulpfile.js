@@ -8,8 +8,14 @@
   const rename = require('gulp-rename');
   const sourcemaps = require('gulp-sourcemaps');
   const uglify = require('gulp-uglify');
-  const browserify = require('gulp-browserify');
   const plumber = require('gulp-plumber');
+  const watchify = require('watchify');
+  const browserify = require('browserify');
+  const gutil = require('gulp-util');
+  const source = require('vinyl-source-stream');
+  const buffer = require('vinyl-buffer');
+  const es = require('event-stream');
+  const streamify = require('gulp-streamify');
 
   const paths = {
     external_scripts: [
@@ -30,10 +36,10 @@
       'app/static/vendor/lodash/lodash.min.js'
     ],
     scripts: [
-      'app/static/js/index.js',
-      'app/static/js/progress.js',
-      'app/static/js/variation.js',
-      'app/static/js/main.js'
+      './app/static/js/index.js',
+      './app/static/js/progress.js',
+      './app/static/js/variation.js',
+      './app/static/js/main.js'
     ],
     js_output: 'app/static/dist/js',
     css_output: 'app/static/dist/css',
@@ -54,37 +60,46 @@
     ]
   };
 
+  (() => {
+      const bundle = () => {
+          const tasks = paths.scripts.map((script) => {
+              const b = browserify({
+                  entries: [script],
+                  debug:true,
+                  extensions: [".js", ".jsx"]
+              }).transform("babelify", {
+                  presets: ["es2015", "react", "stage-0"],
+                  extensions: [".js", ".jsx"],
+              });
+
+              const s = script.split('/');
+
+              return b.bundle()
+              .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+              .pipe(source(s[s.length - 1].replace('.js', '.min.js')))
+              .pipe(streamify(uglify({
+                  compress: {
+                      unused: false
+                  },
+                  preserveComments: false
+              })))
+              .pipe(gulp.dest(paths.js_output))
+          });
+          return es.merge.apply(null, tasks);
+      };
+
+      gulp.task('js', bundle);
+  })();
+
   gulp.task('vendor', () =>
     gulp.src(paths.external_scripts)
       .pipe(concat('packed.js'))
       .pipe(gulp.dest(paths.js_output))
   );
 
-  gulp.task('script', () =>
-    gulp.src(paths.scripts)
-      .pipe(plumber())
-      .pipe(babel({stage: 0}))
-      //.pipe(sourcemaps.init({loadMaps: true}))
-      .pipe(browserify({
-        transform: ['babelify'],
-        extensions: ['', '.js', '.jsx']
-      }))
-      .pipe(uglify({
-        compress: {
-          unused: false
-        },
-        preserveComments: false
-      }))
-      .pipe(rename({
-        extname: '.min.js'
-      }))
-      //.pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest(paths.js_output))
-  );
-
   gulp.task('watch', () => {
     gulp.watch(paths.external_scripts, ['vendor']);
-    gulp.watch('app/static/js/**', ['script']);
+    gulp.watch('app/static/js/**', ['js']);
   });
 
   gulp.task('minify-vendor-css', () =>
@@ -122,6 +137,6 @@
       .pipe(gulp.dest('app/static/dist/img'))
   );
 
-  gulp.task('default', ['watch', 'vendor', 'script', 'minify-vendor-css', 'minify-css', 'copy-fonts1', 'copy-fonts2', 'copy-fonts3', 'copy-imgs']);
-  gulp.task('build', ['vendor', 'script', 'minify-vendor-css', 'minify-css', 'copy-fonts1', 'copy-fonts2', 'copy-fonts3', 'copy-imgs']);
+  gulp.task('default', ['watch', 'vendor', 'js', 'minify-vendor-css', 'minify-css', 'copy-fonts1', 'copy-fonts2', 'copy-fonts3', 'copy-imgs']);
+  gulp.task('build', ['vendor', 'js', 'minify-vendor-css', 'minify-css', 'copy-fonts1', 'copy-fonts2', 'copy-fonts3', 'copy-imgs']);
 })();

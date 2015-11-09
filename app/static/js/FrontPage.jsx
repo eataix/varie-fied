@@ -5,7 +5,7 @@ import NewProjectForm from './NewProjectForm';
 import NewVariationForm from './NewVariationForm';
 import ProjectList from './ProjectList';
 
-export default class FrontPage extends React.Component {
+class FrontPage extends React.Component {
   render() {
     return (
       <div>
@@ -20,3 +20,4 @@ export default class FrontPage extends React.Component {
   }
 }
 
+export default FrontPage;
