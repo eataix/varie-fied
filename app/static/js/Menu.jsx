@@ -94,7 +94,8 @@ class OldProjectList extends React.Component {
           Archived Projects <span className="caret"/>
         </a>
         <ul className="dropdown-menu">
-          { this.props.projects.filter((e) => !e.active).map((project, i) => <OldProject key={i} id={project.id} name={project.name}/>) }
+          { this.props.projects.filter((e) => !e.active).map((project, i) => <OldProject key={i} id={project.id}
+                                                                                         name={project.name}/>) }
         </ul>
       </li>
     );

@@ -2,14 +2,12 @@
   'use strict';
 
   const gulp = require('gulp');
-  const babel = require('gulp-babel');
+  //const babel = require('gulp-babel');
   const concat = require('gulp-concat');
   const minifyCss = require('gulp-minify-css');
   const rename = require('gulp-rename');
   const sourcemaps = require('gulp-sourcemaps');
   const uglify = require('gulp-uglify');
-  const plumber = require('gulp-plumber');
-  const watchify = require('watchify');
   const browserify = require('browserify');
   const gutil = require('gulp-util');
   const source = require('vinyl-source-stream');
@@ -61,34 +59,35 @@
   };
 
   (() => {
-      const bundle = () => {
-          const tasks = paths.scripts.map((script) => {
-              const b = browserify({
-                  entries: [script],
-                  debug:true,
-                  extensions: [".js", ".jsx"]
-              }).transform("babelify", {
-                  presets: ["es2015", "react", "stage-0"],
-                  extensions: [".js", ".jsx"],
-              });
+    const bundle = () => {
+      const tasks = paths.scripts.map((script) => {
+        const b = browserify({
+          entries: [script],
+          debug: true,
+          extensions: [".js", ".jsx"]
+        }).transform("babelify", {
+          presets: ["es2015", "react", "stage-0"],
+          extensions: [".js", ".jsx"],
+        });
 
-              const s = script.split('/');
+        const s = script.split('/');
 
-              return b.bundle()
-              .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-              .pipe(source(s[s.length - 1].replace('.js', '.min.js')))
-              .pipe(streamify(uglify({
-                  compress: {
-                      unused: false
-                  },
-                  preserveComments: false
-              })))
-              .pipe(gulp.dest(paths.js_output))
-          });
-          return es.merge.apply(null, tasks);
-      };
+        return b.bundle()
+          .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+          .pipe(source(s[s.length - 1].replace('.js', '.min.js')))
+          //.pipe(streamify(uglify({
+          //  compress: {
+          //    unused: false
+          //  },
+          //  preserveComments: false
+          //})))
+          .pipe(gulp.dest(paths.js_output))
+      });
 
-      gulp.task('js', bundle);
+      return es.merge.apply(null, tasks);
+    };
+
+    gulp.task('js', bundle);
   })();
 
   gulp.task('vendor', () =>
