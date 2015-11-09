@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 const metaData = $('#meta-data').data();
 //noinspection JSUnresolvedVariable
 export const newProjectUrl = metaData.newProjectUrl;
@@ -19,7 +17,7 @@ const projectData = $('#project-data').data();
 export const projectId = _.isUndefined(projectData) ? null : projectData.projectId;
 //noinspection JSUnresolvedVariable
 export const projectName = _.isUndefined(projectData) ? null : projectData.projectName;
-//noinspection JSUnresolvedVariable,JSUnusedGlobalSymbols
+//noinspection JSUnresolvedVariable
 export const projectActive = _.isUndefined(projectData) ? null : projectData.projectActive === 'True';
 //noinspection JSUnresolvedVariable
 export const projectMargin = _.isUndefined(projectData) ? null : parseFloat(projectData.projectMargin);

@@ -1,8 +1,6 @@
 import { isTrue, isFalse, isNull, getProjectProgressItemsUrl } from './defs';
 import { spinInterval } from './config';
 
-import _ from 'lodash';
-
 let $table = null;
 
 const setCallback = () => {

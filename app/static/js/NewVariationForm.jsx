@@ -1,10 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
-
-import _ from 'lodash';
-import accounting from 'accounting';
-
 import { updateTime, updateSubcontractor, updateInvoiceNumber, updateMarginAndAdminFee, updateDescription, updatePreparedFor, addVariationItem, deleteVariationItem, editVariationItem } from './redux/actions';
 import { isTrue, isFalse, isNull, newVariationUrl, newItemUrl } from './defs';
 import { spinInterval } from './config';

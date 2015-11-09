@@ -6,12 +6,11 @@ flask-script
 flask-migrate
 flask-httpauth
 psycopg2
+ipython
 openpyxl
-# ipython
 # gevent==1.1b5
 # -e git+https://github.com/benoitc/gunicorn.git#egg=gunicorn
-# flask-testing
-# requests
-# selenium
-# fake-factory
-uwsgi
+flask-testing
+requests
+selenium
+fake-factory

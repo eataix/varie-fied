@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Button, Input, Modal } from 'react-bootstrap';
 
-
 import { editProjectUrl } from './defs';
 import { editProjectName, editProjectRefNumber, editProjectMargin, editProjectAdminFee } from './redux/actions';
 
@@ -214,14 +213,12 @@ class EditProjectMetaForm extends React.Component {
             <Modal.Footer>
               <Button
                 className="btn btn-primary btn-raised"
-                data-dismiss="modal"
-              >
+                data-dismiss="modal">
                 Dismiss
               </Button>
               <Button
                 className="btn btn-info btn-raised"
-                onClick={this.handleClick}
-              >
+                onClick={this.handleClick}>
                 Save
               </Button>
             </Modal.Footer>
@@ -282,7 +279,7 @@ class EditProjectMetaForm extends React.Component {
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
-      });
+      }); // eslint-disable-line no-console
 
       $.ajax({
         url: editProjectUrl,

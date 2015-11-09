@@ -1,10 +1,6 @@
 import { isTrue, isFalse, isNull, getProjectVariationsUrl, projectMargin, projectAdminFee } from './defs';
 import { spinInterval } from './config';
 
-import _ from 'lodash';
-import accounting from 'accounting';
-import moment from 'moment';
-
 let $table = null;
 
 const setCallback = () => {

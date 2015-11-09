@@ -19,16 +19,19 @@
     external_scripts: [
       'app/static/vendor/jquery/dist/jquery.min.js',
       'app/static/vendor/bootstrap/dist/js/bootstrap.min.js',
+      'app/static/vendor/moment/min/moment-with-locales.min.js',
       'app/static/vendor/arrive/minified/arrive.min.js',
       'app/static/vendor/bootstrap-material-design/dist/js/material.min.js',
       'app/static/vendor/bootstrap-material-design/dist/js/ripples.min.js',
       'app/static/vendor/sweetalert/dist/sweetalert.min.js',
       'app/static/vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
       'app/static/vendor/parsleyjs/dist/parsley.min.js',
+      'app/static/vendor/accounting/accounting.min.js',
       'app/static/vendor/selectize/dist/js/standalone/selectize.min.js',
       'app/static/vendor/bootstrap-table/dist/bootstrap-table.min.js',
       'app/static/vendor/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js',
-      'app/static/vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js'
+      'app/static/vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
+      'app/static/vendor/lodash/lodash.min.js'
     ],
     scripts: [
       './app/static/js/index.js',

@@ -2,8 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
 
-import _ from 'lodash';
-
 import { addClient, deleteClient, editClient, newProjectName, newProjectRefNumber, newProjectMargin, newProjectAdminFee } from './redux/actions';
 import { isTrue, isFalse, isNull, newProjectUrl, newClientUrl } from './defs';
 import { spinInterval } from './config';
