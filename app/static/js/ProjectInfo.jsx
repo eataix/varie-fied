@@ -1,5 +1,7 @@
 import React from 'react';
 
+import _ from 'lodash';
+
 class ProjectInfo extends React.Component {
   render() {
     if (_.isNull(this.props.project)) {

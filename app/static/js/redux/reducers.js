@@ -11,6 +11,8 @@ import {
   LOAD_PROJECT
 } from './actions';
 
+import _ from 'lodash';
+
 const initialState = {
   variations: Immutable.List([{
     name: '',

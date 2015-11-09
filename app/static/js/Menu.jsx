@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { NavItem } from 'react-bootstrap';
 
+import _ from 'lodash';
+
 import { loadProjects } from './redux/actions';
 import { projectsUrl } from './defs';
 import { pollInterval } from './config';

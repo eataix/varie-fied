@@ -1,5 +1,7 @@
 import React from 'react';
 
+import _ from 'lodash';
+
 import { projectName, deleteProjectUrl, editProjectUrl } from './defs';
 
 class Toolbar extends React.Component {

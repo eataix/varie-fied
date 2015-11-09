@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
+
 import { addProgressItem, deleteProgressItem, editProgressItem } from './redux/actions';
 import { isTrue, isFalse, isNull, newProgressItemUrl, projectId } from './defs';
 import { spinInterval } from './config';
