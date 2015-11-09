@@ -18,7 +18,7 @@ const exportFunctions = () => {
     $(cb).attr('disabled', true);
     setCallback();
     const $tr = $(cb).parents('tr');
-    $tr.attr('class', 'info');
+    $tr.attr('class', 'warning');
     const $approved = $tr.find('.checkbox-approved');
     $approved.prop('checked', false);
     $approved.attr('disabled', false);
@@ -30,9 +30,11 @@ const exportFunctions = () => {
   window.pendingFormatter = (value) => {
     const mid = value ? 'checked="" disabled' : '';
     return [
-      '<label>',
-      `  <input class="checkbox checkbox-pending" type="checkbox" ${mid} onclick="pendingClick(this);">`,
-      '</label>'
+      '<div class="checkbox" style="text-align:center">',
+      '  <label>',
+      `    <input class="checkbox checkbox-pending" type="checkbox" ${mid} onclick="pendingClick(this);">`,
+      '  </label>',
+      '</div>'
     ].join('\n');
   };
 
@@ -52,9 +54,11 @@ const exportFunctions = () => {
   window.approvedFormatter = (value) => {
     const mid = value ? 'checked="" disabled' : '';
     return [
-      '<label>',
-      `  <input class="checkbox checkbox-approved" type="checkbox" ${mid} onclick="approvedClick(this);">`,
-      '</label>'
+      '<div class="checkbox" style="text-align:center">',
+      '  <label>',
+      `    <input class="checkbox checkbox-approved" type="checkbox" ${mid} onclick="approvedClick(this);">`,
+      '  </label>',
+      '</div>'
     ].join('\n');
   };
 
@@ -74,9 +78,11 @@ const exportFunctions = () => {
   window.declinedFormatter = (value) => {
     const mid = value ? 'checked="" disabled' : '';
     return [
-      '<label>',
-      `  <input class="checkbox checkbox-declined" type="checkbox" ${mid} onclick="declinedClick(this);">`,
-      '</label>'
+      '<div class="checkbox" style="text-align:center">',
+      '  <label>',
+      `    <input class="checkbox checkbox-declined" type="checkbox" ${mid} onclick="declinedClick(this);">`,
+      '  </label>',
+      '</div>'
     ].join('\n');
   };
 
@@ -87,9 +93,11 @@ const exportFunctions = () => {
   window.completeFormatter = (value) => {
     const mid = value ? 'checked=""' : '';
     return [
-      '<label>',
-      `  <input class="checkbox checkbox-complete" type="checkbox" ${mid} onclick="completeClick();">`,
-      '</label>'
+      '<div class="checkbox" style="text-align:center">',
+      '  <label>',
+      `    <input class="checkbox checkbox-complete" type="checkbox" ${mid} onclick="completeClick();">`,
+      '  </label>',
+      '</div>'
     ].join('\n');
   };
 
@@ -337,10 +345,10 @@ export const handleSaveVariation = () => {
         const vid = value.vid;
         const selector = `[data-index=${offset}]`;
         const element = $(selector);
-        value.pending = element.find('.pending').children().children().is(':checked');
-        value.approved = element.find('.approved').children().children().is(':checked');
-        value.declined = element.find('.declined').children().children().is(':checked');
-        value.completed = element.find('.completed').children().children().is(':checked');
+        value.pending = element.find('.checkbox-pending').is(':checked');
+        value.approved = element.find('.checkbox-approved').is(':checked');
+        value.declined = element.find('.checkbox-declined').is(':checked');
+        value.completed = element.find('.checkbox-complete').is(':checked');
         value.amount = accounting.parse(element.find('.subtotal').html());
 
         $.ajax({
