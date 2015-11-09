@@ -30,7 +30,7 @@ const exportFunctions = () => {
   window.pendingFormatter = (value) => {
     const mid = value ? 'checked="" disabled' : '';
     return [
-      '<div class="checkbox checkbox-info" style="text-align:center">',
+      '<div class="checkbox checkbox-info">',
       '  <label>',
       `    <input class="checkbox checkbox-pending" type="checkbox" ${mid} onclick="pendingClick(this);">`,
       '  </label>',
@@ -54,7 +54,7 @@ const exportFunctions = () => {
   window.approvedFormatter = (value) => {
     const mid = value ? 'checked="" disabled' : '';
     return [
-      '<div class="checkbox checkbox-success" style="text-align:center">',
+      '<div class="checkbox checkbox-success">',
       '  <label>',
       `    <input class="checkbox checkbox-approved" type="checkbox" ${mid} onclick="approvedClick(this);">`,
       '  </label>',
@@ -78,7 +78,7 @@ const exportFunctions = () => {
   window.declinedFormatter = (value) => {
     const mid = value ? 'checked="" disabled' : '';
     return [
-      '<div class="checkbox checkbox-danger" style="text-align:center">',
+      '<div class="checkbox checkbox-danger">',
       '  <label>',
       `    <input class="checkbox checkbox-declined" type="checkbox" ${mid} onclick="declinedClick(this);">`,
       '  </label>',
@@ -93,7 +93,7 @@ const exportFunctions = () => {
   window.completeFormatter = (value) => {
     const mid = value ? 'checked=""' : '';
     return [
-      '<div class="checkbox checkbox-primary" style="text-align:center">',
+      '<div class="checkbox checkbox-primary">',
       '  <label>',
       `    <input class="checkbox checkbox-complete" type="checkbox" ${mid} onclick="completeClick();">`,
       '  </label>',
@@ -141,8 +141,8 @@ const exportFunctions = () => {
         '<table class="table table-hover">',
         '  <thead>',
         '    <tr>',
-        '      <th style="text-align: center">Name</th>',
-        '      <th style="text-align: center">Amount</th>',
+        '      <th>Name</th>',
+        '      <th>Amount</th>',
         '    </tr>',
         '  </thead>',
         '  <tbody>'
@@ -191,7 +191,7 @@ const exportFunctions = () => {
       });
     });
 
-    return '<strong><i class="fa fa-spinner fa-spin"></i> Loading...</strong>';
+    return '<strong><span class="fa fa-spinner fa-spin"></span> Loading...</strong>';
   };
 };
 
@@ -331,7 +331,7 @@ export const handleSaveVariation = () => {
 
     const $button = $('.saveVariationsConfirmation').find('.confirm');
     const html = $button.html();
-    $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
+    $button.html(`<span class="fa fa-spinner fa-spin"></span> ${html}`);
 
     const data = $table.bootstrapTable('getData');
     const statusArray = new Array(data.length).fill(null);
@@ -452,7 +452,7 @@ export const handleDeleteVariation = () => {
     }
     const $button = $('.deleteRowsConfirmation').find('.confirm');
     const html = $button.html();
-    $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
+    $button.html(`<span class="fa fa-spinner fa-spin"></span> ${html}`);
     $button.off('click');
 
     const selected = $table.bootstrapTable('getSelections');

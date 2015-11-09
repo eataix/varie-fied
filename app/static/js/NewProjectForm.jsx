@@ -143,10 +143,10 @@ class ClientList extends React.Component {
           <table className="table table-bordered">
             <thead>
             <tr>
-              <th style={{ textAlign: 'center' }}>Client Name</th>
-              <th style={{ textAlign: 'center' }}>Address First Line</th>
-              <th style={{ textAlign: 'center' }}>Address Second Line</th>
-              <th style={{ textAlign: 'center' }}/>
+              <th>Client Name</th>
+              <th>Address First Line</th>
+              <th>Address Second Line</th>
+              <th/>
             </tr>
             </thead>
             <tbody>
@@ -224,14 +224,14 @@ class Client extends React.Component {
             href="javascript:void(0)"
             onClick={this.props.addRow}
           >
-            <i className="fa fa-plus"/>
+            <span className="fa fa-plus"/>
           </a>
           /
           <a
             href="javascript:void(0)"
             onClick={this.props.deleteRow}
           >
-            <i className="fa fa-minus"/>
+            <span className="fa fa-minus"/>
           </a>
         </td>
       </tr>
@@ -401,7 +401,7 @@ class NewProjectForm extends React.Component {
 
       const $button = $('.newProjectConfirmation').find('.confirm');
       const html = $button.html();
-      $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
+      $button.html(`<span class="fa fa-spinner fa-spin"></span> ${html}`);
 
       console.log({ // eslint-disable-line no-console
         url: newProjectUrl,

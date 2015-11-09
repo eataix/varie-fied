@@ -162,3 +162,12 @@
     -webkit-transition: all 0.3s 1s ease-out;
     transition: all 0.3s 1s ease-out;
 }
+
+div .checkbox {
+    text-align: center;
+}
+
+th {
+    text-align: center;
+}
+

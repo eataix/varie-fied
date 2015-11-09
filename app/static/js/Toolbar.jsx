@@ -21,7 +21,7 @@ class Toolbar extends React.Component {
           data-toggle="modal"
           data-target="#new-progress-item-dialog"
         >
-          <i className="fa fa-plus"/> New Items
+          <span className="fa fa-plus"/> New Items
         </button>
       );
     } else {
@@ -31,7 +31,7 @@ class Toolbar extends React.Component {
           data-toggle="modal"
           data-target="#new-variation-dialog"
         >
-          <i className="fa fa-plus"/> Add Variation
+          <span className="fa fa-plus"/> Add Variation
         </button>
       );
     }
@@ -46,7 +46,7 @@ class Toolbar extends React.Component {
           className="btn btn-info btn-raised"
           href={`/export/${this.props.project.id}`}
         >
-          <i className="fa fa-download"/> Export Project
+          <span className="fa fa-download"/> Export Project
         </a>
         {mid}
         <button
@@ -55,7 +55,7 @@ class Toolbar extends React.Component {
           className="btn btn-info btn-raised"
           onClick={this.handleArchive}
         >
-          <i className="fa fa-check-square-o"/>{ this.props.project.active ? 'Archive Project' : 'Unarchive Project' }
+          <span className="fa fa-check-square-o"/>{ this.props.project.active ? 'Archive Project' : 'Unarchive Project' }
         </button>
         <button
           id="delete_project"
@@ -63,7 +63,7 @@ class Toolbar extends React.Component {
           className="btn btn-danger btn-raised"
           onClick={this.handleDelete}
         >
-          <i className="fa fa-trash"/> Delete Project
+          <span className="fa fa-trash"/> Delete Project
         </button>
       </div>
     );
@@ -92,7 +92,7 @@ class Toolbar extends React.Component {
       }
       const $button = $('.deleteConfirmation').find('.confirm');
       const html = $button.html();
-      $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
+      $button.html(`<span class="fa fa-spinner fa-spin"></span> ${html}`);
 
       $.ajax({
         url: deleteProjectUrl,
@@ -134,7 +134,7 @@ class Toolbar extends React.Component {
       }
       const $button = $('.archiveConfirmation').find('.confirm');
       const html = $button.html();
-      $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
+      $button.html(`<span class="fa fa-spinner fa-spin"></span> ${html}`);
 
       $.ajax({
         url: editProjectUrl,

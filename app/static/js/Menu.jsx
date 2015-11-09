@@ -14,7 +14,7 @@ class HomeBar extends React.Component {
         active={active}
         href="/"
       >
-        <i className="fa fa-home"/> Home
+        <span className="fa fa-home"/> Home
       </NavItem>
     );
   }
@@ -39,7 +39,7 @@ class ProjectItem extends React.Component {
           aria-haspopup="true"
           aria-expanded="false"
         >
-          <i className={iClassName}/> {this.props.project.name}<span className="caret"/>
+          <span className={iClassName}/> {this.props.project.name}<span className="caret"/>
         </a>
         <ul className="dropdown-menu">
           <li>
@@ -173,7 +173,7 @@ class Menu extends React.Component {
                 data-toggle="modal"
                 data-target="#new-project-dialog"
               >
-                <i className="fa fa-plus"/> New Project
+                <span className="fa fa-plus"/> New Project
               </a>
             </li>
             <li>
@@ -182,7 +182,7 @@ class Menu extends React.Component {
                 data-toggle="modal"
                 data-target="#new-variation-dialog"
               >
-                <i className="fa fa-plus"/> New Variation
+                <span className="fa fa-plus"/> New Variation
               </a>
             </li>
           </ul>

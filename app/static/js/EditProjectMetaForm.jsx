@@ -261,7 +261,7 @@ class EditProjectMetaForm extends React.Component {
       }
       const $button = $('.saveMetaConfirmation').find('.confirm');
       const html = $button.html();
-      $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}`);
+      $button.html(`<span class="fa fa-spinner fa-spin"></span> ${html}`);
 
       const new_name = this.props.name;
       const new_reference_number = this.props.reference_number;

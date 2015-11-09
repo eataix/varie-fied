@@ -50,19 +50,19 @@ class ProgressItem extends React.Component {
             onChange={this.handleValueChange}
           />
         </td>
-        <td style={{ width: 150, textAlign: 'center', verticalAlign: 'middle' }}>
+        <td style={{ width: 120, textAlign: 'center', verticalAlign: 'middle' }}>
           <a
             href="javascript:void(0)"
             onClick={this.props.addRow}
           >
-            <span className="fa fa-plus"> </span> Add
+            <span className="fa fa-plus"/> Add
           </a>
           /
           <a
             href="javascript:void(0)"
             onClick={this.props.deleteRow}
           >
-            <span className="fa fa-minus"> </span> Delete
+            <span className="fa fa-minus"/> Delete
           </a>
         </td>
       </tr>
@@ -134,9 +134,9 @@ class NewProgressItemsForm extends React.Component {
                     <table className="table table-bordered">
                       <thead>
                       <tr>
-                        <th style={{ textAlign: 'center' }}>Name</th>
-                        <th style={{ textAlign: 'center' }}>Contract Value</th>
-                        <th style={{ textAlign: 'center' }}/>
+                        <th>Name</th>
+                        <th>Contract Value</th>
+                        <th/>
                       </tr>
                       </thead>
                       <tbody>

@@ -34,7 +34,7 @@ class TimePicker extends React.Component {
               required
             />
             <span className="input-group-addon">
-              <i className="fa fa-calendar"/>
+              <span className="fa fa-calendar"/>
             </span>
           </div>
         </div>
@@ -343,7 +343,7 @@ class VariationItem extends React.Component {
             value={this.props.value}
           />
         </td>
-        <td style={{ width: 150, textAlign: 'center', verticalAlign: 'middle' }}>
+        <td style={{ width: 120, textAlign: 'center', verticalAlign: 'middle' }}>
           <a
             href="javascript:void(0)"
             className="add-row"
@@ -376,8 +376,9 @@ class ItemTable extends React.Component {
   render() {
     return (
       <div className="form-group">
-        <label htmlFor="inputDescription"
-               className="col-sm-2 control-label"
+        <label
+          htmlFor="inputDescription"
+          className="col-sm-2 control-label"
         >
           Items*
         </label>
@@ -385,9 +386,9 @@ class ItemTable extends React.Component {
           <table className="table table-bordered">
             <thead>
             <tr>
-              <th style={{ textAlign: 'center' }}>Name</th>
-              <th style={{ textAlign: 'center' }}>Amount</th>
-              <th style={{ textAlign: 'center' }}>Action</th>
+              <th>Name</th>
+              <th>Amount</th>
+              <th>Action</th>
             </tr>
             </thead>
             <tbody>
@@ -514,7 +515,7 @@ class NewVariationForm extends React.Component {
 
       const $button = $('.newVariationConfirmation').find('.confirm');
       const html = $button.html();
-      $button.html(`<i class="fa fa-spinner fa-spin"></i> ${html}$`);
+      $button.html(`<span class="fa fa-spinner fa-spin"></span> ${html}$`);
 
       console.log({ // eslint-disable-line no-console
         url: newVariationUrl,
