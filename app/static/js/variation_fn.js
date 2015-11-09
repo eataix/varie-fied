@@ -30,7 +30,7 @@ const exportFunctions = () => {
   window.pendingFormatter = (value) => {
     const mid = value ? 'checked="" disabled' : '';
     return [
-      '<div class="checkbox" style="text-align:center">',
+      '<div class="checkbox checkbox-info" style="text-align:center">',
       '  <label>',
       `    <input class="checkbox checkbox-pending" type="checkbox" ${mid} onclick="pendingClick(this);">`,
       '  </label>',
@@ -54,7 +54,7 @@ const exportFunctions = () => {
   window.approvedFormatter = (value) => {
     const mid = value ? 'checked="" disabled' : '';
     return [
-      '<div class="checkbox" style="text-align:center">',
+      '<div class="checkbox checkbox-success" style="text-align:center">',
       '  <label>',
       `    <input class="checkbox checkbox-approved" type="checkbox" ${mid} onclick="approvedClick(this);">`,
       '  </label>',
@@ -78,7 +78,7 @@ const exportFunctions = () => {
   window.declinedFormatter = (value) => {
     const mid = value ? 'checked="" disabled' : '';
     return [
-      '<div class="checkbox" style="text-align:center">',
+      '<div class="checkbox checkbox-danger" style="text-align:center">',
       '  <label>',
       `    <input class="checkbox checkbox-declined" type="checkbox" ${mid} onclick="declinedClick(this);">`,
       '  </label>',
@@ -93,7 +93,7 @@ const exportFunctions = () => {
   window.completeFormatter = (value) => {
     const mid = value ? 'checked=""' : '';
     return [
-      '<div class="checkbox" style="text-align:center">',
+      '<div class="checkbox checkbox-primary" style="text-align:center">',
       '  <label>',
       `    <input class="checkbox checkbox-complete" type="checkbox" ${mid} onclick="completeClick();">`,
       '  </label>',
