@@ -104,7 +104,7 @@ const exportFunctions = () => {
   window.rowStyle = (row) => {
     if (row.pending) {
       return {
-        classes: 'info'
+        classes: 'warning'
       };
     } else if (row.approved) {
       return {
