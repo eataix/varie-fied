@@ -1,4 +1,4 @@
-(() => {
+const init = () => {
   $.fn.editable.defaults.mode = 'inline';
 
   $(document).on('ready', () => {
@@ -6,10 +6,10 @@
   });
 
   /* eslint-disable */
-  (function (i, s, o, g, r, a, m) {
+  (function(i, s, o, g, r, a, m) {
     i['GoogleAnalyticsObject'] = r;
     //noinspection CommaExpressionJS
-    i[r] = i[r] || function () {
+    i[r] = i[r] || function() {
         (i[r].q = i[r].q || []).push(arguments)
       }, i[r].l = 1 * new Date();
     //noinspection CommaExpressionJS
@@ -23,5 +23,6 @@
   ga('create', 'UA-67200722-1', 'auto');
   ga('send', 'pageview');
   /* eslint-enable */
-})();
+};
 
+export default init;

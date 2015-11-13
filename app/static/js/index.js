@@ -1,3 +1,5 @@
+require('babel-polyfill');
+
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { render } from 'react-dom';
 import { createStore } from 'redux';
@@ -5,6 +7,7 @@ import { Provider } from 'react-redux';
 
 import app from './redux/reducers';
 import FrontPage from './FrontPage';
+import init from './main';
 
 (() => {
   const store = createStore(app);
@@ -21,5 +24,7 @@ import FrontPage from './FrontPage';
     </Provider>,
     document.getElementById('content')
   );
+
+  init();
 })();
 
