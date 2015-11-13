@@ -154,3 +154,4 @@ ProjectPage.propTypes = {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectPage);
+

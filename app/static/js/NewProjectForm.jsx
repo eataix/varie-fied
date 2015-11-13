@@ -502,3 +502,4 @@ class NewProjectForm extends React.Component {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewProjectForm);
+

@@ -264,3 +264,4 @@ class NewProgressItemsForm extends React.Component {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewProgressItemsForm);
+

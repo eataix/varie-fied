@@ -71,3 +71,4 @@ class ProjectList extends React.Component {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectList);
+

@@ -35,3 +35,4 @@ ProjectInfo.propTypes = {
 };
 
 export default ProjectInfo;
+
