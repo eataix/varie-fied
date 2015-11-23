@@ -1,6 +1,6 @@
-from typing import Any, Dict
+from flask import jsonify, request, Response
 
-from flask import jsonify, request
+from typing import List
 
 from app import db
 from app.api_1_0 import api
@@ -10,22 +10,22 @@ from app.models import Project, Variation
 
 @api.route('/projects/')
 @auth.login_required
-def get_projects() -> Dict[str, Any]:
-    projects = Project.query.all()
+def get_projects() -> Response:
+    projects = Project.query.all()  # type: List[Project]
     return jsonify({'projects': [project.to_json() for project in projects]})
 
 
 @api.route('/projects/<int:project_id>')
 @auth.login_required
-def get_project(project_id: int) -> Dict[str, Any]:
-    project = Project.query.get_or_404(project_id)
+def get_project(project_id: int) -> Response:
+    project = Project.query.get_or_404(project_id)  # type: Project
     return jsonify(project.to_json())
 
 
 @api.route('/projects/', methods=['POST'])
 @auth.login_required
-def new_project() -> Dict[str, Any]:
-    project = Project.from_json(request.json)
+def new_project() -> Response:
+    project = Project.from_json(request.json)  # type: Project
     db.session.add(project)
     db.session.commit()
     return jsonify(project.to_json()), 201
@@ -33,8 +33,8 @@ def new_project() -> Dict[str, Any]:
 
 @api.route('/projects/<int:project_id>', methods=['PUT'])
 @auth.login_required
-def edit_project(project_id: int) -> Dict[str, Any]:
-    project = Project.query.get_or_404(project_id)
+def edit_project(project_id: int) -> Response:
+    project = Project.query.get_or_404(project_id)  # type: Project
     project.name = request.json.get('name', project.name)
     project.reference_number = request.json.get('reference_number', project.reference_number)
     project.active = bool(request.json.get('active', project.active))
@@ -55,8 +55,8 @@ def edit_project(project_id: int) -> Dict[str, Any]:
 
 @api.route('/projects/<int:project_id>/variations/')
 @auth.login_required
-def get_project_variations(project_id: int) -> Dict[str, Any]:
-    project = Project.query.get_or_404(project_id)
+def get_project_variations(project_id: int) -> Response:
+    project = Project.query.get_or_404(project_id)  # type: Project
 
     project.variations.sort(key=lambda v: v.vid)
     jsons = []
@@ -70,7 +70,7 @@ def get_project_variations(project_id: int) -> Dict[str, Any]:
 
 @api.route('/projects/<int:project_id>/progress_items/')
 @auth.login_required
-def get_project_progress_items(project_id: int) -> Dict[str, Any]:
+def get_project_progress_items(project_id: int) -> Response:
     project = Project.query.get_or_404(project_id)
 
     project.progress_items.sort(key=lambda p: p.id)
@@ -85,8 +85,8 @@ def get_project_progress_items(project_id: int) -> Dict[str, Any]:
 
 @api.route('/projects/<int:project_id>/clients/')
 @auth.login_required
-def get_project_clients(project_id: int) -> Dict[str, Any]:
-    project = Project.query.get_or_404(project_id)
+def get_project_clients(project_id: int) -> Response:
+    project = Project.query.get_or_404(project_id)  # type: Project
 
     project.clients.sort(key=lambda p: p.id)
     jsons = []
@@ -100,8 +100,8 @@ def get_project_clients(project_id: int) -> Dict[str, Any]:
 
 @api.route('/projects/<int:project_id>', methods=['DELETE'])
 @auth.login_required
-def delete_project(project_id: int) -> Dict[str, Any]:
-    project = Project.query.get_or_404(project_id)
+def delete_project(project_id: int) -> Response:
+    project = Project.query.get_or_404(project_id)  # type: Project
     db.session.delete(project)
     db.session.commit()
     return jsonify(project.to_json())

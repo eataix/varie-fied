@@ -1,3 +1,4 @@
+from typing import List
 from flask import render_template, send_file
 
 from app.main import main
