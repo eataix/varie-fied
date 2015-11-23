@@ -504,7 +504,7 @@ class Project(db.Model):
             new_ws['B' + str(row)].font = Font(name='Lao UI', size=11)
             new_ws['H' + str(row)].font = Font(name='Lao UI', size=11)
 
-            if self.admin_fee is not None:
+            if self.admin_fee is not None and self.admin_fee != 0:
                 row += 1
                 new_ws['B' + str(row)].value = 'Fixed administration fee'
                 new_ws['H' + str(row)].value = self.admin_fee
