@@ -15,13 +15,6 @@ def get_clients() -> Response:
     return jsonify({'progress_items': [client.to_json() for client in clients]})
 
 
-@api.route('/clients/<int:client_id>')
-@auth.login_required
-def get_client(client_id: int) -> Response:
-    client = Client.query.get_or_404(client_id)  # type: Client
-    return jsonify(client.to_json())
-
-
 @api.route('/clients/', methods=['POST'])
 @auth.login_required
 def new_client() -> Response:
@@ -29,6 +22,13 @@ def new_client() -> Response:
     db.session.add(client)
     db.session.commit()
     return jsonify(client.to_json()), 201
+
+
+@api.route('/clients/<int:client_id>')
+@auth.login_required
+def get_client(client_id: int) -> Response:
+    client = Client.query.get_or_404(client_id)  # type: Client
+    return jsonify(client.to_json())
 
 
 @api.route('/clients/<int:client_id>', methods=['PUT'])

@@ -15,13 +15,6 @@ def get_variations() -> Response:
     return jsonify({'variations': [project.to_json() for project in variations]})
 
 
-@api.route('/variations/<int:variation_id>')
-@auth.login_required
-def get_variation(variation_id: int) -> Response:
-    variation = Variation.query.get_or_404(variation_id)  # type: Variation
-    return jsonify(variation.to_json())
-
-
 @api.route('/variations/', methods=['POST'])
 @auth.login_required
 def new_variation() -> Response:
@@ -29,6 +22,13 @@ def new_variation() -> Response:
     db.session.add(variation)
     db.session.commit()
     return jsonify(variation.to_json()), 201
+
+
+@api.route('/variations/<int:variation_id>')
+@auth.login_required
+def get_variation(variation_id: int) -> Response:
+    variation = Variation.query.get_or_404(variation_id)  # type: Variation
+    return jsonify(variation.to_json())
 
 
 @api.route('/variations/<int:variation_id>', methods=['PUT'])
@@ -49,14 +49,6 @@ def edit_variation(variation_id: int) -> Response:
     return jsonify(variation.to_json())
 
 
-@api.route('/variations/<int:variation_id>/items/')
-@auth.login_required
-def get_variation_items(variation_id: int) -> Response:
-    variation = Variation.query.get_or_404(variation_id)  # type: Variation
-    variation.items.sort(key=lambda i: i.id)
-    return jsonify({'items': [item.to_json() for item in variation.items]})
-
-
 @api.route('/variations/<int:variation_id>', methods=['DELETE'])
 @auth.login_required
 def delete_variation(variation_id: int) -> Response:
@@ -64,3 +56,11 @@ def delete_variation(variation_id: int) -> Response:
     db.session.delete(variation)
     db.session.commit()
     return jsonify(variation.to_json())
+
+
+@api.route('/variations/<int:variation_id>/items/')
+@auth.login_required
+def get_variation_items(variation_id: int) -> Response:
+    variation = Variation.query.get_or_404(variation_id)  # type: Variation
+    variation.items.sort(key=lambda i: i.id)
+    return jsonify({'items': [item.to_json() for item in variation.items]})
