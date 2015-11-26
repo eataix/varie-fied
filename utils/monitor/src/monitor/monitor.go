@@ -33,9 +33,9 @@ func main() {
 			color.Unset()
 		}()
 		if t.Hour() >= 7 && t.Hour() <= 16 {
-			time.Sleep(10 * time.Second)
-		} else {
 			time.Sleep(10 * time.Minute)
+		} else {
+			time.Sleep(1 * time.Hour)
 		}
 	}
 }
