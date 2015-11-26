@@ -14,6 +14,7 @@ func main() {
 	username := os.Getenv("LOGIN")
 	password := os.Getenv("PASSWORD")
 	request, _ := http.NewRequest("GET", "https://v2.freeaddr.info", nil)
+	request.Header.Set("User-Agent", "Go Monitor")
 	request.SetBasicAuth(username, password)
 	for {
 		t := time.Now()
