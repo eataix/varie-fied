@@ -195,6 +195,7 @@ const exportFunctions = () => {
   };
 };
 
+//noinspection JSUnusedLocalSymbols
 export const initVariationTable = (table) => {
   if (_.isNull($table)) {
     $table = $(table);

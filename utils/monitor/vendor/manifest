@@ -1,0 +1,23 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/fatih/color",
+			"repository": "https://github.com/fatih/color",
+			"revision": "9aae6aaa22315390f03959adca2c4d395b02fcef",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mattn/go-colorable",
+			"repository": "https://github.com/mattn/go-colorable",
+			"revision": "51a7e7a8b1665b25ca173debdc8d52d493348f15",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mattn/go-isatty",
+			"repository": "https://github.com/mattn/go-isatty",
+			"revision": "d6aaa2f596ae91a0a58d8e7f2c79670991468e4f",
+			"branch": "master"
+		}
+	]
+}
