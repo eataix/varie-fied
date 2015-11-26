@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,13 +14,18 @@ import (
 func main() {
 	username := os.Getenv("LOGIN")
 	password := os.Getenv("PASSWORD")
+
+	config := &tls.Config{MinVersion: tls.VersionTLS12}
+	transport := &http.Transport{TLSClientConfig: config}
+	client := &http.Client{Transport: transport}
+
 	request, _ := http.NewRequest("GET", "https://v2.freeaddr.info", nil)
 	request.Header.Set("User-Agent", "Go Monitor")
 	request.SetBasicAuth(username, password)
 	for {
 		t := time.Now()
 		go func() {
-			resp, err := http.DefaultClient.Do(request)
+			resp, err := client.Do(request)
 			if err != nil {
 				log.Fatal(err)
 			}
