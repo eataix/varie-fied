@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 import arrow
 from flask import url_for
@@ -19,17 +19,23 @@ class Project(db.Model):
     active = db.Column(db.Boolean, default=True)  # type: bool
     admin_fee = db.Column(db.Float, nullable=True)  # type: float
 
+    client = db.relation('Client', uselist=False, backref='project', cascade="all, delete-orphan", lazy='select')  # type : List[Client]
+    superintendent = db.relation('Superintendent', uselist=False, backref='project', cascade="all, delete-orphan", lazy='select')  # type : List[Superintendent]
+
     variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan",
                                  lazy='select')  # type: List[Variation]
     progress_items = db.relation('ProgressItem', backref='project', cascade="all, delete-orphan",
                                  lazy='select')  # type: List[ProgressItem]
-    clients = db.relation('Client', backref='project', cascade="all, delete-orphan",
-                          lazy='select')  # type : List[Client]
 
     def __repr__(self) -> str:
         return u'<Project Name: {}, Active: {}, Margin: {}>'.format(self.name, self.active, self.margin)
 
     def to_json(self) -> Dict[str, Any]:
+        if self.superintendent is None:
+            superintendent_name = ''
+        else:
+            superintendent_name = self.superintendent.name
+
         json_project = {
             'id': self.pid,
             'name': self.name,
@@ -39,7 +45,7 @@ class Project(db.Model):
             'admin_fee': self.admin_fee,
             'variations': url_for('api.get_project_variations', project_id=self.pid, _external=True),
             'progress_items': url_for('api.get_project_progress_items', project_id=self.pid, _external=True),
-            'clients': url_for('api.get_project_clients', project_id=self.pid, _external=True),
+            'superintendent_name': superintendent_name,
             'url': url_for('api.get_project', project_id=self.pid, _external=True),
         }
         return json_project
@@ -60,10 +66,10 @@ class Project(db.Model):
 
         def prepare(worksheet: worksheet.Worksheet) -> None:
             worksheet.header_footer.setHeader(
-                    '&L&"Calibri,Regular"&K000000&G&C&"Lao UI,Bold"&8Total Project Construction Pty. Ltd.&"Lao UI,Regular"&K000000_x000D_ACN 117 578 560  ABN 84 117 578 560_x000D_PO Box 313 HALL ACT_x000D_P: 02-6230 2455   F:02-6230 2488_x000D_E: troy@totalproject.com.au')
+                '&L&"Calibri,Regular"&K000000&G&C&"Lao UI,Bold"&8Total Project Construction Pty. Ltd.&"Lao UI,Regular"&K000000_x000D_ACN 117 578 560  ABN 84 117 578 560_x000D_PO Box 313 HALL ACT_x000D_P: 02-6230 2455   F:02-6230 2488_x000D_E: troy@totalproject.com.au')
             worksheet.header_footer.setFooter(
-                    '&L&"Arial,Italic"&9&K000000App. A - Contract Variations&R&"Arial,Italic"&9&K000000{}'.format(
-                            self.name))
+                '&L&"Arial,Italic"&9&K000000App. A - Contract Variations&R&"Arial,Italic"&9&K000000{}'.format(
+                    self.name))
             worksheet.page_margins.top = cm_to_inch(3.4)
             worksheet.page_margins.bottom = cm_to_inch(2)
             worksheet.page_margins.left = cm_to_inch(1.2)
@@ -78,14 +84,12 @@ class Project(db.Model):
         prepare(ws)
 
         ws['A1'].value = 'Client:      '
-        ws['A1'].value += '    '.join([client.name for client in self.clients])
+        ws['A1'].value += '    '.join([self.client.name, self.superintendent.name])
         ws['A1'].font = Font(name='Lao UI', size=10, bold=True)
         ws['A2'].value = '             '
-        ws['A2'].value += '    '.join(
-                [client.first_line_address for client in self.clients if client.first_line_address is not None])
+        ws['A2'].value += '    '.join([self.client.first_line_address, self.superintendent.first_line_address])
         ws['A3'].value = '             '
-        ws['A3'].value += '    '.join(
-                [client.second_line_address for client in self.clients if client.second_line_address is not None])
+        ws['A3'].value += '    '.join([self.client.second_line_address, self.superintendent.second_line_address])
         ws['C1'].value = 'Reference #: {}-{}'.format(arrow.now('Australia/Canberra').format('MM'), self.reference_number)
         ws['C1'].font = Font(name='Lao UI', size=10, bold=True)
         ws['C3'].value = 'Date: {}'.format(arrow.now('Australia/Canberra').format('DD/MM/YY'))
@@ -128,8 +132,8 @@ class Project(db.Model):
 
         ws['A1'].border = Border(top=Side(border_style='medium', color='FF000000'))
         ws['B1'].border = Border(
-                top=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000'),
+            top=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
         )
         ws['C1'].border = Border(top=Side(border_style='medium', color='FF000000'))
         ws['D1'].border = Border(top=Side(border_style='medium', color='FF000000'))
@@ -138,55 +142,55 @@ class Project(db.Model):
 
         ws['A3'].border = Border(bottom=Side(border_style='medium', color='FF000000'))
         ws['B3'].border = Border(
-                bottom=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
         )
 
         ws['A4'].border = Border(
-                top=Side(border_style='medium', color='FF000000'),
-                bottom=Side(border_style='medium', color='FF000000'),
+            top=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
         )
         ws['A6'].border = Border(
-                top=Side(border_style='medium', color='FF000000'),
-                bottom=Side(border_style='medium', color='FF000000'),
-                left=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000'),
+            top=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
         )
         ws['B6'].border = Border(
-                top=Side(border_style='medium', color='FF000000'),
-                left=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000'),
+            top=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
         )
         ws['C6'].border = Border(
-                top=Side(border_style='medium', color='FF000000'),
-                left=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000'),
+            top=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
         )
         ws['D6'].border = Border(
-                top=Side(border_style='medium', color='FF000000'),
-                left=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000'),
+            top=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
         )
         ws['A7'].border = Border(
-                top=Side(border_style='medium', color='FF000000'),
-                bottom=Side(border_style='medium', color='FF000000'),
-                left=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000'),
+            top=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
         )
         ws['B7'].border = Border(
-                bottom=Side(border_style='medium', color='FF000000'),
-                left=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
         )
         ws['C7'].border = Border(
-                bottom=Side(border_style='medium', color='FF000000'),
-                left=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
         )
         ws['D7'].border = Border(
-                bottom=Side(border_style='medium', color='FF000000'),
-                left=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000'),
         )
 
         row = 8
@@ -205,8 +209,8 @@ class Project(db.Model):
                 cell = ws['{}{}'.format(column, irow)]
                 cell.font = Font(name='Lao UI', size=9)
                 cell.border = Border(
-                        left=Side(border_style='thin', color='FF000000'),
-                        right=Side(border_style='thin', color='FF000000'),
+                    left=Side(border_style='thin', color='FF000000'),
+                    right=Side(border_style='thin', color='FF000000'),
                 )
                 if column == 'D':
                     cell.alignment = Alignment(vertical='center', horizontal='center')
@@ -231,10 +235,10 @@ class Project(db.Model):
                 cell = ws['{}{}'.format(column, row)]
                 cell.fill = fill
                 cell.border = Border(
-                        top=Side(border_style='thin', color='FF000000'),
-                        bottom=Side(border_style='thin', color='FF000000'),
-                        left=Side(border_style='thin', color='FF000000'),
-                        right=Side(border_style='thin', color='FF000000')
+                    top=Side(border_style='thin', color='FF000000'),
+                    bottom=Side(border_style='thin', color='FF000000'),
+                    left=Side(border_style='thin', color='FF000000'),
+                    right=Side(border_style='thin', color='FF000000')
                 )
 
         row += 1
@@ -246,33 +250,33 @@ class Project(db.Model):
             cell = ws['{}{}'.format(column, row)]
             cell.fill = fill
             cell.border = Border(
-                    top=Side(border_style='medium', color='FF000000'),
-                    bottom=Side(border_style='medium', color='FF000000'),
-                    left=Side(border_style='medium', color='FF000000'),
-                    right=Side(border_style='medium', color='FF000000')
+                top=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000')
             )
 
         row += 1
         ws['A{}'.format(row)].value = 'Less paid to date'
         ws['C{}'.format(row)].border = Border(
-                left=Side(border_style='thin', color='FF000000'),
-                right=Side(border_style='thin', color='FF000000')
+            left=Side(border_style='thin', color='FF000000'),
+            right=Side(border_style='thin', color='FF000000')
         )
 
         row += 1
         ws['A{}'.format(row)].value = 'Value of work completed this period'
         ws['C{}'.format(row)].value = '=C{} - C{}'.format(row - 2, row - 1)
         ws['C{}'.format(row)].border = Border(
-                left=Side(border_style='thin', color='FF000000'),
-                right=Side(border_style='thin', color='FF000000')
+            left=Side(border_style='thin', color='FF000000'),
+            right=Side(border_style='thin', color='FF000000')
         )
 
         row += 1
         ws['A{}'.format(row)].value = 'GST this period'
         ws['C{}'.format(row)].value = '=C{} * 10%'.format(row - 1)
         ws['C{}'.format(row)].border = Border(
-                left=Side(border_style='thin', color='FF000000'),
-                right=Side(border_style='thin', color='FF000000')
+            left=Side(border_style='thin', color='FF000000'),
+            right=Side(border_style='thin', color='FF000000')
         )
         for irow in range(row - 3, row + 1):
             for column in 'ABCD':
@@ -285,10 +289,10 @@ class Project(db.Model):
         ws['C{}'.format(row)].value = '=C{} + C{}'.format(row - 2, row - 1)
         ws['C{}'.format(row)].font = Font(name='Lao UI', size=9, bold=True)
         ws['C{}'.format(row)].border = Border(
-                top=Side(border_style='medium', color='FF000000'),
-                bottom=Side(border_style='medium', color='FF000000'),
-                left=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000')
+            top=Side(border_style='medium', color='FF000000'),
+            bottom=Side(border_style='medium', color='FF000000'),
+            left=Side(border_style='medium', color='FF000000'),
+            right=Side(border_style='medium', color='FF000000')
         )
 
         for irow in range(8, row + 1):
@@ -331,10 +335,10 @@ class Project(db.Model):
             ws[cell].alignment = Alignment(horizontal='center')
             ws[cell].fill = fill
             ws[cell].border = Border(
-                    top=Side(border_style='medium', color='FF000000'),
-                    bottom=Side(border_style='medium', color='FF000000'),
-                    left=Side(border_style='medium', color='FF000000'),
-                    right=Side(border_style='medium', color='FF000000')
+                top=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000')
             )
 
         row = 6
@@ -394,10 +398,10 @@ class Project(db.Model):
             cell.alignment = Alignment(vertical='center', horizontal='center')
             cell.fill = fill
             cell.border = Border(
-                    left=Side(border_style='medium', color='FF000000'),
-                    right=Side(border_style='medium', color='FF000000'),
-                    top=Side(border_style='medium', color='FF000000'),
-                    bottom=Side(border_style='medium', color='FF000000')
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
+                top=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000')
             )
             if column != 'A':
                 cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
@@ -730,3 +734,33 @@ class Client(db.Model):
             second_line_address = json['second_line_address']
         return Client(name=name, project=project, first_line_address=first_line_address,
                       second_line_address=second_line_address)
+
+
+class Superintendent(db.Model):
+    __tablename__ = 'superintendents'
+    id = db.Column(db.Integer, primary_key=True)  # type: int
+    name = db.Column(db.String, nullable=False)  # type: str
+    first_line_address = db.Column(db.String, nullable=True)  # type: str
+    second_line_address = db.Column(db.String, nullable=True)  # type: str
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)  # type: int
+
+    def to_json(self) -> Dict[str, Any]:
+        return {
+            'id': self.id,
+            'name': self.name,
+            'first_line_address': self.first_line_address,
+            'second_line_address': self.second_line_address
+        }
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> 'Superintendent':
+        project = Project.query.get_or_404(int(json.get('project_id')))  # type: Project
+        name = json['name']
+        first_line_address = None
+        if 'first_line_address' in json:
+            first_line_address = json['first_line_address']
+        second_line_address = None
+        if 'second_line_address' in json:
+            second_line_address = json['second_line_address']
+        return Superintendent(name=name, project=project, first_line_address=first_line_address,
+                              second_line_address=second_line_address)

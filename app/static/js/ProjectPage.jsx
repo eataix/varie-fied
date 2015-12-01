@@ -40,6 +40,22 @@ class Table extends React.Component {
   }
 }
 
+class Totals extends React.Component {
+  shouldComponentUpdate() {
+    return false;
+  }
+
+  render() {
+    if (this.props.progress) {
+      return (
+        <div name="totals"/>
+      );
+    } else {
+      return false;
+    }
+  }
+}
+
 const mapStateToProps = (state) => {
   return {
     project: state.project
@@ -137,6 +153,7 @@ class ProjectPage extends React.Component {
             </div>
           </div>
           <Table progress={this.props.progress}/>
+          <Totals progress={this.props.progress}/>
         </div>
         <NewProjectForm />
         <NewVariationForm />

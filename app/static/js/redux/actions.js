@@ -2,9 +2,8 @@ export const ADD_VARIATION_ITEM = 'ADD_VARIATION_ITEM';
 export const DELETE_VARIATION_ITEM = 'DELETE_VARIATION_ITEM';
 export const EDIT_VARIATION_ITEM = 'EDIT_VARIATION_ITEM';
 
-export const ADD_CLIENT = 'ADD_CLIENT';
-export const DELETE_CLIENT = 'DELETE_CLIENT';
 export const EDIT_CLIENT = 'EDIT_CLIENT';
+export const EDIT_SUPERINTENDENT = 'EDIT_SUPERINTENDENT';
 
 export const ADD_PROGRESS_ITEM = 'ADD_PROGRESS_ITEM';
 export const DELETE_PROGRESS_ITEM = 'DELETE_PROGRESS_ITEM';
@@ -54,26 +53,18 @@ export const editVariationItem = (index, name, value) => {
   };
 };
 
-export const addClient = (name = '', first = '', second = '') => {
+export const editClient = (name, first, second) => {
   return {
-    type: ADD_CLIENT,
+    type: EDIT_CLIENT,
     name,
     first,
     second
   };
 };
 
-export const deleteClient = (index) => {
+export const editSuperintendent = (name, first, second) => {
   return {
-    type: DELETE_CLIENT,
-    index
-  };
-};
-
-export const editClient = (index, name, first, second) => {
-  return {
-    type: EDIT_CLIENT,
-    index,
+    type: EDIT_SUPERINTENDENT,
     name,
     first,
     second

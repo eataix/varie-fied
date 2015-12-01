@@ -8,6 +8,8 @@ export const newItemUrl = metaData.newItemUrl;
 //noinspection JSUnresolvedVariable
 export const newClientUrl = metaData.newClientUrl;
 //noinspection JSUnresolvedVariable
+export const newSuperintendentUrl = metaData.newSuperintendentUrl;
+//noinspection JSUnresolvedVariable
 export const newProgressItemUrl = metaData.newProgressItemUrl;
 //noinspection JSUnresolvedVariable
 export const projectsUrl = metaData.projectsUrl;

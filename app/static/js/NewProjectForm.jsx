@@ -2,9 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Input, Button, Modal } from 'react-bootstrap';
 
-import { addClient, deleteClient, editClient, newProjectName, newProjectRefNumber, newProjectMargin, newProjectAdminFee } from './redux/actions';
-import { isTrue, isFalse, isNull, newProjectUrl, newClientUrl } from './defs';
-import { spinInterval } from './config';
+import { editClient, editSuperintendent, newProjectName, newProjectRefNumber, newProjectMargin, newProjectAdminFee } from './redux/actions';
+import { newProjectUrl, newClientUrl, newSuperintendentUrl } from './defs';
 
 class ProjectName extends React.Component {
   constructor() {
@@ -91,6 +90,7 @@ class Margin extends React.Component {
         data-parsley-type="number"
         onChange={this.handleChange}
         value={this.props.value}
+        placeholder="e.g., please enter 0.1 for 10% OH"
       />
     );
   }
@@ -122,7 +122,7 @@ class AdminFee extends React.Component {
         labelClassName="col-sm-3"
         wrapperClassName="col-sm-9"
         data-parsley-type="number"
-        placeholder="optional"
+        placeholder="leave blank if not applicable"
         onChange={this.handleChange}
         value={this.props.value}
       />
@@ -134,48 +134,6 @@ AdminFee.propTypes = {
   value: React.PropTypes.string.isRequired
 };
 
-class ClientList extends React.Component {
-  render() {
-    return (
-      <div className="form-group">
-        <label className="col-sm-3 control-label">Clients</label>
-        <div className="col-sm-9">
-          <table className="table table-bordered">
-            <thead>
-            <tr>
-              <th>Client Name</th>
-              <th>Address First Line</th>
-              <th>Address Second Line</th>
-              <th/>
-            </tr>
-            </thead>
-            <tbody>
-            {
-              this.props.clients.map((r, i) =>
-              <Client
-                key={r + i}
-                addRow={this.props.addClient}
-                deleteRow={this.props.deleteClient.bind(null, i)}
-                updateItem={this.props.editClient.bind(null, i)}
-                name={r.name}
-                first={r.first}
-                second={r.second}
-              />)
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  }
-}
-ClientList.propTypes = {
-  addClient: React.PropTypes.func.isRequired,
-  deleteClient: React.PropTypes.func.isRequired,
-  editClient: React.PropTypes.func.isRequired,
-  clients: React.PropTypes.object.isRequired
-};
-
 class Client extends React.Component {
   constructor() {
     super();
@@ -183,68 +141,134 @@ class Client extends React.Component {
   }
 
   handleChange() {
-    this.props.updateItem(this.refs.name.getValue(), this.refs.first.getValue(), this.refs.second.getValue());
+    this.props.editClient(this.refs.name.getValue(), this.refs.first.getValue(), this.refs.second.getValue());
   }
 
   render() {
     return (
-      <tr className="client">
-        <td>
-          <Input
-            ref="name"
-            standalone={true}
-            type="textarea"
-            required
-            value={this.props.name}
-            onChange={this.handleChange}
-          />
-        </td>
-        <td style={{ verticalAlign: 'middle' }}>
-          <Input
-            ref="first"
-            standalone={true}
-            type="text"
-            required
-            onChange={this.handleChange}
-            value={this.props.first}
-          />
-        </td>
-        <td style={{ verticalAlign: 'middle' }}>
-          <Input
-            ref="second"
-            standalone={true}
-            type="text"
-            required
-            onChange={this.handleChange}
-            value={this.props.second}
-          />
-        </td>
-        <td style={{ width: 80, textAlign: 'center', verticalAlign: 'middle' }}>
-          <a
-            href="javascript:void(0)"
-            onClick={this.props.addRow}
-          >
-            <span className="fa fa-plus"/>
-          </a>
-          /
-          <a
-            href="javascript:void(0)"
-            onClick={this.props.deleteRow}
-          >
-            <span className="fa fa-minus"/>
-          </a>
-        </td>
-      </tr>
+      <div className="form-group">
+        <label className="col-sm-3 control-label">Client</label>
+        <div className="col-sm-9">
+          <table className="table table-bordered">
+            <thead>
+            <tr>
+              <th>Client Name</th>
+              <th>Address First Line</th>
+              <th>Address Second Line</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr className="client">
+              <td>
+                <Input
+                  ref="name"
+                  standalone={true}
+                  type="textarea"
+                  required
+                  value={this.props.client.name}
+                  onChange={this.handleChange}
+                />
+              </td>
+              <td style={{ verticalAlign: 'middle' }}>
+                <Input
+                  ref="first"
+                  standalone={true}
+                  type="text"
+                  required
+                  onChange={this.handleChange}
+                  value={this.props.client.first}
+                />
+              </td>
+              <td style={{ verticalAlign: 'middle' }}>
+                <Input
+                  ref="second"
+                  standalone={true}
+                  type="text"
+                  required
+                  onChange={this.handleChange}
+                  value={this.props.client.second}
+                />
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     );
   }
 }
 Client.propTypes = {
-  addRow: React.PropTypes.func.isRequired,
-  deleteRow: React.PropTypes.func.isRequired,
-  updateItem: React.PropTypes.func.isRequired,
-  name: React.PropTypes.string.isRequired,
-  first: React.PropTypes.string.isRequired,
-  second: React.PropTypes.string.isRequired
+  client: React.PropTypes.object.isRequired,
+  editClient: React.PropTypes.func.isRequired
+};
+
+
+class Superintendent extends React.Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange() {
+    this.props.editSuperintendent(this.refs.name.getValue(), this.refs.first.getValue(), this.refs.second.getValue());
+  }
+
+  render() {
+    return (
+      <div className="form-group">
+        <label className="col-sm-3 control-label">Superintendent</label>
+        <div className="col-sm-9">
+          <table className="table table-bordered">
+            <thead>
+            <tr>
+              <th>Superintendent Name</th>
+              <th>Address First Line</th>
+              <th>Address Second Line</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr className="client">
+              <td>
+                <Input
+                  ref="name"
+                  standalone={true}
+                  type="textarea"
+                  required
+                  value={this.props.superintendent.name}
+                  onChange={this.handleChange}
+                />
+              </td>
+              <td style={{ verticalAlign: 'middle' }}>
+                <Input
+                  ref="first"
+                  standalone={true}
+                  type="text"
+                  required
+                  onChange={this.handleChange}
+                  value={this.props.superintendent.first}
+                />
+              </td>
+              <td style={{ verticalAlign: 'middle' }}>
+                <Input
+                  ref="second"
+                  standalone={true}
+                  type="text"
+                  required
+                  onChange={this.handleChange}
+                  value={this.props.superintendent.second}
+                />
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+}
+Superintendent.propTypes = {
+  superintendent: React.PropTypes.object.isRequired,
+  editSuperintendent: React.PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => {
@@ -253,20 +277,18 @@ const mapStateToProps = (state) => {
     refNum: state.newRefNum,
     margin: state.newMargin,
     adminFee: state.newAdminFee,
-    clients: state.clients
+    client: state.client,
+    superintendent: state.superintendent
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    addClient: () => {
-      dispatch(addClient('', '', ''));
-    },
-    deleteClient: (index) => {
-      dispatch(deleteClient(index));
-    },
     editClient: (index, name, first, second) => {
       dispatch(editClient(index, name, first, second));
+    },
+    editSuperintendent: (index, name, first, second) => {
+      dispatch(editSuperintendent(index, name, first, second));
     },
     newProjectName: (name) => {
       dispatch(newProjectName(name));
@@ -287,6 +309,8 @@ class NewProjectForm extends React.Component {
   constructor() {
     super();
     this.handleSave = this.handleSave.bind(this);
+    this.createClient = this.createClient.bind(this);
+    this.createSuperintendent = this.createSuperintendent.bind(this);
     this.handleHideModal = this.handleHideModal.bind(this);
   }
 
@@ -334,11 +358,13 @@ class NewProjectForm extends React.Component {
                     value={this.props.adminFee}
                     cb={this.props.newProjectAdminFee}
                   />
-                  <ClientList
-                    clients={this.props.clients}
-                    addClient={this.props.addClient}
-                    deleteClient={this.props.deleteClient}
+                  <Client
+                    client={this.props.client}
                     editClient={this.props.editClient}
+                  />
+                  <Superintendent
+                    superintendent={this.props.superintendent}
+                    editSuperintendent={this.props.editSuperintendent}
                   />
                 </form>
               </div>
@@ -356,6 +382,82 @@ class NewProjectForm extends React.Component {
         </div>
       </div>
     );
+  }
+
+  createClient(data) {
+    const client = this.props.client;
+    console.log(client); // eslint-disable-line no-console
+
+    const name = client.name;
+    let first_line_address = client.first;
+    if (first_line_address === '') {
+      first_line_address = null;
+    }
+    let second_line_address = client.second;
+    if (second_line_address === '') {
+      second_line_address = null;
+    }
+    $.ajax({
+      url: newClientUrl,
+      type: 'POST',
+      data: JSON.stringify({
+        name,
+        first_line_address,
+        second_line_address,
+        project_id: data.id
+      }),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json'
+    }).done(() => {
+      this.createSuperintendent(data);
+    }).fail(() => {
+      swal({
+        title: 'Error',
+        text: 'Cannot save the project... Please try again.',
+        type: 'error'
+      });
+    });
+  }
+
+  createSuperintendent(data) {
+    const superintendent = this.props.superintendent;
+    console.log(superintendent); // eslint-disable-line no-console
+
+    const name = superintendent.name;
+    let first_line_address = superintendent.first;
+    if (first_line_address === '') {
+      first_line_address = null;
+    }
+    let second_line_address = superintendent.second;
+    if (second_line_address === '') {
+      second_line_address = null;
+    }
+    $.ajax({
+      url: newSuperintendentUrl,
+      type: 'POST',
+      data: JSON.stringify({
+        name,
+        first_line_address,
+        second_line_address,
+        project_id: data.id
+      }),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json'
+    }).done(() => {
+      swal({
+        title: 'Nice!',
+        text: `You created a new project: ${data.name}`,
+        type: 'success'
+      }, () => {
+        location.pathname = `/project/${data.id}/progress`;
+      });
+    }).fail(() => {
+      swal({
+        title: 'Error',
+        text: 'Cannot save the project... Please try again.',
+        type: 'error'
+      });
+    });
   }
 
   handleSave() {
@@ -434,68 +536,7 @@ class NewProjectForm extends React.Component {
           type: 'error'
         });
       }).done((data) => {
-        const clients = this.props.clients;
-        console.log(clients); // eslint-disable-line no-console
-        const statusArray = new Array(clients.size).fill(null);
-
-        (() => {
-          const createClient = (offset = 0) => {
-            if (offset >= clients.size) {
-              return;
-            }
-            const client = clients.get(offset);
-            const name = client.name;
-            let first_line_address = client.first;
-            if (first_line_address === '') {
-              first_line_address = null;
-            }
-            let second_line_address = client.second;
-            if (second_line_address === '') {
-              second_line_address = null;
-            }
-            $.ajax({
-              url: newClientUrl,
-              type: 'POST',
-              data: JSON.stringify({
-                name,
-                first_line_address,
-                second_line_address,
-                project_id: data.id
-              }),
-              contentType: 'application/json; charset=utf-8',
-              dataType: 'json'
-            }).done(() => {
-              statusArray[offset] = true;
-              createClient(offset + 1);
-            }).fail(() => {
-              statusArray[offset] = false;
-            });
-          };
-          createClient(0);
-        })();
-
-        (() => {
-          const waiting = () => {
-            if (statusArray.some(isFalse)) {
-              swal({
-                title: 'Error',
-                text: 'Cannot save the project... Please try again.',
-                type: 'error'
-              });
-            } else if (statusArray.some(isNull)) {
-              setTimeout(waiting, spinInterval);
-            } else if (statusArray.every(isTrue)) {
-              swal({
-                title: 'Nice!',
-                text: `You created a new project: ${data.name}`,
-                type: 'success'
-              }, () => {
-                location.pathname = `/project/${data.id}/progress`;
-              });
-            }
-          };
-          waiting();
-        })();
+        this.createClient(data);
       });
     });
   }

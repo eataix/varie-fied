@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 import {
   ADD_VARIATION_ITEM, DELETE_VARIATION_ITEM, EDIT_VARIATION_ITEM,
-  ADD_CLIENT, DELETE_CLIENT, EDIT_CLIENT,
+  EDIT_CLIENT, EDIT_SUPERINTENDENT,
   ADD_PROGRESS_ITEM, DELETE_PROGRESS_ITEM, EDIT_PROGRESS_ITEM,
   UPDATE_MARGIN_AND_ADMIN_FEE, UPDATE_TIME, UPDATE_SUBCONTRACTOR, UPDATE_INVOICE_NUMBER, UPDATE_DESCRIPTION, UPDATE_PREPARED_FOR,
   NEW_PROJECT_NAME, NEW_PROJECT_REF_NUMBER, NEW_PROJECT_MARGIN, NEW_PROJECT_ADMIN_FEE,
@@ -16,11 +16,16 @@ const initialState = {
     name: '',
     value: ''
   }]),
-  clients: Immutable.List([{
+  client: {
     name: '',
     first: '',
     second: ''
-  }]),
+  },
+  superintendent: {
+    name: '',
+    first: '',
+    second: ''
+  },
   progressItems: Immutable.List([{
     name: '',
     value: ''
@@ -71,30 +76,21 @@ const app = (state = initialState, action) => {
           value: action.value
         })
       });
-    case ADD_CLIENT:
-      return Object.assign({}, state, {
-        clients: state.clients.push({
-          name: action.name,
-          first: action.first,
-          second: action.second
-        })
-      });
-    case DELETE_CLIENT:
-      if (state.clients.size === 1) {
-        return state;
-      } else {
-        return Object.assign({}, state, {
-          clients: state.clients.delete(action.index)
-        });
-      }
-      break;
     case EDIT_CLIENT:
       return Object.assign({}, state, {
-        clients: state.clients.set(action.index, {
+        client: {
           name: action.name,
           first: action.first,
           second: action.second
-        })
+        }
+      });
+    case EDIT_SUPERINTENDENT:
+      return Object.assign({}, state, {
+        superintendent: {
+          name: action.name,
+          first: action.first,
+          second: action.second
+        }
       });
     case ADD_PROGRESS_ITEM:
       return Object.assign({}, state, {

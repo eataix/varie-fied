@@ -1,7 +1,5 @@
 from flask import jsonify, request, Response
 
-from typing import List
-
 from app import db
 from app.api_1_0 import api
 from app.api_1_0.authentication import auth
@@ -83,19 +81,18 @@ def get_project_progress_items(project_id: int) -> Response:
     return jsonify({'progress_items': jsons})
 
 
-@api.route('/projects/<int:project_id>/clients/')
+@api.route('/projects/<int:project_id>/client')
 @auth.login_required
-def get_project_clients(project_id: int) -> Response:
+def get_project_client(project_id: int) -> Response:
     project = Project.query.get_or_404(project_id)  # type: Project
+    return jsonify({'client': project.client.to_json()})
 
-    project.clients.sort(key=lambda p: p.id)
-    jsons = []
-    for (idx, variation) in enumerate(project.clients):
-        json = variation.to_json()
-        json['virtual_id'] = idx + 1
-        jsons.append(json)
 
-    return jsonify({'clients': jsons})
+@api.route('/projects/<int:project_id>/superintendent')
+@auth.login_required
+def get_project_superintendent(project_id: int) -> Response:
+    project = Project.query.get_or_404(project_id)  # type: Project
+    return jsonify({'superintendent': project.superintendent.to_json()})
 
 
 @api.route('/projects/<int:project_id>', methods=['DELETE'])

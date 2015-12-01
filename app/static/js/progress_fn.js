@@ -8,6 +8,24 @@ const setCallback = () => {
     window.onbeforeunload = () => {
       return 'You have unsaved changes.';
     };
+    let sum = 0.0;
+    let sum2 = 0.0;
+    const data = $table.bootstrapTable('getData');
+    data.forEach((progress_item, idx) => {
+      if (idx < data.length - 1) {
+        sum += parseFloat(progress_item.completed_value);
+        sum2 += parseFloat(progress_item.contract_value);
+      }
+    });
+    $table.bootstrapTable('updateRow', {
+      index: data.length - 1,
+      row: {
+        completed_value: sum,
+        contract_value: sum2,
+        percentage: sum / sum2,
+        name: 'TOTALS'
+      }
+    });
   });
 };
 
@@ -73,6 +91,22 @@ export const initProgressTable = (table) => {
       }],
       data: data.progress_items
     });
+
+    let sum = 0.0;
+    let sum2 = 0.0;
+    data.progress_items.forEach((progress_item) => {
+      sum += progress_item.completed_value;
+      sum2 += progress_item.contract_value;
+    });
+    $table.bootstrapTable('insertRow', {
+      index: data.progress_items.length,
+      row: {
+        completed_value: sum,
+        contract_value: sum2,
+        percentage: sum / sum2,
+        name: 'TOTALS'
+      }
+    });
   }).always(() => {
     $('body').addClass('loaded');
   });
@@ -102,7 +136,7 @@ export const handleSaveProgress = () => {
     }
 
     const data = $table.bootstrapTable('getData');
-    const statusArray = new Array(data.length).fill(null);
+    const statusArray = new Array(data.length - 1).fill(null);
 
     (() => {
       const updateProgressItems = (offset = 0) => {
@@ -186,7 +220,7 @@ export const handleDeleteProgress = () => {
     }
 
     const selected = $table.bootstrapTable('getSelections');
-    const statusArray = new Array(selected.length).fill(null);
+    const statusArray = new Array(selected.length - 1).fill(null);
 
     (() => {
       const saveSelections = (offset = 0) => {

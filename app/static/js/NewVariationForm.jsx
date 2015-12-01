@@ -141,7 +141,10 @@ class Project extends React.Component {
 
   handleChange(event) {
     const p = this.props.projects.find((e) => e.id.toString() === event.target.value);
-    this.props.cb(p.id, p.margin, p.admin_fee);
+    if (!_.isUndefined(p)) {
+      this.props.cb(p.id, p.margin, p.admin_fee);
+      this.props.updatePreparedFor(p.superintendent_name);
+    }
   }
 
   render() {
@@ -164,7 +167,8 @@ class Project extends React.Component {
 }
 Project.propTypes = {
   projects: React.PropTypes.array.isRequired,
-  cb: React.PropTypes.func.isRequired
+  cb: React.PropTypes.func.isRequired,
+  updatePreparedFor: React.PropTypes.func.isRequired
 };
 
 class Margin extends React.Component {
@@ -643,6 +647,7 @@ class NewVariationForm extends React.Component {
                   <Project
                     projects={this.props.projects}
                     cb={this.props.updateMarginAndAdminFee}
+                    updatePreparedFor={this.props.updatePreparedFor}
                   />
                   <TimePicker
                     cb={this.props.updateTime}
