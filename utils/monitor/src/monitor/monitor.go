@@ -31,10 +31,10 @@ func main() {
 			}
 			const layout = "2006-01-02 15:04:05"
 			fmt.Print(t.Format(layout))
-			if resp.StatusCode != http.StatusOK {
-				color.Set(color.FgRed)
-			} else {
+			if resp.StatusCode == http.StatusOK {
 				color.Set(color.FgGreen)
+			} else {
+				color.Set(color.FgRed)
 			}
 			fmt.Printf("\t%s\n", resp.Status)
 			color.Unset()

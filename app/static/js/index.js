@@ -10,21 +10,23 @@ import FrontPage from './FrontPage';
 import init from './main';
 
 (() => {
-  const store = createStore(app);
+  if ($('#content').length >= 1) {
+    const store = createStore(app);
 
-  console.log(store.getState()); // eslint-disable-line no-console
-
-  store.subscribe(() => {
     console.log(store.getState()); // eslint-disable-line no-console
-  });
 
-  render(
-    <Provider store={store}>
-      <FrontPage />
-    </Provider>,
-    document.getElementById('content')
-  );
+    store.subscribe(() => {
+      console.log(store.getState()); // eslint-disable-line no-console
+    });
 
-  init();
+    render(
+      <Provider store={store}>
+        <FrontPage />
+      </Provider>,
+      document.getElementById('content')
+    );
+
+    init();
+  }
 })();
 

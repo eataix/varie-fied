@@ -10,21 +10,22 @@ import app from './redux/reducers';
 import init from './main';
 
 (() => {
-
-  const store = createStore(app);
-  console.log(store.getState()); // eslint-disable-line no-console
-
-  store.subscribe(() => {
+  if ($('#content').length >= 1) {
+    const store = createStore(app);
     console.log(store.getState()); // eslint-disable-line no-console
-  });
 
-  render(
-    <Provider store={store}>
-      <ProjectPage progress={false}/>
-    </Provider>,
-    document.getElementById('content')
-  );
+    store.subscribe(() => {
+      console.log(store.getState()); // eslint-disable-line no-console
+    });
 
-  init();
+    render(
+      <Provider store={store}>
+        <ProjectPage progress={false}/>
+      </Provider>,
+      document.getElementById('content')
+    );
+
+    init();
+  }
 })();
 
