@@ -140,7 +140,7 @@ export const handleSaveProgress = () => {
 
     (() => {
       const updateProgressItems = (offset = 0) => {
-        if (offset >= data.length) {
+        if (offset >= data.length - 1) {
           return;
         }
         const value = data[offset];
@@ -224,7 +224,7 @@ export const handleDeleteProgress = () => {
 
     (() => {
       const saveSelections = (offset = 0) => {
-        if (offset >= selected.length) {
+        if (offset >= selected.length || _.isUndefined(selected[offset].id)) {
           return;
         }
         $.ajax({

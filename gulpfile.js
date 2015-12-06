@@ -21,8 +21,10 @@
       'app/static/vendor/bootstrap/dist/js/bootstrap.min.js',
       'app/static/vendor/moment/min/moment-with-locales.min.js',
       'app/static/vendor/arrive/minified/arrive.min.js',
+
       'app/static/vendor/bootstrap-material-design/dist/js/material.min.js',
       'app/static/vendor/bootstrap-material-design/dist/js/ripples.min.js',
+
       'app/static/vendor/sweetalert/dist/sweetalert.min.js',
       'app/static/vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
       'app/static/vendor/parsleyjs/dist/parsley.min.js',
@@ -36,17 +38,17 @@
     scripts: [
       './app/static/js/index.js',
       './app/static/js/progress.js',
-      './app/static/js/variation.js'//,
-      //'./app/static/js/main.js'
+      './app/static/js/variation.js'
     ],
     js_output: 'app/static/dist/js',
     css_output: 'app/static/dist/css',
     vendor_css: [
       'app/static/vendor/bootstrap/dist/css/bootstrap.min.css',
       'app/static/vendor/font-awesome/css/font-awesome.min.css',
-      'app/static/vendor/bootstrap-material-design/dist/css/material.min.css',
+
+      'app/static/vendor/bootstrap-material-design/dist/css/bootstrap-material-design.min.css',
       'app/static/vendor/bootstrap-material-design/dist/css/ripples.min.css',
-      'app/static/vendor/bootstrap-material-design/dist/css/roboto.min.css',
+
       'app/static/vendor/sweetalert/dist/sweetalert.css',
       'app/static/vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
       'app/static/vendor/selectize/dist/css/selectize.bootstrap3.css',

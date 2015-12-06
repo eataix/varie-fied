@@ -17,7 +17,7 @@ class Toolbar extends React.Component {
     if (this.props.progress) {
       mid = (
         <button
-          className="btn btn-material-deep-purple btn-raised"
+          className="btn btn-primary btn-raised"
           data-toggle="modal"
           data-target="#new-progress-item-dialog"
         >
