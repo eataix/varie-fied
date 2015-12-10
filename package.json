@@ -6,7 +6,7 @@
     "Meitian Huang <_@freeaddr.info>"
   ],
   "engines": {
-      "node": "5.1.0"
+    "node": "5.1.0"
   },
   "license": "MIT",
   "devDependencies": {
@@ -37,7 +37,7 @@
   "dependencies": {
     "immutable": "^3.7.5",
     "react": "^0.14.0",
-    "react-bootstrap": "^0.27.1",
+    "react-bootstrap": "^0.28.0",
     "react-dom": "^0.14.0",
     "react-redux": "^4.0.0",
     "redux": "^3.0.2"
