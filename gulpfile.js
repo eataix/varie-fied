@@ -33,7 +33,7 @@
       'app/static/vendor/bootstrap-table/dist/bootstrap-table.min.js',
       'app/static/vendor/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js',
       'app/static/vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
-      'app/static/vendor/lodash/lodash.min.js'
+      'app/static/vendor/lodash/dist/lodash.min.js'
     ],
     scripts: [
       './app/static/js/index.js',
@@ -77,12 +77,12 @@
         return b.bundle()
           .on('error', gutil.log.bind(gutil, 'Browserify Error'))
           .pipe(source(s[s.length - 1].replace('.js', '.min.js')))
-          //.pipe(streamify(uglify({
-          //  compress: {
-          //    unused: false
-          //  },
-          //  preserveComments: false
-          //})))
+          .pipe(streamify(uglify({
+            compress: {
+              unused: false
+            },
+            preserveComments: false
+          })))
           .pipe(gulp.dest(paths.js_output))
       });
 
