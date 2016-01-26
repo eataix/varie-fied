@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 
 import arrow
 from flask import url_for
@@ -19,8 +19,8 @@ class Project(db.Model):
     active = db.Column(db.Boolean, default=True)  # type: bool
     admin_fee = db.Column(db.Float, nullable=True)  # type: float
 
-    client = db.relation('Client', uselist=False, backref='project', cascade="all, delete-orphan", lazy='select')  # type : List[Client]
-    superintendent = db.relation('Superintendent', uselist=False, backref='project', cascade="all, delete-orphan", lazy='select')  # type : List[Superintendent]
+    client = db.relation('Client', uselist=False, backref='project', cascade="all, delete-orphan", lazy='select')  # type: Optional[Client]
+    superintendent = db.relation('Superintendent', uselist=False, backref='project', cascade="all, delete-orphan", lazy='select')  # type: Optional[Superintendent]
 
     variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan",
                                  lazy='select')  # type: List[Variation]
@@ -83,13 +83,32 @@ class Project(db.Model):
         ws.title = 'Claim - TOTAL'
         prepare(ws)
 
+        if self.client is None:
+            client_name = ''
+            client_first_line_address = ''
+            client_second_line_address = ''
+        else:
+            client_name = self.client.name
+            client_first_line_address = self.client.first_line_address
+            client_second_line_address = self.client.second_line_address
+
+        if self.client is None:
+            superintendent_name = ''
+            superintendent_first_line_address = ''
+            superintendent_second_line_address = ''
+        else:
+            superintendent_name = self.superintendent.name
+            superintendent_first_line_address = self.superintendent.first_line_address
+            superintendent_second_line_address = self.superintendent.second_line_address
+
         ws['A1'].value = 'Client:      '
-        ws['A1'].value += '    '.join([self.client.name, self.superintendent.name])
+        ws['A1'].value += '    '.join([client_name, superintendent_name])
+
         ws['A1'].font = Font(name='Lao UI', size=10, bold=True)
         ws['A2'].value = '             '
-        ws['A2'].value += '    '.join([self.client.first_line_address, self.superintendent.first_line_address])
+        ws['A2'].value += '    '.join([client_first_line_address, superintendent_first_line_address])
         ws['A3'].value = '             '
-        ws['A3'].value += '    '.join([self.client.second_line_address, self.superintendent.second_line_address])
+        ws['A3'].value += '    '.join([client_second_line_address, superintendent_second_line_address])
         ws['C1'].value = 'Reference #: {}-{}'.format(arrow.now('Australia/Canberra').format('MM'), self.reference_number)
         ws['C1'].font = Font(name='Lao UI', size=10, bold=True)
         ws['C3'].value = 'Date: {}'.format(arrow.now('Australia/Canberra').format('DD/MM/YY'))
