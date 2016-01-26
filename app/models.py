@@ -686,13 +686,17 @@ class ProgressItem(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)  # type: int
 
     def to_json(self) -> Dict[str, Any]:
+        if self.contract_value != 0:
+            percentage = self.completed_value / self.contract_value
+        else:
+            percentage = 0
         return {
             'id': self.id,
             'name': self.name,
             'contract_value': self.contract_value,
             'completed_value': self.completed_value,
             'project_id': self.project_id,
-            'percentage': self.completed_value / self.contract_value
+            'percentage': percentage
         }
 
     @staticmethod
