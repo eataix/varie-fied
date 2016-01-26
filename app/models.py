@@ -92,7 +92,7 @@ class Project(db.Model):
             client_first_line_address = self.client.first_line_address
             client_second_line_address = self.client.second_line_address
 
-        if self.client is None:
+        if self.superintendent is None:
             superintendent_name = ''
             superintendent_first_line_address = ''
             superintendent_second_line_address = ''
