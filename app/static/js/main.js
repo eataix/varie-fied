@@ -1,9 +1,9 @@
 const init = () => {
-  $.fn.editable.defaults.mode = 'inline';
+    $.fn.editable.defaults.mode = 'inline';
 
-  $(document).on('ready', () => {
-    $.material.init();
-  });
+    $(document).on('ready', () => {
+        $.material.init();
+    });
 };
 
 export default init;

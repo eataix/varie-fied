@@ -30,182 +30,182 @@ export const EDIT_PROJECT_MARGIN = 'EDIT_PROJECT_MARGIN';
 export const EDIT_PROJECT_ADMIN_FEE = 'EDIT_PROJECT_ADMIN_FEE';
 
 export const addVariationItem = (name = '', value = '') => {
-  return {
-    type: ADD_VARIATION_ITEM,
-    name,
-    value
-  };
+    return {
+        type: ADD_VARIATION_ITEM,
+        name,
+        value
+    };
 };
 
 export const deleteVariationItem = (index) => {
-  return {
-    type: DELETE_VARIATION_ITEM,
-    index
-  };
+    return {
+        type: DELETE_VARIATION_ITEM,
+        index
+    };
 };
 
 export const editVariationItem = (index, name, value) => {
-  return {
-    type: EDIT_VARIATION_ITEM,
-    index,
-    name,
-    value
-  };
+    return {
+        type: EDIT_VARIATION_ITEM,
+        index,
+        name,
+        value
+    };
 };
 
 export const editClient = (name, first, second) => {
-  return {
-    type: EDIT_CLIENT,
-    name,
-    first,
-    second
-  };
+    return {
+        type: EDIT_CLIENT,
+        name,
+        first,
+        second
+    };
 };
 
 export const editSuperintendent = (name, first, second) => {
-  return {
-    type: EDIT_SUPERINTENDENT,
-    name,
-    first,
-    second
-  };
+    return {
+        type: EDIT_SUPERINTENDENT,
+        name,
+        first,
+        second
+    };
 };
 
 export const addProgressItem = (name = '', value = '') => {
-  return {
-    type: ADD_PROGRESS_ITEM,
-    name,
-    value
-  };
+    return {
+        type: ADD_PROGRESS_ITEM,
+        name,
+        value
+    };
 };
 
 export const deleteProgressItem = (index) => {
-  return {
-    type: DELETE_PROGRESS_ITEM,
-    index
-  };
+    return {
+        type: DELETE_PROGRESS_ITEM,
+        index
+    };
 };
 
 export const editProgressItem = (index, name, value) => {
-  return {
-    type: EDIT_PROGRESS_ITEM,
-    index,
-    name,
-    value
-  };
+    return {
+        type: EDIT_PROGRESS_ITEM,
+        index,
+        name,
+        value
+    };
 };
 
 export const updateMarginAndAdminFee = (id, margin, adminFee) => {
-  return {
-    type: UPDATE_MARGIN_AND_ADMIN_FEE,
-    id,
-    margin,
-    adminFee
-  };
+    return {
+        type: UPDATE_MARGIN_AND_ADMIN_FEE,
+        id,
+        margin,
+        adminFee
+    };
 };
 
 export const updateTime = (time) => {
-  return {
-    type: UPDATE_TIME,
-    time
-  };
+    return {
+        type: UPDATE_TIME,
+        time
+    };
 };
 
 export const updateSubcontractor = (subcontractor) => {
-  return {
-    type: UPDATE_SUBCONTRACTOR,
-    subcontractor
-  };
+    return {
+        type: UPDATE_SUBCONTRACTOR,
+        subcontractor
+    };
 };
 
 export const updateInvoiceNumber = (invoiceNumber) => {
-  return {
-    type: UPDATE_INVOICE_NUMBER,
-    invoiceNumber
-  };
+    return {
+        type: UPDATE_INVOICE_NUMBER,
+        invoiceNumber
+    };
 };
 
 export const updateDescription = (description) => {
-  return {
-    type: UPDATE_DESCRIPTION,
-    description
-  };
+    return {
+        type: UPDATE_DESCRIPTION,
+        description
+    };
 };
 
 export const updatePreparedFor = (preparedFor) => {
-  return {
-    type: UPDATE_PREPARED_FOR,
-    preparedFor
-  };
+    return {
+        type: UPDATE_PREPARED_FOR,
+        preparedFor
+    };
 };
 
 export const newProjectName = (newName) => {
-  return {
-    type: NEW_PROJECT_NAME,
-    newName
-  };
+    return {
+        type: NEW_PROJECT_NAME,
+        newName
+    };
 };
 
 export const newProjectRefNumber = (newRefNum) => {
-  return {
-    type: NEW_PROJECT_REF_NUMBER,
-    newRefNum
-  };
+    return {
+        type: NEW_PROJECT_REF_NUMBER,
+        newRefNum
+    };
 };
 
 export const newProjectMargin = (newMargin) => {
-  return {
-    type: NEW_PROJECT_MARGIN,
-    newMargin
-  };
+    return {
+        type: NEW_PROJECT_MARGIN,
+        newMargin
+    };
 };
 
 export const newProjectAdminFee = (newAdminFee) => {
-  return {
-    type: NEW_PROJECT_ADMIN_FEE,
-    newAdminFee
-  };
+    return {
+        type: NEW_PROJECT_ADMIN_FEE,
+        newAdminFee
+    };
 };
 
 export const loadProjects = (projects) => {
-  return {
-    type: LOAD_PROJECTS,
-    projects
-  };
+    return {
+        type: LOAD_PROJECTS,
+        projects
+    };
 };
 
 export const loadProject = (project) => {
-  return {
-    type: LOAD_PROJECT,
-    project
-  };
+    return {
+        type: LOAD_PROJECT,
+        project
+    };
 };
 
 export const editProjectName = (name) => {
-  return {
-    type: EDIT_PROJECT_NAME,
-    name
-  };
+    return {
+        type: EDIT_PROJECT_NAME,
+        name
+    };
 };
 
 export const editProjectRefNumber = (refNumber) => {
-  return {
-    type: EDIT_PROJECT_REF_NUMBER,
-    refNumber
-  };
+    return {
+        type: EDIT_PROJECT_REF_NUMBER,
+        refNumber
+    };
 };
 
 export const editProjectMargin = (margin) => {
-  return {
-    type: EDIT_PROJECT_MARGIN,
-    margin
-  };
+    return {
+        type: EDIT_PROJECT_MARGIN,
+        margin
+    };
 };
 
 export const editProjectAdminFee = (adminFee) => {
-  return {
-    type: EDIT_PROJECT_ADMIN_FEE,
-    adminFee
-  };
+    return {
+        type: EDIT_PROJECT_ADMIN_FEE,
+        adminFee
+    };
 };
 

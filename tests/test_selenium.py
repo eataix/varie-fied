@@ -52,16 +52,16 @@ class ViewsTest(CustomTestCase):
         for __ in range(number_clients - 1):
             elem.click()
 
-        clientNameElems = browser.find_elements_by_name('clientName')
-        firstAddressLineElems = browser.find_elements_by_name('firstAddressLine')
-        secondAddressLineElems = browser.find_elements_by_name('secondAddressLine')
-        self.assertEqual(len(clientNameElems), number_clients)
+        client_name_elems = browser.find_elements_by_name('clientName')
+        first_address_line_elems = browser.find_elements_by_name('firstAddressLine')
+        second_address_line_elems = browser.find_elements_by_name('secondAddressLine')
+        self.assertEqual(len(client_name_elems), number_clients)
 
         for idx in range(number_clients):
-            clientNameElems[idx].send_keys("{}".format(fake.company()))
+            client_name_elems[idx].send_keys("{}".format(fake.company()))
             first, second = fake.address().split('\n')
-            firstAddressLineElems[idx].send_keys("{}".format(first))
-            secondAddressLineElems[idx].send_keys("{}".format(second))
+            first_address_line_elems[idx].send_keys("{}".format(first))
+            second_address_line_elems[idx].send_keys("{}".format(second))
 
         elem = browser.find_element_by_id('btn-add-project')
         elem.click()

@@ -1,4 +1,5 @@
-from flask import jsonify, request, Response
+from flask import Response, jsonify, request
+from typing import List
 
 from app import db
 from app.api_1_0 import api
@@ -9,21 +10,21 @@ from app.models import Project, Variation
 @api.route('/projects/')
 @auth.login_required
 def get_projects() -> Response:
-    projects = Project.query.all()  # type: List[Project]
+    projects: List[Project] = Project.query.all()
     return jsonify({'projects': [project.to_json() for project in projects]})
 
 
 @api.route('/projects/<int:project_id>')
 @auth.login_required
 def get_project(project_id: int) -> Response:
-    project = Project.query.get_or_404(project_id)  # type: Project
+    project: Project = Project.query.get_or_404(project_id)
     return jsonify(project.to_json())
 
 
 @api.route('/projects/', methods=['POST'])
 @auth.login_required
 def new_project() -> Response:
-    project = Project.from_json(request.json)  # type: Project
+    project: Project = Project.from_json(request.json)
     db.session.add(project)
     db.session.commit()
     return jsonify(project.to_json()), 201
@@ -32,7 +33,7 @@ def new_project() -> Response:
 @api.route('/projects/<int:project_id>', methods=['PUT'])
 @auth.login_required
 def edit_project(project_id: int) -> Response:
-    project = Project.query.get_or_404(project_id)  # type: Project
+    project: Project = Project.query.get_or_404(project_id)
     project.name = request.json.get('name', project.name)
     project.reference_number = request.json.get('reference_number', project.reference_number)
     project.active = bool(request.json.get('active', project.active))
@@ -54,7 +55,7 @@ def edit_project(project_id: int) -> Response:
 @api.route('/projects/<int:project_id>/variations/')
 @auth.login_required
 def get_project_variations(project_id: int) -> Response:
-    project = Project.query.get_or_404(project_id)  # type: Project
+    project: Project = Project.query.get_or_404(project_id)
 
     project.variations.sort(key=lambda v: v.vid)
     jsons = []
@@ -84,21 +85,21 @@ def get_project_progress_items(project_id: int) -> Response:
 @api.route('/projects/<int:project_id>/client')
 @auth.login_required
 def get_project_client(project_id: int) -> Response:
-    project = Project.query.get_or_404(project_id)  # type: Project
+    project: Project = Project.query.get_or_404(project_id)
     return jsonify({'client': project.client.to_json()})
 
 
 @api.route('/projects/<int:project_id>/superintendent')
 @auth.login_required
 def get_project_superintendent(project_id: int) -> Response:
-    project = Project.query.get_or_404(project_id)  # type: Project
+    project: Project = Project.query.get_or_404(project_id)
     return jsonify({'superintendent': project.superintendent.to_json()})
 
 
 @api.route('/projects/<int:project_id>', methods=['DELETE'])
 @auth.login_required
 def delete_project(project_id: int) -> Response:
-    project = Project.query.get_or_404(project_id)  # type: Project
+    project: Project = Project.query.get_or_404(project_id)
     db.session.delete(project)
     db.session.commit()
     return jsonify(project.to_json())

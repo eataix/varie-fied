@@ -1,10 +1,11 @@
 from datetime import datetime
-from typing import Dict, Any, Optional, List
 
 import arrow
+import openpyxl
 from flask import url_for
-from openpyxl import Workbook, worksheet
-from openpyxl.styles import Alignment, Border, Color, Font, Side, PatternFill
+from openpyxl import worksheet
+from openpyxl.styles import Alignment, Border, Color, Font, PatternFill, Side
+from typing import Any, Dict, List, Optional
 
 from app import db
 from app.exceptions import ValidationError
@@ -12,23 +13,24 @@ from app.exceptions import ValidationError
 
 class Project(db.Model):
     __tablename__ = 'projects'
-    pid = db.Column(db.Integer, primary_key=True)  # type: int
-    reference_number = db.Column(db.String, nullable=False)  # type: str
-    name = db.Column(db.String, nullable=False)  # type: str
-    margin = db.Column(db.Float, nullable=False)  # type: float
-    active = db.Column(db.Boolean, default=True)  # type: bool
-    admin_fee = db.Column(db.Float, nullable=True)  # type: float
+    pid: int = db.Column(db.Integer, primary_key=True)
+    reference_number: str = db.Column(db.String, nullable=False)
+    name: str = db.Column(db.String, nullable=False)
+    margin: float = db.Column(db.Float, nullable=False)
+    active: bool = db.Column(db.Boolean, default=True)
+    admin_fee: float = db.Column(db.Float, nullable=True)
 
-    client = db.relation('Client', uselist=False, backref='project', cascade="all, delete-orphan", lazy='select')  # type: Optional[Client]
-    superintendent = db.relation('Superintendent', uselist=False, backref='project', cascade="all, delete-orphan", lazy='select')  # type: Optional[Superintendent]
-
-    variations = db.relationship('Variation', backref='project', cascade="all, delete-orphan",
-                                 lazy='select')  # type: List[Variation]
-    progress_items = db.relation('ProgressItem', backref='project', cascade="all, delete-orphan",
-                                 lazy='select')  # type: List[ProgressItem]
+    client: Optional[Client] = db.relation('Client', uselist=False, backref='project', cascade="all, delete-orphan",
+                                           lazy='select')
+    superintendent: Optional[Superintendent] = db.relation('Superintendent', uselist=False, backref='project',
+                                                           cascade="all, delete-orphan", lazy='select')
+    variations: List[Variation] = db.relationship('Variation', backref='project', cascade="all, delete-orphan",
+                                                  lazy='select')
+    progress_items: List[ProgressItem] = db.relation('ProgressItem', backref='project', cascade="all, delete-orphan",
+                                                     lazy='select')
 
     def __repr__(self) -> str:
-        return u'<Project Name: {}, Active: {}, Margin: {}>'.format(self.name, self.active, self.margin)
+        return f'<Project Name: {self.name}, Active: {self.active}, Margin: {self.margin}>'
 
     def to_json(self) -> Dict[str, Any]:
         if self.superintendent is None:
@@ -64,22 +66,21 @@ class Project(db.Model):
         def cm_to_inch(cm: float) -> float:
             return cm * 0.393701
 
-        def prepare(worksheet: worksheet.Worksheet) -> None:
-            worksheet.header_footer.setHeader(
-                '&L&"Calibri,Regular"&K000000&G&C&"Lao UI,Bold"&8Total Project Construction Pty. Ltd.&"Lao UI,Regular"&K000000_x000D_ACN 117 578 560  ABN 84 117 578 560_x000D_PO Box 313 HALL ACT_x000D_P: 02-6230 2455   F:02-6230 2488_x000D_E: troy@totalproject.com.au')
-            worksheet.header_footer.setFooter(
-                '&L&"Arial,Italic"&9&K000000App. A - Contract Variations&R&"Arial,Italic"&9&K000000{}'.format(
-                    self.name))
-            worksheet.page_margins.top = cm_to_inch(3.4)
-            worksheet.page_margins.bottom = cm_to_inch(2)
-            worksheet.page_margins.left = cm_to_inch(1.2)
-            worksheet.page_margins.right = cm_to_inch(1.1)
+        def prepare(ws: openpyxl.worksheet.Worksheet) -> None:
+            ws.header_footer.setHeader(
+                    '&L&"Calibri,Regular"&K000000&G&C&"Lao UI,Bold"&8Total Project Construction Pty. Ltd.&"Lao UI,Regular"&K000000_x000D_ACN 117 578 560  ABN 84 117 578 560_x000D_PO Box 313 HALL ACT_x000D_P: 02-6230 2455   F:02-6230 2488_x000D_E: troy@totalproject.com.au')
+            ws.header_footer.setFooter(
+                    f'&L&"Arial,Italic"&9&K000000App. A - Contract Variations&R&"Arial,Italic"&9&K000000{self.name}')
+            ws.page_margins.top = cm_to_inch(3.4)
+            ws.page_margins.bottom = cm_to_inch(2)
+            ws.page_margins.left = cm_to_inch(1.2)
+            ws.page_margins.right = cm_to_inch(1.1)
 
         fill = PatternFill(patternType='solid', fgColor=Color('D8E4BC'))
 
-        wb = Workbook()  # type: Workbook
+        wb: openpyxl.Workbook = openpyxl.Workbook()
 
-        ws = wb.active  # type: worksheet.Worksheet
+        ws: openpyxl.worksheet.Worksheet = wb.active
         ws.title = 'Claim - TOTAL'
         prepare(ws)
 
@@ -109,22 +110,22 @@ class Project(db.Model):
         ws['A2'].value += '    '.join([client_first_line_address, superintendent_first_line_address])
         ws['A3'].value = '             '
         ws['A3'].value += '    '.join([client_second_line_address, superintendent_second_line_address])
-        ws['C1'].value = 'Reference #: {}-{}'.format(arrow.now('Australia/Canberra').format('MM'), self.reference_number)
+        ws['C1'].value = f'Reference #: {arrow.now("Australia/Canberra").format("MM")}-{self.reference_number}'
         ws['C1'].font = Font(name='Lao UI', size=10, bold=True)
-        ws['C3'].value = 'Date: {}'.format(arrow.now('Australia/Canberra').format('DD/MM/YY'))
+        ws['C3'].value = f'Date: {arrow.now("Australia/Canberra").format("DD/MM/YY")}'
         ws['C3'].font = Font(name='Lao UI', size=10)
 
         ws['A4'].value = 'PROGRESS CLAIM No.'
         ws['A4'].font = Font(name='Lao UI', size=14)
         ws['A4'].fill = fill
-        ws['B4'].value = 'Project No: {}'.format(self.reference_number)
+        ws['B4'].value = f'Project No: {self.reference_number}'
         ws['B4'].font = Font(name='Lao UI', size=10)
-        ws['C4'].value = '{}'.format(arrow.now('Australia/Canberra').format('MMMM'))
+        ws['C4'].value = f'{arrow.now("Australia/Canberra").format("MMMM")}'
         ws['C4'].font = Font(name='Lao UI', size=10)
         ws['B5'].value = 'Approval terms: '
         ws['B5'].font = Font(name='Lao UI', size=10)
 
-        ws['A6'].value = 'Project: {}'.format(self.name)
+        ws['A6'].value = f'Project: {self.name}'
         ws['A6'].font = Font(name='Lao UI', size=11, bold=True)
         ws['B6'].value = 'Contract'
         ws['B6'].font = Font(name='Lao UI', size=10, bold=True)
@@ -146,13 +147,13 @@ class Project(db.Model):
 
         for row in [6, 7]:
             for column in 'ABCD':
-                cell = ws['{}{}'.format(column, row)]
+                cell = ws[f'{column}{row}']
                 cell.fill = fill
 
         ws['A1'].border = Border(top=Side(border_style='medium', color='FF000000'))
         ws['B1'].border = Border(
-            top=Side(border_style='medium', color='FF000000'),
-            right=Side(border_style='medium', color='FF000000'),
+                top=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
         )
         ws['C1'].border = Border(top=Side(border_style='medium', color='FF000000'))
         ws['D1'].border = Border(top=Side(border_style='medium', color='FF000000'))
@@ -161,163 +162,167 @@ class Project(db.Model):
 
         ws['A3'].border = Border(bottom=Side(border_style='medium', color='FF000000'))
         ws['B3'].border = Border(
-            bottom=Side(border_style='medium', color='FF000000'),
-            right=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
         )
 
         ws['A4'].border = Border(
-            top=Side(border_style='medium', color='FF000000'),
-            bottom=Side(border_style='medium', color='FF000000'),
+                top=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000'),
         )
         ws['A6'].border = Border(
-            top=Side(border_style='medium', color='FF000000'),
-            bottom=Side(border_style='medium', color='FF000000'),
-            left=Side(border_style='medium', color='FF000000'),
-            right=Side(border_style='medium', color='FF000000'),
+                top=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
         )
         ws['B6'].border = Border(
-            top=Side(border_style='medium', color='FF000000'),
-            left=Side(border_style='medium', color='FF000000'),
-            right=Side(border_style='medium', color='FF000000'),
+                top=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
         )
         ws['C6'].border = Border(
-            top=Side(border_style='medium', color='FF000000'),
-            left=Side(border_style='medium', color='FF000000'),
-            right=Side(border_style='medium', color='FF000000'),
+                top=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
         )
         ws['D6'].border = Border(
-            top=Side(border_style='medium', color='FF000000'),
-            left=Side(border_style='medium', color='FF000000'),
-            right=Side(border_style='medium', color='FF000000'),
+                top=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
         )
         ws['A7'].border = Border(
-            top=Side(border_style='medium', color='FF000000'),
-            bottom=Side(border_style='medium', color='FF000000'),
-            left=Side(border_style='medium', color='FF000000'),
-            right=Side(border_style='medium', color='FF000000'),
+                top=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
         )
         ws['B7'].border = Border(
-            bottom=Side(border_style='medium', color='FF000000'),
-            left=Side(border_style='medium', color='FF000000'),
-            right=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
         )
         ws['C7'].border = Border(
-            bottom=Side(border_style='medium', color='FF000000'),
-            left=Side(border_style='medium', color='FF000000'),
-            right=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
         )
         ws['D7'].border = Border(
-            bottom=Side(border_style='medium', color='FF000000'),
-            left=Side(border_style='medium', color='FF000000'),
-            right=Side(border_style='medium', color='FF000000'),
+                bottom=Side(border_style='medium', color='FF000000'),
+                left=Side(border_style='medium', color='FF000000'),
+                right=Side(border_style='medium', color='FF000000'),
         )
 
         row = 8
-        self.progress_items.sort(key=lambda p: p.id)
+
+        def _comp(p):
+            return p.id
+
+        self.progress_items.sort(key=_comp)
         for progress_item in self.progress_items:
-            ws['A{}'.format(row)].value = progress_item.name
-            ws['B{}'.format(row)].value = progress_item.contract_value
-            ws['C{}'.format(row)].value = progress_item.completed_value
-            ws['D{}'.format(row)].value = '= C{}/B{}'.format(row, row)
+            ws[f'A{row}'].value = progress_item.name
+            ws[f'B{row}'].value = progress_item.contract_value
+            ws[f'C{row}'].value = progress_item.completed_value
+            ws[f'D{row}'].value = f'= C{row}/B{row}'
             # print(ws['B{}'.format(row)].number_format)
             # print(ws['C{}'.format(row)].number_format)
             row += 1
 
         for irow in range(8, row):
             for column in 'ABCD':
-                cell = ws['{}{}'.format(column, irow)]
+                cell = ws[f'{column}{irow}']
                 cell.font = Font(name='Lao UI', size=9)
                 cell.border = Border(
-                    left=Side(border_style='thin', color='FF000000'),
-                    right=Side(border_style='thin', color='FF000000'),
+                        left=Side(border_style='thin', color='FF000000'),
+                        right=Side(border_style='thin', color='FF000000'),
                 )
                 if column == 'D':
                     cell.alignment = Alignment(vertical='center', horizontal='center')
 
-        ws['A{}'.format(row)].value = 'TOTAL OF CONTRACT'
-        ws['B{}'.format(row)].value = '=SUM(B{}:B{})'.format(8, row - 1)
-        ws['C{}'.format(row)].value = '=SUM(C{}:C{})'.format(8, row - 1)
-        ws['D{}'.format(row)].value = '=C{}/B{}'.format(row, row)
+        ws[f'A{row}'].value = 'TOTAL OF CONTRACT'
+        ws[f'B{row}'].value = f'=SUM(B{8}:B{row - 1})'
+        ws[f'C{row}'].value = f'=SUM(C{8}:C{row - 1})'
+        ws[f'D{row}'].value = f'=C{row}/B{row}'
 
         for column in 'ABCD':
-            cell = ws['{}{}'.format(column, row)]
+            cell = ws[f'{column}{row}']
             cell.font = Font(name='Lao UI', size=9, bold=True)
 
         row += 1
 
-        ws['A{}'.format(row)].value = 'Variations - See Appendix A attached'
-        ws['B{}'.format(row)].value = r"='Appendix A'!D34"
-        ws['C{}'.format(row)].value = r"='Appendix A'!E34"
-        ws['D{}'.format(row)].value = '=C{}/B{}'.format(row, row)
+        ws[f'A{row}'].value = 'Variations - See Appendix A attached'
+        ws[f'B{row}'].value = r"='Appendix A'!D34"
+        ws[f'C{row}'].value = r"='Appendix A'!E34"
+        ws[f'D{row}'].value = f'=C{row}/B{row}'
         for row in [row - 1, row]:
             for column in 'ABCD':
-                cell = ws['{}{}'.format(column, row)]
+                cell = ws[f'{column}{row}']
                 cell.fill = fill
                 cell.border = Border(
-                    top=Side(border_style='thin', color='FF000000'),
-                    bottom=Side(border_style='thin', color='FF000000'),
-                    left=Side(border_style='thin', color='FF000000'),
-                    right=Side(border_style='thin', color='FF000000')
+                        top=Side(border_style='thin', color='FF000000'),
+                        bottom=Side(border_style='thin', color='FF000000'),
+                        left=Side(border_style='thin', color='FF000000'),
+                        right=Side(border_style='thin', color='FF000000')
                 )
 
         row += 1
-        ws['A{}'.format(row)].value = 'Totals Excluding GST'
-        ws['B{}'.format(row)].value = '=B{} + B{}'.format(row - 1, row - 2)
-        ws['C{}'.format(row)].value = '=C{} + C{}'.format(row - 1, row - 2)
-        ws['D{}'.format(row)].value = '=C{}/B{}'.format(row, row)
+        ws[f'A{row}'].value = 'Totals Excluding GST'
+        ws[f'B{row}'].value = f'=B{row - 1} + B{row - 2}'
+        ws[f'C{row}'].value = f'=C{row - 1} + C{row - 2}'
+        ws[f'D{row}'].value = f'=C{row}/B{row}'
         for column in 'BCD':
-            cell = ws['{}{}'.format(column, row)]
+            cell = ws[f'{column}{row}']
             cell.fill = fill
             cell.border = Border(
+                    top=Side(border_style='medium', color='FF000000'),
+                    bottom=Side(border_style='medium', color='FF000000'),
+                    left=Side(border_style='medium', color='FF000000'),
+                    right=Side(border_style='medium', color='FF000000')
+            )
+
+        row += 1
+        ws[f'A{row}'].value = 'Less paid to date'
+        ws[f'C{row}'].border = Border(
+                left=Side(border_style='thin', color='FF000000'),
+                right=Side(border_style='thin', color='FF000000')
+        )
+
+        row += 1
+        ws[f'A{row}'].value = 'Value of work completed this period'
+        ws[f'C{row}'].value = f'=C{row - 2} - C{row - 1}'
+        ws[f'C{row}'].border = Border(
+                left=Side(border_style='thin', color='FF000000'),
+                right=Side(border_style='thin', color='FF000000')
+        )
+
+        row += 1
+        ws[f'A{row}'].value = 'GST this period'
+        ws[f'C{row}'].value = f'=C{row - 1} * 10%'
+        ws[f'C{row}'].border = Border(
+                left=Side(border_style='thin', color='FF000000'),
+                right=Side(border_style='thin', color='FF000000')
+        )
+        for irow in range(row - 3, row + 1):
+            for column in 'ABCD':
+                cell = ws[f'{column}{irow}']
+                cell.font = Font(name='Lao UI', size=9)
+
+        row += 1
+        ws[f'A{row}'].value = 'TOTAL PAYABLE THIS CLAIM'
+        ws[f'A{row}'].font = Font(name='Lao UI', size=9, bold=True)
+        ws[f'C{row}'].value = f'=C{row - 2} + C{row - 1}'
+        ws[f'C{row}'].font = Font(name='Lao UI', size=9, bold=True)
+        ws[f'C{row}'].border = Border(
                 top=Side(border_style='medium', color='FF000000'),
                 bottom=Side(border_style='medium', color='FF000000'),
                 left=Side(border_style='medium', color='FF000000'),
                 right=Side(border_style='medium', color='FF000000')
-            )
-
-        row += 1
-        ws['A{}'.format(row)].value = 'Less paid to date'
-        ws['C{}'.format(row)].border = Border(
-            left=Side(border_style='thin', color='FF000000'),
-            right=Side(border_style='thin', color='FF000000')
-        )
-
-        row += 1
-        ws['A{}'.format(row)].value = 'Value of work completed this period'
-        ws['C{}'.format(row)].value = '=C{} - C{}'.format(row - 2, row - 1)
-        ws['C{}'.format(row)].border = Border(
-            left=Side(border_style='thin', color='FF000000'),
-            right=Side(border_style='thin', color='FF000000')
-        )
-
-        row += 1
-        ws['A{}'.format(row)].value = 'GST this period'
-        ws['C{}'.format(row)].value = '=C{} * 10%'.format(row - 1)
-        ws['C{}'.format(row)].border = Border(
-            left=Side(border_style='thin', color='FF000000'),
-            right=Side(border_style='thin', color='FF000000')
-        )
-        for irow in range(row - 3, row + 1):
-            for column in 'ABCD':
-                cell = ws['{}{}'.format(column, irow)]
-                cell.font = Font(name='Lao UI', size=9)
-
-        row += 1
-        ws['A{}'.format(row)].value = 'TOTAL PAYABLE THIS CLAIM'
-        ws['A{}'.format(row)].font = Font(name='Lao UI', size=9, bold=True)
-        ws['C{}'.format(row)].value = '=C{} + C{}'.format(row - 2, row - 1)
-        ws['C{}'.format(row)].font = Font(name='Lao UI', size=9, bold=True)
-        ws['C{}'.format(row)].border = Border(
-            top=Side(border_style='medium', color='FF000000'),
-            bottom=Side(border_style='medium', color='FF000000'),
-            left=Side(border_style='medium', color='FF000000'),
-            right=Side(border_style='medium', color='FF000000')
         )
 
         for irow in range(8, row + 1):
-            ws['B{}'.format(irow)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
-            ws['C{}'.format(irow)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
-            ws['D{}'.format(irow)].number_format = r'0.00%'
+            ws[f'B{irow}'].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+            ws[f'C{irow}'].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+            ws[f'D{irow}'].number_format = r'0.00%'
 
         ws.column_dimensions['A'].width = 40
         ws.column_dimensions['B'].width = 15
@@ -325,14 +330,13 @@ class Project(db.Model):
         ws.column_dimensions['D'].width = 8
         ws.sheet_view.view = 'pageLayout'
 
-        ws = wb.create_sheet()
-        """:type : openpyxl.worksheet.Worksheet"""
+        ws: openpyxl.worksheet.Worksheet = wb.create_sheet()
         ws.title = 'Appendix A'
         prepare(ws)
 
         ws.merge_cells('A1:D1')
         ws['A1'].style.alignment.wrap_text = True
-        ws['A1'].value = '{}\nJOB #: {}'.format(self.name, self.reference_number)
+        ws['A1'].value = f'{self.name}\nJOB #: {self.reference_number}'
         ws['A1'].fill = fill
         ws['A1'].font = Font(name='Lao UI', size=11, bold=True)
 
@@ -354,10 +358,10 @@ class Project(db.Model):
             ws[cell].alignment = Alignment(horizontal='center')
             ws[cell].fill = fill
             ws[cell].border = Border(
-                top=Side(border_style='medium', color='FF000000'),
-                bottom=Side(border_style='medium', color='FF000000'),
-                left=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000')
+                    top=Side(border_style='medium', color='FF000000'),
+                    bottom=Side(border_style='medium', color='FF000000'),
+                    left=Side(border_style='medium', color='FF000000'),
+                    right=Side(border_style='medium', color='FF000000')
             )
 
         row = 6
@@ -373,7 +377,7 @@ class Project(db.Model):
                     column = 'D'
                 ws[column + str(row)].value = variation.amount
             elif variation.declined:
-                ws['B' + str(row)].value = "{} (declined {})".format(variation.description, variation.amount)
+                ws['B' + str(row)].value = f"{variation.description} (declined {variation.amount})"
                 ws['C' + str(row)].value = 0.0
 
             if variation.completed:
@@ -390,7 +394,7 @@ class Project(db.Model):
 
         for index in range(6, row):
             for column in ['A', 'B', 'C', 'D', 'E']:
-                cell = ws['{}{}'.format(column, index)]
+                cell = ws[f'{column}{index}']
 
                 cell.border = Border(left=Side(border_style='thin', color='FF000000'),
                                      right=Side(border_style='thin', color='FF000000'))
@@ -406,21 +410,21 @@ class Project(db.Model):
                         cell.alignment = Alignment(vertical='center')
                         cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
-        ws.merge_cells('A{}:B{}'.format(row, row))
-        ws['A{}'.format(row)].value = 'TOTALS'
-        ws['C{}'.format(row)].value = '=SUM(C6:C{})'.format(row - 1)
-        ws['D{}'.format(row)].value = '=SUM(D6:D{})'.format(row - 1)
-        ws['E{}'.format(row)].value = '=SUM(E6:E{})'.format(row - 1)
+        ws.merge_cells(f'A{row}:B{row}')
+        ws[f'A{row}'].value = 'TOTALS'
+        ws[f'C{row}'].value = f'=SUM(C6:C{row - 1})'
+        ws[f'D{row}'].value = f'=SUM(D6:D{row - 1})'
+        ws[f'E{row}'].value = f'=SUM(E6:E{row - 1})'
 
         for column in 'ABCDE':
-            cell = ws['{}{}'.format(column, row)]
+            cell = ws[f'{column}{row}']
             cell.alignment = Alignment(vertical='center', horizontal='center')
             cell.fill = fill
             cell.border = Border(
-                left=Side(border_style='medium', color='FF000000'),
-                right=Side(border_style='medium', color='FF000000'),
-                top=Side(border_style='medium', color='FF000000'),
-                bottom=Side(border_style='medium', color='FF000000')
+                    left=Side(border_style='medium', color='FF000000'),
+                    right=Side(border_style='medium', color='FF000000'),
+                    top=Side(border_style='medium', color='FF000000'),
+                    bottom=Side(border_style='medium', color='FF000000')
             )
             if column != 'A':
                 cell.number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
@@ -438,10 +442,9 @@ class Project(db.Model):
         ws.sheet_view.view = 'pageLayout'
 
         for index, variation in enumerate(self.variations):
-            new_ws = wb.create_sheet()
-            """:type openpyxl.worksheet.Worksheet"""
+            new_ws: openpyxl.worksheet.Worksheet = wb.create_sheet()
             prepare(new_ws)
-            new_ws.title = 'V{}'.format(index + 1)
+            new_ws.title = f'V{index + 1}'
 
             new_ws.merge_cells('A1:H1')
             new_ws['A1'].value = 'CONTRACT VARIATION'
@@ -456,12 +459,12 @@ class Project(db.Model):
                                                      right=Side(border_style='medium', color='FF000000'))
 
             new_ws.merge_cells('B3:H3')
-            new_ws['B3'].value = 'PROJECT: {}'.format(self.name)
+            new_ws['B3'].value = f'PROJECT: {self.name}'
             new_ws['B3'].fill = fill
             new_ws['B3'].font = Font(name='Lao UI', size=12, bold=True)
             for column in 'BCDEFGH':
-                new_ws['{}3'.format(column)].border = Border(top=Side(border_style='thin', color='FF000000'),
-                                                             bottom=Side(border_style='thin', color='FF000000'))
+                new_ws[f'{column}3'].border = Border(top=Side(border_style='thin', color='FF000000'),
+                                                     bottom=Side(border_style='thin', color='FF000000'))
 
             new_ws['B5'].value = 'VARIATION NO:'
             new_ws['B5'].fill = fill
@@ -472,7 +475,7 @@ class Project(db.Model):
             new_ws['D5'].fill = fill
             new_ws['D5'].font = Font(name='Lao UI', size=14, bold=True)
             new_ws.merge_cells('G5:H5')
-            new_ws['G5'].value = 'TPC REF: {}'.format(self.reference_number)
+            new_ws['G5'].value = f'TPC REF: {self.reference_number}'
             new_ws['G5'].font = Font(name='Lao UI', size=14, bold=True)
             new_ws['G5'].alignment = Alignment(vertical='center', horizontal='left')
             for column in 'BCDE':
@@ -486,30 +489,30 @@ class Project(db.Model):
 
             row = 7
             if len(variation.items) > 1:
-                new_ws.merge_cells('B{}:G{}'.format(row, row))
-                new_ws['B{}'.format(row)].value = variation.description
-                new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11, bold=True)
-                new_ws['B{}'.format(row)].alignment = Alignment(vertical='center')
+                new_ws.merge_cells(f'B{row}:G{row}')
+                new_ws[f'B{row}'].value = variation.description
+                new_ws[f'B{row}'].font = Font(name='Lao UI', size=11, bold=True)
+                new_ws[f'B{row}'].alignment = Alignment(vertical='center')
                 row += 1
 
             for item in variation.items:
-                new_ws.merge_cells('B{}:G{}'.format(row, row))
-                new_ws['B{}'.format(row)].value = item.description
-                new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11, bold=True)
-                new_ws['B{}'.format(row)].alignment = Alignment(vertical='center')
+                new_ws.merge_cells(f'B{row}:G{row}')
+                new_ws[f'B{row}'].value = item.description
+                new_ws[f'B{row}'].font = Font(name='Lao UI', size=11, bold=True)
+                new_ws[f'B{row}'].alignment = Alignment(vertical='center')
 
-                new_ws['H{}'.format(row)].value = item.amount
-                new_ws['H{}'.format(row)].font = Font(name='Lao UI', size=11, bold=True)
-                new_ws['H{}'.format(row)].alignment = Alignment(vertical='center')
-                new_ws['H{}'.format(row)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
+                new_ws[f'H{row}'].value = item.amount
+                new_ws[f'H{row}'].font = Font(name='Lao UI', size=11, bold=True)
+                new_ws[f'H{row}'].alignment = Alignment(vertical='center')
+                new_ws[f'H{row}'].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
                 new_ws.row_dimensions[row].height = 40
 
                 row += 1
 
             while row < 13:
-                new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11)
-                new_ws['H{}'.format(row)].font = Font(name='Lao UI', size=11)
+                new_ws[f'B{row}'].font = Font(name='Lao UI', size=11)
+                new_ws[f'H{row}'].font = Font(name='Lao UI', size=11)
                 row += 1
 
             for column in 'BCDEFGH':
@@ -517,13 +520,13 @@ class Project(db.Model):
                 cell.border = Border(bottom=Side(border_style='thin', color='FF000000'))
 
             new_ws['B' + str(row)].value = 'Value of work'
-            new_ws['H' + str(row)].value = '=SUM(H7:H{})'.format(row - 1)
+            new_ws['H' + str(row)].value = f'=SUM(H7:H{row - 1})'
             new_ws['B' + str(row)].font = Font(name='Lao UI', size=11)
             new_ws['H' + str(row)].font = Font(name='Lao UI', size=11)
             row += 1
 
-            new_ws['B' + str(row)].value = 'Add OH/Profit {}%'.format(self.margin * 100)
-            new_ws['H' + str(row)].value = '=H{} * {}%'.format(row - 1, self.margin * 100)
+            new_ws['B' + str(row)].value = f'Add OH/Profit {self.margin * 100}%'
+            new_ws['H' + str(row)].value = f'=H{row - 1} * {self.margin * 100}%'
             new_ws['B' + str(row)].font = Font(name='Lao UI', size=11)
             new_ws['H' + str(row)].font = Font(name='Lao UI', size=11)
 
@@ -540,57 +543,57 @@ class Project(db.Model):
 
             new_ws['B' + str(row)].value = 'Subtotal'
             if self.admin_fee is None:
-                new_ws['H' + str(row)] = '=H{} + H{}'.format(row - 2, row - 1)
+                new_ws['H' + str(row)] = f'=H{row - 2} + H{row - 1}'
             else:
-                new_ws['H' + str(row)] = '=H{} + H{} + H{}'.format(row - 3, row - 2, row - 1)
+                new_ws['H' + str(row)] = f'=H{row - 3} + H{row - 2} + H{row - 1}'
             new_ws['H' + str(row)].font = Font(name='Lao UI', size=11, bold=True)
             row += 1
 
             new_ws['B' + str(row)] = 'Add GST'
-            new_ws['H' + str(row)].value = '=H{} * 0.1'.format(row - 1)
+            new_ws['H' + str(row)].value = f'=H{row - 1} * 0.1'
             new_ws['H' + str(row)].font = Font(name='Lao UI', size=11, underline='singleAccounting')
             for column in 'BCDEFGH':
                 new_ws[column + str(row)].border = Border(bottom=Side(border_style='medium', color='FF000000'))
             row += 1
 
-            new_ws.merge_cells('B{}:C{}'.format(row, row))
+            new_ws.merge_cells(f'B{row}:C{row}')
             for column in 'BCDEFGH':
-                new_ws['{}{}'.format(column, row)].fill = fill
+                new_ws[f'{column}{row}'].fill = fill
             new_ws['B' + str(row)] = 'TOTAL'
-            new_ws['H' + str(row)].value = '=H{} + H{}'.format(row - 1, row - 2)
+            new_ws['H' + str(row)].value = f'=H{row - 1} + H{row - 2}'
             new_ws['H' + str(row)].font = Font(name='Lao UI', size=11, bold=True)
 
             for idx in range(7, row + 1):
                 new_ws['H' + str(idx)].number_format = r'_-"$"* #,##0.00_-;\\-"$"* #,##0.00_-;_-"$"* "-"??_-;_-@_-'
 
             row += 4
-            new_ws['B{}'.format(row)].value = 'Variation Prepared By:'
-            new_ws['G{}'.format(row)].value = 'Variation Prepared For:'
-            new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11)
-            new_ws['G{}'.format(row)].font = Font(name='Lao UI', size=11)
+            new_ws[f'B{row}'].value = 'Variation Prepared By:'
+            new_ws[f'G{row}'].value = 'Variation Prepared For:'
+            new_ws[f'B{row}'].font = Font(name='Lao UI', size=11)
+            new_ws[f'G{row}'].font = Font(name='Lao UI', size=11)
 
             row += 5
-            new_ws['B{}'.format(row)].value = 'FOR'
-            new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11)
+            new_ws[f'B{row}'].value = 'FOR'
+            new_ws[f'B{row}'].font = Font(name='Lao UI', size=11)
 
-            new_ws['B{}'.format(row + 1)].value = 'Total Project Construction Pty Ltd'
-            new_ws['B{}'.format(row + 1)].font = Font(name='Lao UI', size=11)
+            new_ws[f'B{row + 1}'].value = 'Total Project Construction Pty Ltd'
+            new_ws[f'B{row + 1}'].font = Font(name='Lao UI', size=11)
 
-            new_ws['G{}'.format(row)].value = 'FOR'
-            new_ws['G{}'.format(row)].font = Font(name='Lao UI', size=11)
+            new_ws[f'G{row}'].value = 'FOR'
+            new_ws[f'G{row}'].font = Font(name='Lao UI', size=11)
 
-            new_ws['G{}'.format(row + 1)].value = variation.prepared_for
-            new_ws['G{}'.format(row + 1)].font = Font(name='Lao UI', size=11)
+            new_ws[f'G{row + 1}'].value = variation.prepared_for
+            new_ws[f'G{row + 1}'].font = Font(name='Lao UI', size=11)
 
             row += 3
-            new_ws['B{}'.format(row)].value = 'Date:'
+            new_ws[f'B{row}'].value = 'Date:'
             # new_ws['C{}'.format(row)].value = '=TODAY()'
-            new_ws['C{}'.format(row)].value = datetime.today()
-            new_ws['C{}'.format(row)].number_format = 'mm-dd-yy'
-            new_ws['G{}'.format(row)].value = 'Date:'
-            new_ws['B{}'.format(row)].font = Font(name='Lao UI', size=11)
-            new_ws['C{}'.format(row)].font = Font(name='Lao UI', size=11)
-            new_ws['G{}'.format(row)].font = Font(name='Lao UI', size=11)
+            new_ws[f'C{row}'].value = datetime.today()
+            new_ws[f'C{row}'].number_format = 'mm-dd-yy'
+            new_ws[f'G{row}'].value = 'Date:'
+            new_ws[f'B{row}'].font = Font(name='Lao UI', size=11)
+            new_ws[f'C{row}'].font = Font(name='Lao UI', size=11)
+            new_ws[f'G{row}'].font = Font(name='Lao UI', size=11)
 
             new_ws.row_dimensions[1].height = 60
             new_ws.row_dimensions[3].height = 40
@@ -607,25 +610,23 @@ class Project(db.Model):
 
 class Variation(db.Model):
     __tablename__ = 'variations'
-    vid = db.Column(db.Integer, primary_key=True)  # type: int
-    date = db.Column(db.DateTime, default=datetime.utcnow())  # type: datetime
-    subcontractor = db.Column(db.String(64), default="")  # type: str
-    invoice_no = db.Column(db.String(64), nullable=True)  # type: str
-    description = db.Column(db.Text, nullable=False)  # type: str
-    amount = db.Column(db.Float, default=0.0)  # type: float
-    pending = db.Column(db.Boolean, default=True)  # type : bool
-    approved = db.Column(db.Boolean, default=False)  # type: bool
-    declined = db.Column(db.Boolean, default=False)  # type: bool
-    completed = db.Column(db.Boolean, default=False)  # type: bool
-    note = db.Column(db.Text, nullable=True)  # type: str
-    prepared_for = db.Column(db.Text, default='')  # type: str
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'))  # type: int
-    items = db.relationship('Item', backref='variation', cascade="all, delete-orphan",
-                            lazy='select')  # type: List[Item]
+    vid: int = db.Column(db.Integer, primary_key=True)
+    date: datetime = db.Column(db.DateTime, default=datetime.utcnow())
+    subcontractor: str = db.Column(db.String(64), default="")
+    invoice_no: str = db.Column(db.String(64), nullable=True)
+    description: str = db.Column(db.Text, nullable=False)
+    amount: float = db.Column(db.Float, default=0.0)
+    pending: bool = db.Column(db.Boolean, default=True)
+    approved: bool = db.Column(db.Boolean, default=False)
+    declined: bool = db.Column(db.Boolean, default=False)
+    completed: bool = db.Column(db.Boolean, default=False)
+    note: str = db.Column(db.Text, nullable=True)
+    prepared_for: str = db.Column(db.Text, default='')
+    project_id: int = db.Column(db.Integer, db.ForeignKey('projects.pid'))
+    items: List[Item] = db.relationship('Item', backref='variation', cascade="all, delete-orphan", lazy='select')
 
     def __repr__(self) -> str:
-        return u'<Variation Id: {}, Project id: {}, Description: {}, Amount: {}, Subcontractor: {}>' \
-            .format(self.vid, self.project_id, self.description, self.amount, self.subcontractor)
+        return f'<Variation Id: {self.vid}, Project id: {self.project_id}, Description: {self.description}, Amount: {self.amount}, Subcontractor: {self.subcontractor}>'
 
     def to_json(self) -> Dict[str, Any]:
         json_variation = {
@@ -669,14 +670,13 @@ class Variation(db.Model):
 
 class Item(db.Model):
     __tablename__ = 'items'
-    id = db.Column(db.Integer, primary_key=True)  # type: int
-    amount = db.Column(db.Float, nullable=False)  # type: float
-    description = db.Column(db.Text, nullable=False)  # type: str
-    variation_id = db.Column(db.Integer, db.ForeignKey('variations.vid'))  # type: int
+    id: int = db.Column(db.Integer, primary_key=True)
+    amount: float = db.Column(db.Float, nullable=False)
+    description: str = db.Column(db.Text, nullable=False)
+    variation_id: int = db.Column(db.Integer, db.ForeignKey('variations.vid'))
 
     def __repr__(self) -> str:
-        return u'<Item Id: {}, Variation: {}, Amount: {}, Description: {}>'.format(self.id, self.variation_id,
-                                                                                   self.amount, self.description)
+        return f'<Item Id: {self.id}, Variation: {self.variation_id}, Amount: {self.amount}, Description: {self.description}>'
 
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -697,12 +697,12 @@ class Item(db.Model):
 
 class ProgressItem(db.Model):
     __tablename__ = 'progress_items'
-    id = db.Column(db.Integer, primary_key=True)  # type: int
-    name = db.Column(db.String, nullable=False)  # type: str
-    contract_value = db.Column(db.Float, nullable=False)  # type: float
-    completed_value = db.Column(db.Float, default=0.0)  # type: float
+    id: int = db.Column(db.Integer, primary_key=True)
+    name: str = db.Column(db.String, nullable=False)
+    contract_value: float = db.Column(db.Float, nullable=False)
+    completed_value: float = db.Column(db.Float, default=0.0)
 
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)  # type: int
+    project_id: int = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)
 
     def to_json(self) -> Dict[str, Any]:
         if self.contract_value != 0:
@@ -720,7 +720,7 @@ class ProgressItem(db.Model):
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> 'ProgressItem':
-        project = Project.query.get_or_404(int(json.get('project_id')))  # type: Project
+        project: Project = Project.query.get_or_404(int(json.get('project_id')))
         name = json['name']
         contract_value = json['contract_value']
         completed_value = None
@@ -731,11 +731,11 @@ class ProgressItem(db.Model):
 
 class Client(db.Model):
     __tablename__ = 'clients'
-    id = db.Column(db.Integer, primary_key=True)  # type: int
-    name = db.Column(db.String, nullable=False)  # type: str
-    first_line_address = db.Column(db.String, nullable=True)  # type: str
-    second_line_address = db.Column(db.String, nullable=True)  # type: str
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)  # type: int
+    id: int = db.Column(db.Integer, primary_key=True)
+    name: str = db.Column(db.String, nullable=False)
+    first_line_address: str = db.Column(db.String, nullable=True)
+    second_line_address: str = db.Column(db.String, nullable=True)
+    project_id: int = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)
 
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -747,7 +747,7 @@ class Client(db.Model):
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> 'Client':
-        project = Project.query.get_or_404(int(json.get('project_id')))  # type: Project
+        project: Project = Project.query.get_or_404(int(json.get('project_id')))
         name = json['name']
         first_line_address = None
         if 'first_line_address' in json:
@@ -761,11 +761,11 @@ class Client(db.Model):
 
 class Superintendent(db.Model):
     __tablename__ = 'superintendents'
-    id = db.Column(db.Integer, primary_key=True)  # type: int
-    name = db.Column(db.String, nullable=False)  # type: str
-    first_line_address = db.Column(db.String, nullable=True)  # type: str
-    second_line_address = db.Column(db.String, nullable=True)  # type: str
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)  # type: int
+    id: int = db.Column(db.Integer, primary_key=True)
+    name: str = db.Column(db.String, nullable=False)
+    first_line_address: str = db.Column(db.String, nullable=True)
+    second_line_address: str = db.Column(db.String, nullable=True)
+    project_id: int = db.Column(db.Integer, db.ForeignKey('projects.pid'), nullable=False)
 
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -777,7 +777,7 @@ class Superintendent(db.Model):
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> 'Superintendent':
-        project = Project.query.get_or_404(int(json.get('project_id')))  # type: Project
+        project: Project = Project.query.get_or_404(int(json.get('project_id')))
         name = json['name']
         first_line_address = None
         if 'first_line_address' in json:

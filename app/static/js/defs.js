@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 const metaData = $('#meta-data').data();
 //noinspection JSUnresolvedVariable
 export const newProjectUrl = metaData.newProjectUrl;
@@ -37,14 +39,14 @@ export const editProjectUrl = _.isUndefined(projectData) ? null : projectData.ed
 export const deleteProjectUrl = _.isUndefined(projectData) ? null : projectData.deleteProjectUrl;
 
 export const isNull = (e) => {
-  return _.isNull(e);
+    return _.isNull(e);
 };
 
 export const isTrue = (e) => {
-  return e === true;
+    return e === true;
 };
 
 export const isFalse = (e) => {
-  return e === false;
+    return e === false;
 };
 

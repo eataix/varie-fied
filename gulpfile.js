@@ -28,12 +28,10 @@
       'app/static/vendor/sweetalert/dist/sweetalert.min.js',
       'app/static/vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
       'app/static/vendor/parsleyjs/dist/parsley.min.js',
-      'app/static/vendor/accounting/accounting.min.js',
       'app/static/vendor/selectize/dist/js/standalone/selectize.min.js',
       'app/static/vendor/bootstrap-table/dist/bootstrap-table.min.js',
       'app/static/vendor/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js',
       'app/static/vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
-      'app/static/vendor/lodash/dist/lodash.min.js'
     ],
     scripts: [
       './app/static/js/index.js',
@@ -112,7 +110,7 @@
 
   gulp.task('minify-css', () =>
     gulp.src(paths.css)
-      //.pipe(sourcemaps.init())
+    //.pipe(sourcemaps.init())
       .pipe(minifyCss())
       .pipe(rename({
         extname: '.min.css'
